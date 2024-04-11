@@ -20,6 +20,11 @@ export default function create_account() {
       handleCheck();
     }
   }, [isClient]);
+  useEffect(() => {
+    if (!isConnected) {
+      router.push("/");
+    }
+  });
 
   const handleCheck = async () => {
     try {
