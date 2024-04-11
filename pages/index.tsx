@@ -1,9 +1,12 @@
+"use client";
+
 import { Inter } from "next/font/google";
 import { ConnectKitButton } from "connectkit";
 import { useAccount } from "wagmi";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+import dynamic from "next/dynamic";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,9 +30,10 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    console.log("chungus");
-    handleCheck();
-    fetchUser();
+    if (isConnected) {
+      handleCheck();
+      fetchUser();
+    }
   }, [isConnected]);
 
   const handleCheck = async () => {
