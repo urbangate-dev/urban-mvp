@@ -1,76 +1,40 @@
 "use client";
 
-import { Inter } from "next/font/google";
-import { ConnectKitButton } from "connectkit";
-import { useAccount } from "wagmi";
-import { useState, useEffect } from "react";
+import PropertyCard from "@/components/property-card";
+import { NextRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { ChildPageProps, Property } from "@/utils/props";
 import axios from "axios";
-import { useRouter } from "next/router";
-import dynamic from "next/dynamic";
 
-const inter = Inter({ subsets: ["latin"] });
-
-type User = {
-  name: string;
-  email: string;
-};
-
-export default function Home() {
-  const [isClient, setIsClient] = useState(false);
-  const [user, setUser] = useState<User>({
-    name: "",
-    email: "",
-  });
-  const { address, isConnected } = useAccount();
-
-  const router = useRouter();
+const Home: React.FC<ChildPageProps> = ({
+  isConnected,
+  address,
+  user,
+  router,
+}) => {
+  const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
-    setIsClient(true);
+    getProperties();
   }, []);
 
-  useEffect(() => {
-    if (isConnected) {
-      handleCheck();
-      fetchUser();
-    }
-  }, [isConnected]);
-
-  const handleCheck = async () => {
+  const getProperties = async () => {
     try {
-      const response = await axios.get(
-        `/api/checkuser?walletAddress=${encodeURIComponent(address as string)}`
-      );
-      if (isConnected && !response.data.exists) router.push("/create_account");
+      const response = await axios.get("/api/property");
+      setProperties(response.data.properties);
     } catch (error) {
-      console.error("Error checking user:", error);
+      console.error("Error fetching properties: ", error);
     }
   };
-
-  const fetchUser = async () => {
-    try {
-      const response = await axios.get(
-        `/api/getuser?walletAddress=${encodeURIComponent(address as string)}`
-      );
-      setUser({
-        name: response.data.user.name,
-        email: response.data.user.email,
-      });
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
-  };
-
   return (
-    <main>
-      {isClient ? <ConnectKitButton /> : ""}
-
-      <p>{isConnected ? `Welcome, ${user.name}` : "Logged out"}</p>
-      <p>
-        <a href="https://demo.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=9b1138d3-d290-4968-9547-a6dc6683847a&env=demo&acct=4bb4edce-bff6-49b6-9503-264c6555fee0&v=2">
-          Seal your fate
-        </a>
-      </p>
-    </main>
+    <div className="p-10">
+      <div className="flex justify-center gap-10">
+        {properties.map((property) => (
+          <PropertyCard key={property.id} property={property} />
+        ))}
+      </div>
+    </div>
   );
-}
+};
+
+export default Home;
