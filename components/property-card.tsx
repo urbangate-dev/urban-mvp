@@ -25,7 +25,7 @@ interface PropertyCardProps {
 export default function PropertyCard({ property }: PropertyCardProps) {
   return (
     <div className="flex flex-col w-[25%] rounded-2xl overflow-hidden border">
-      <Link href="/property">
+      <Link href={`/property/${property.id}`}>
         <Image src={PropertyImage} alt="property" className="" />
         <div className="p-5">
           <p className="text-2xl mb-2">{property.address}</p>

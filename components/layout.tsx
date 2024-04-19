@@ -42,10 +42,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const fetchUser = async () => {
     if (address)
       try {
-        const response = await axios.get(
-          `/api/user?walletAddress=${encodeURIComponent(address as string)}`
-        );
-        if (isConnected && response.data.user.name == "")
+        const response = await axios.get(`/api/user/${address}`);
+        if (isConnected && !response.data.user.name)
           router.push("/create-account");
         else
           setUser({
