@@ -40,6 +40,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   // if user is connected and exists, then fetch user data from database
   const fetchUser = async () => {
+    //error
     try {
       const response = await axios.get(
         `/api/user?walletAddress=${encodeURIComponent(address as string)}`

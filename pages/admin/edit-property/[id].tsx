@@ -37,7 +37,7 @@ const EditProperty: React.FC<ChildPageProps> = ({
     borrower: "",
   });
 
-  const { propertyId } = router.query;
+  const { id } = router.query;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -59,7 +59,7 @@ const EditProperty: React.FC<ChildPageProps> = ({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`/api/property/${propertyId}`, formData);
+      const response = await axios.put(`/api/property/${id}`, formData);
       console.log("Property created:", response.data.property);
       router.push("/admin/dashboard");
     } catch (error) {
@@ -69,13 +69,13 @@ const EditProperty: React.FC<ChildPageProps> = ({
 
   useEffect(() => {
     fetchProperty();
-  }, [propertyId]);
+  }, [id]);
 
   const fetchProperty = async () => {
-    if (propertyId)
+    if (id)
       try {
-        console.log(`/api/property/${propertyId}`);
-        const response = await axios.get(`/api/property/${propertyId}`);
+        console.log(`/api/property/${id}`);
+        const response = await axios.get(`/api/property/${id}`);
         setFormData(response.data.property);
       } catch (error) {
         console.error("Error fetching property: ", error);
