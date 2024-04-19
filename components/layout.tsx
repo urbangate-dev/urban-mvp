@@ -40,22 +40,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   // if user is connected and exists, then fetch user data from database
   const fetchUser = async () => {
-    //error
-    try {
-      const response = await axios.get(
-        `/api/user?walletAddress=${encodeURIComponent(address as string)}`
-      );
-      if (isConnected && response.data.user.name == "")
-        router.push("/create-account");
-      else
-        setUser({
-          name: response.data.user.name,
-          email: response.data.user.email,
-          role: response.data.user.role,
-        });
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    }
+    if (address)
+      try {
+        const response = await axios.get(
+          `/api/user?walletAddress=${encodeURIComponent(address as string)}`
+        );
+        if (isConnected && response.data.user.name == "")
+          router.push("/create-account");
+        else
+          setUser({
+            name: response.data.user.name,
+            email: response.data.user.email,
+            role: response.data.user.role,
+          });
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
   };
 
   if (isMounted)
