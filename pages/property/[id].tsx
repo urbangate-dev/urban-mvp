@@ -15,6 +15,7 @@ const Property: React.FC<ChildPageProps> = ({
     id: "",
     address: "",
     dealDescription: "",
+    propertyDescription: "",
     city: "",
     state: "",
     zip: "",
