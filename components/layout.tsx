@@ -1,6 +1,6 @@
 "use client";
 
-import { ConnectKitButton, useIsMounted } from "connectkit";
+import { ConnectKitButton } from "connectkit";
 import { useAccount } from "wagmi";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -23,15 +23,10 @@ interface ChildProps {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>({
-    name: "",
-    email: "",
-    role: "",
-  });
+  const [user, setUser] = useState<User>();
   const { address, isConnected } = useAccount();
 
   const router = useRouter();
-  const isMounted = useIsMounted();
   const isAdminRoute = router.pathname.startsWith("/admin");
 
   useEffect(() => {
@@ -39,11 +34,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [isConnected]);
 
   // if user is connected and exists, then fetch user data from database
+
   const fetchUser = async () => {
     if (address)
       try {
         const response = await axios.get(`/api/user/${address}`);
-        if (isConnected && !response.data.user.name)
+        if (isConnected && Object.keys(response.data).length === 0)
           router.push("/create-account");
         else
           setUser({
@@ -56,7 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
   };
 
-  if (isMounted)
+  if (user)
     return (
       <div>
         <header className="flex justify-between items-center p-4 border-b">
@@ -67,6 +63,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <p>
               {isConnected && user.name != "" ? `Welcome, ${user.name}` : ""}
             </p>
+            {user.role === "ADMIN" ? (
+              <Link href="/admin/dashboard">Admin Dashboard</Link>
+            ) : (
+              ""
+            )}
+
             <ConnectKitButton label="Login with Wallet" />
           </div>
         </header>

@@ -29,9 +29,11 @@ const Home: React.FC<ChildPageProps> = ({
   return (
     <div className="p-10">
       <div className="flex justify-center gap-10">
-        {properties.map((property) => (
-          <PropertyCard key={property.id} property={property} />
-        ))}
+        {properties
+          .filter((property) => !property.draft)
+          .map((property) => (
+            <PropertyCard key={property.id} property={property} />
+          ))}
       </div>
     </div>
   );

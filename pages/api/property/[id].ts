@@ -18,9 +18,9 @@ export default async function handler(
           },
         });
         if (!property) {
-          return res.status(404).json({ error: "Property not found" });
+          return res.status(200).json({ exists: false, property: {} });
         }
-        res.status(200).json({ property });
+        res.status(200).json({ exists: true, property });
       } catch (error) {
         console.error("Error fetching property:", error);
         res.status(500).json({ error: "Internal server error" });

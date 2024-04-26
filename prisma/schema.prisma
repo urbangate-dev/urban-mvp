@@ -21,20 +21,32 @@ model User {
 
 // Define the data model for the Property
 model Property {
-    id                Int      @id @default(autoincrement())
-    createdAt         DateTime @default(now())
-    address           String
-    city              String
-    state             String
-    propertyType      String
-    bathroom          Int
-    bedroom           Int
-    sqft              Int
-    asIsPropertyValue Float
-    ARVValue          Float
-    totalCost         Float
-    borrower          String
-    loans             Loan[] // One-to-many relationship with loans
+    id                       Int      @id @default(autoincrement())
+    createdAt                DateTime @default(now())
+    address                  String
+    dealDescription          String
+    city                     String
+    state                    String
+    zip                      String
+    propertyType             String
+    bathroom                 Int
+    bedroom                  Int
+    sqft                     Int
+    loanAsIsValue            Float
+    loanARVValue             Float
+    loanToCostValue          Float
+    loanAmount               Float
+    yieldPercent             Float
+    maturityDate             String
+    borrower                 String
+    rehabBudget              Float
+    exitStrategy             String
+    borrowerExperience       String
+    borrowerNumberOfDeals    Int
+    borrowerDescription      String
+    investorPresentationLink String
+    draft                    Boolean
+    loans                    Loan[] // One-to-many relationship with loans
 }
 
 // Define the data model for the Loan

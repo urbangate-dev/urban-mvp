@@ -18,39 +18,67 @@ export default async function handler(
   } else if (req.method === "POST") {
     const {
       address,
+      dealDescription,
       city,
       state,
+      zip,
       propertyType,
       bathroom,
       bedroom,
       sqft,
-      asIsPropertyValue,
-      ARVValue,
-      totalCost,
+      loanAsIsValue,
+      loanARVValue,
+      loanToCostValue,
+      loanAmount,
+      yieldPercent,
+      maturityDate,
       borrower,
+      rehabBudget,
+      exitStrategy,
+      borrowerExperience,
+      borrowerNumberOfDeals,
+      borrowerDescription,
+      investorPresentationLink,
+      draft,
     } = req.body;
 
     const parsedBathroom = parseInt(bathroom, 10);
     const parsedBedroom = parseInt(bedroom, 10);
     const parsedSqft = parseInt(sqft, 10);
-    const parsedAsIsPropertyValue = parseFloat(asIsPropertyValue);
-    const parsedARVValue = parseFloat(ARVValue);
-    const parsedTotalCost = parseFloat(totalCost);
+    const parsedBorrowerNumberOfDeals = parseInt(borrowerNumberOfDeals, 10);
+    const parsedLoanAsIsValue = parseFloat(loanAsIsValue);
+    const parsedLoanARVValue = parseFloat(loanARVValue);
+    const parsedLoanToCostValue = parseFloat(loanToCostValue);
+    const parsedLoanAmount = parseFloat(loanAmount);
+    const parsedYieldPercent = parseFloat(yieldPercent);
+    const parsedRehabBudget = parseFloat(rehabBudget);
 
     try {
       const createdProperty = await prisma.property.create({
         data: {
           address,
+          dealDescription,
           city,
           state,
+          zip,
           propertyType,
           bathroom: parsedBathroom,
           bedroom: parsedBedroom,
           sqft: parsedSqft,
-          asIsPropertyValue: parsedAsIsPropertyValue,
-          ARVValue: parsedARVValue,
-          totalCost: parsedTotalCost,
+          loanAsIsValue: parsedLoanAsIsValue,
+          loanARVValue: parsedLoanARVValue,
+          loanToCostValue: parsedLoanToCostValue,
+          loanAmount: parsedLoanAmount,
+          yieldPercent: parsedYieldPercent,
+          maturityDate,
           borrower,
+          rehabBudget: parsedRehabBudget,
+          exitStrategy,
+          borrowerExperience,
+          borrowerNumberOfDeals: parsedBorrowerNumberOfDeals,
+          borrowerDescription,
+          investorPresentationLink,
+          draft,
         },
       });
       console.log("Property created:", createdProperty);

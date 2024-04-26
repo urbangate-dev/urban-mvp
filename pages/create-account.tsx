@@ -1,6 +1,5 @@
 import { FormEvent, useState, useEffect } from "react";
 import axios from "axios";
-import { NextRouter, useRouter } from "next/router";
 import { ChildPageProps } from "@/utils/props";
 
 const CreateAccount: React.FC<ChildPageProps> = ({
@@ -13,9 +12,9 @@ const CreateAccount: React.FC<ChildPageProps> = ({
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    if (!isConnected || (isConnected && user.name == "")) {
+    console.log(user);
+    if (!isConnected || (isConnected && user.name != "")) {
       router.push("/");
-      console.log("chungus");
     }
   }, [isConnected]);
 

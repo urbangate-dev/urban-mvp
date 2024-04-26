@@ -2,20 +2,7 @@ import { ChildPageProps } from "@/utils/props";
 import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-
-interface Property {
-  address: string;
-  city: string;
-  state: string;
-  propertyType: string;
-  bathroom: number;
-  bedroom: number;
-  sqft: number;
-  asIsPropertyValue: number;
-  ARVValue: number;
-  totalCost: number;
-  borrower: string;
-}
+import { PropertyWithoutId as Property } from "@/utils/props";
 
 const EditProperty: React.FC<ChildPageProps> = ({
   isConnected,
@@ -23,31 +10,48 @@ const EditProperty: React.FC<ChildPageProps> = ({
   user,
   router,
 }) => {
+  const defaultDate = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState<Property>({
     address: "",
+    dealDescription: "",
     city: "",
     state: "",
+    zip: "",
     propertyType: "",
     bathroom: 0,
     bedroom: 0,
     sqft: 0,
-    asIsPropertyValue: 0,
-    ARVValue: 0,
-    totalCost: 0,
+    loanAsIsValue: 0,
+    loanARVValue: 0,
+    loanToCostValue: 0,
+    loanAmount: 0,
+    yieldPercent: 0,
+    maturityDate: defaultDate,
     borrower: "",
+    rehabBudget: 0,
+    exitStrategy: "",
+    borrowerExperience: "",
+    borrowerNumberOfDeals: 0,
+    borrowerDescription: "",
+    investorPresentationLink: "",
+    draft: true,
   });
 
   const { id } = router.query;
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     const parsedValue =
       name === "bedroom" ||
       name === "sqft" ||
       name === "bathroom" ||
-      name === "asIsPropertyValue" ||
-      name === "ARVValue" ||
-      name === "totalCost"
+      name === "loanAsIsValue" ||
+      name === "loanAmount" ||
+      name === "yieldPercent" ||
+      name === "loanARVValue" ||
+      name === "loanToCostValue"
         ? parseInt(value, 10)
         : value;
     setFormData({
@@ -59,11 +63,27 @@ const EditProperty: React.FC<ChildPageProps> = ({
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`/api/property/${id}`, formData);
+      const response = await axios.put(`/api/property/${id}`, {
+        ...formData,
+        draft: false,
+      });
       console.log("Property created:", response.data.property);
       router.push("/admin/dashboard");
     } catch (error) {
       console.error("Error creating property: ", error);
+    }
+  };
+
+  const saveDraft = async () => {
+    try {
+      const response = await axios.put(`/api/property/${id}`, {
+        ...formData,
+        draft: true,
+      });
+      console.log("Draft saved:", response.data.property);
+      router.push("/admin/dashboard");
+    } catch (error) {
+      console.error("Error saving draft: ", error);
     }
   };
 
@@ -93,6 +113,7 @@ const EditProperty: React.FC<ChildPageProps> = ({
             name="address"
             value={formData.address}
             onChange={handleChange}
+            required
           />
         </label>
         <label>
@@ -110,6 +131,23 @@ const EditProperty: React.FC<ChildPageProps> = ({
             type="text"
             name="state"
             value={formData.state}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Zip:
+          <input
+            type="text"
+            name="zip"
+            value={formData.zip}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Deal Description:
+          <textarea
+            name="dealDescription"
+            value={formData.dealDescription}
             onChange={handleChange}
           />
         </label>
@@ -150,29 +188,56 @@ const EditProperty: React.FC<ChildPageProps> = ({
           />
         </label>
         <label>
-          As-Is Property Value:
+          Loan As-Is Value:
           <input
             type="number"
-            name="asIsPropertyValue"
-            value={formData.asIsPropertyValue}
+            name="loanAsIsValue"
+            value={formData.loanAsIsValue}
             onChange={handleChange}
           />
         </label>
         <label>
-          ARV Value:
+          Loan ARV Value:
           <input
             type="number"
-            name="ARVValue"
-            value={formData.ARVValue}
+            name="loanARVValue"
+            value={formData.loanARVValue}
             onChange={handleChange}
           />
         </label>
         <label>
-          Total Cost:
+          Loan To Cost Value:
           <input
             type="number"
-            name="totalCost"
-            value={formData.totalCost}
+            name="loanToCostValue"
+            value={formData.loanToCostValue}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Loan Amount:
+          <input
+            type="number"
+            name="loanAmount"
+            value={formData.loanAmount}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Yield Percent:
+          <input
+            type="number"
+            name="yieldPercent"
+            value={formData.yieldPercent}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Maturity Date:
+          <input
+            type="date"
+            name="maturityDate"
+            value={formData.maturityDate}
             onChange={handleChange}
           />
         </label>
@@ -185,7 +250,72 @@ const EditProperty: React.FC<ChildPageProps> = ({
             onChange={handleChange}
           />
         </label>
-        <button type="submit">Update</button>
+        <label>
+          Rehab Budget:
+          <input
+            type="number"
+            name="rehabBudget"
+            value={formData.rehabBudget}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Exit Strategy:
+          <input
+            type="text"
+            name="exitStrategy"
+            value={formData.exitStrategy}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Borrower Experience (in years):
+          <input
+            type="text"
+            name="borrowerExperience"
+            value={formData.borrowerExperience}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Borrower Number of Deals:
+          <input
+            type="number"
+            name="borrowerNumberOfDeals"
+            value={formData.borrowerNumberOfDeals}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Borrower Description:
+          <textarea
+            name="borrowerDescription"
+            value={formData.borrowerDescription}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Investor Presentation Link:
+          <input
+            type="text"
+            name="investorPresentationLink"
+            value={formData.investorPresentationLink}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Borrower:
+          <input
+            type="text"
+            name="borrower"
+            value={formData.borrower}
+            onChange={handleChange}
+          />
+        </label>
+        <button type="button" onClick={saveDraft}>
+          Save as Draft
+        </button>
+        <button type="submit">{formData.draft ? "Submit" : "Update"}</button>
       </form>
     </div>
   );
