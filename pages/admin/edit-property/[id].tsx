@@ -14,6 +14,7 @@ const EditProperty: React.FC<ChildPageProps> = ({
   const [formData, setFormData] = useState<Property>({
     address: "",
     dealDescription: "",
+    propertyDescription: "",
     city: "",
     state: "",
     zip: "",
@@ -148,6 +149,14 @@ const EditProperty: React.FC<ChildPageProps> = ({
           <textarea
             name="dealDescription"
             value={formData.dealDescription}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Deal Description:
+          <textarea
+            name="propertyDescription"
+            value={formData.propertyDescription}
             onChange={handleChange}
           />
         </label>

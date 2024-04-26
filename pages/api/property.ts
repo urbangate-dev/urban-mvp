@@ -19,6 +19,7 @@ export default async function handler(
     const {
       address,
       dealDescription,
+      propertyDescription,
       city,
       state,
       zip,
@@ -58,6 +59,7 @@ export default async function handler(
         data: {
           address,
           dealDescription,
+          propertyDescription,
           city,
           state,
           zip,

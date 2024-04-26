@@ -14,6 +14,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
   const [formData, setFormData] = useState<Property>({
     address: "",
     dealDescription: "",
+    propertyDescription: "",
     city: "",
     state: "",
     zip: "",
@@ -131,6 +132,14 @@ const CreateProperty: React.FC<ChildPageProps> = ({
           <textarea
             name="dealDescription"
             value={formData.dealDescription}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Property Description:
+          <textarea
+            name="propertyDescription"
+            value={formData.propertyDescription}
             onChange={handleChange}
           />
         </label>

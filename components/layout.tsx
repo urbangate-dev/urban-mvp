@@ -23,7 +23,11 @@ interface ChildProps {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<User>({
+    name: "",
+    email: "",
+    role: "",
+  });
   const { address, isConnected } = useAccount();
   const isMounted = useIsMounted();
   const router = useRouter();

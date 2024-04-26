@@ -13,7 +13,7 @@ const CreateAccount: React.FC<ChildPageProps> = ({
 
   useEffect(() => {
     console.log(user);
-    if (!isConnected || (isConnected && user.name != "")) {
+    if (!isConnected || (isConnected && user?.name != "" && user)) {
       router.push("/");
     }
   }, [isConnected]);

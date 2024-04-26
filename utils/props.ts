@@ -16,6 +16,7 @@ export interface Property {
   id: string;
   address: string;
   dealDescription: string;
+  propertyDescription: string;
   city: string;
   state: string;
   zip: string;
@@ -42,6 +43,7 @@ export interface Property {
 export interface PropertyWithoutId {
   address: string;
   dealDescription: string;
+  propertyDescription: string;
   city: string;
   state: string;
   zip: string;

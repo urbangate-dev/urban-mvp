@@ -25,6 +25,7 @@ model Property {
     createdAt                DateTime @default(now())
     address                  String
     dealDescription          String
+    propertyDescription      String
     city                     String
     state                    String
     zip                      String

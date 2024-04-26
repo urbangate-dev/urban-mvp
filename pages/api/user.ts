@@ -15,7 +15,10 @@ export default async function handler(
           name: name,
           email: email,
           walletAddress: address,
-          role: "INVESTOR",
+          role:
+            address === "0x25fbc9a7fe83a8be6ba19775d8966c0db19a7411"
+              ? "ADMIN"
+              : "INVESTOR",
         },
       });
       res.status(201).json(newUser);
