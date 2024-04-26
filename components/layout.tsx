@@ -1,6 +1,6 @@
 "use client";
 
-import { ConnectKitButton } from "connectkit";
+import { ConnectKitButton, useIsMounted } from "connectkit";
 import { useAccount } from "wagmi";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
@@ -25,12 +25,13 @@ interface ChildProps {
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>();
   const { address, isConnected } = useAccount();
-
+  const isMounted = useIsMounted();
   const router = useRouter();
   const isAdminRoute = router.pathname.startsWith("/admin");
 
   useEffect(() => {
     fetchUser();
+    console.log("chungus");
   }, [isConnected]);
 
   // if user is connected and exists, then fetch user data from database
@@ -52,7 +53,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       }
   };
 
-  if (user)
+  if (isMounted)
     return (
       <div>
         <header className="flex justify-between items-center p-4 border-b">
@@ -61,9 +62,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="flex items-center gap-6">
             <p>
-              {isConnected && user.name != "" ? `Welcome, ${user.name}` : ""}
+              {isConnected && user?.name != "" ? `Welcome, ${user?.name}` : ""}
             </p>
-            {user.role === "ADMIN" ? (
+            {isConnected && user?.role === "ADMIN" ? (
               <Link href="/admin/dashboard">Admin Dashboard</Link>
             ) : (
               ""
@@ -74,7 +75,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </header>
 
         <main>
-          {isAdminRoute && user.role !== "ADMIN" ? (
+          {isAdminRoute && user?.role !== "ADMIN" ? (
             <p>Unauthorized</p>
           ) : (
             React.Children.map(children, (child) =>
