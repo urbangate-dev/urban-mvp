@@ -22,17 +22,22 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <Image src={PropertyImage} alt="property" className="" />
         <div className="p-5">
           <p className="text-2xl mb-2">{property.address}</p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam
-            unde ratione numquam nostrum rem earum magni ipsa vero esse. Esse,
-            explicabo sint! Hic illum, commodi recusandae eius voluptatum modi
-            tempora laboriosam magnam consectetur cumque voluptatem animi dolore
-            maiores ipsam natus?
-          </p>
+          <p>{property.propertyDescription}</p>
         </div>
         <div className="border-b mx-5"></div>
-        <div className="p-5">
-          <p>Price: {property.loanAmount}</p>
+        <div className="p-5 flex justify-between">
+          <div className="flex flex-col">
+            <p className="text-xl">Loan</p>
+            <p>${property.loanAmount}</p>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-xl">ARV</p>
+            <p>{property.loanARVValue}</p>
+          </div>
+          <div className="flex flex-col">
+            <p className="text-xl">Term</p>
+            <p>{property.term}m</p>
+          </div>
         </div>
       </Link>
     </div>

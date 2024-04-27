@@ -30,6 +30,7 @@ export interface Property {
   loanAmount: number;
   yieldPercent: number;
   maturityDate: string;
+  term: number;
   borrower: string;
   rehabBudget: number;
   exitStrategy: string;
@@ -57,6 +58,7 @@ export interface PropertyWithoutId {
   loanAmount: number;
   yieldPercent: number;
   maturityDate: string;
+  term: number;
   borrower: string;
   rehabBudget: number;
   exitStrategy: string;

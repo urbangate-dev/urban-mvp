@@ -28,6 +28,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
     loanAmount: 0,
     yieldPercent: 0,
     maturityDate: defaultDate,
+    term: 0,
     borrower: "",
     rehabBudget: 0,
     exitStrategy: "",
@@ -50,7 +51,8 @@ const CreateProperty: React.FC<ChildPageProps> = ({
       name === "loanAmount" ||
       name === "yieldPercent" ||
       name === "loanARVValue" ||
-      name === "loanToCostValue"
+      name === "loanToCostValue" ||
+      name === "term"
         ? parseInt(value, 10)
         : value;
     setFormData({
@@ -89,7 +91,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
   return (
     <div className="p-10">
       <Link href="/admin/dashboard">Back to Dashboard</Link>
-      <form onSubmit={handleSubmit} className="flex flex-col p-10 gap-2">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 mt-10">
         <label>
           Address:
           <input
@@ -98,6 +100,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             value={formData.address}
             onChange={handleChange}
             required
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -107,6 +110,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="city"
             value={formData.city}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -116,6 +120,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="state"
             value={formData.state}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -125,6 +130,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="zip"
             value={formData.zip}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -133,6 +139,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="dealDescription"
             value={formData.dealDescription}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -141,6 +148,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="propertyDescription"
             value={formData.propertyDescription}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -150,6 +158,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="propertyType"
             value={formData.propertyType}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -159,6 +168,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="bathroom"
             value={formData.bathroom}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -168,6 +178,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="bedroom"
             value={formData.bedroom}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -177,6 +188,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="sqft"
             value={formData.sqft}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -186,6 +198,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="loanAsIsValue"
             value={formData.loanAsIsValue}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -195,6 +208,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="loanARVValue"
             value={formData.loanARVValue}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -204,6 +218,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="loanToCostValue"
             value={formData.loanToCostValue}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -213,6 +228,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="loanAmount"
             value={formData.loanAmount}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -222,6 +238,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="yieldPercent"
             value={formData.yieldPercent}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -231,6 +248,17 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="maturityDate"
             value={formData.maturityDate}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
+          />
+        </label>
+        <label>
+          Term length in months:
+          <input
+            type="number"
+            name="term"
+            value={formData.term}
+            onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -240,6 +268,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="borrower"
             value={formData.borrower}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -249,6 +278,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="rehabBudget"
             value={formData.rehabBudget}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -258,6 +288,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="exitStrategy"
             value={formData.exitStrategy}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -267,6 +298,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="borrowerExperience"
             value={formData.borrowerExperience}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -276,6 +308,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="borrowerNumberOfDeals"
             value={formData.borrowerNumberOfDeals}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -284,6 +317,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="borrowerDescription"
             value={formData.borrowerDescription}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
         <label>
@@ -293,6 +327,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             name="investorPresentationLink"
             value={formData.investorPresentationLink}
             onChange={handleChange}
+            className="ml-2 border rounded-sm px-2 py-1"
           />
         </label>
 

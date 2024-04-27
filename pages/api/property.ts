@@ -33,6 +33,7 @@ export default async function handler(
       loanAmount,
       yieldPercent,
       maturityDate,
+      term,
       borrower,
       rehabBudget,
       exitStrategy,
@@ -53,6 +54,7 @@ export default async function handler(
     const parsedLoanAmount = parseFloat(loanAmount);
     const parsedYieldPercent = parseFloat(yieldPercent);
     const parsedRehabBudget = parseFloat(rehabBudget);
+    const parsedTerm = parseInt(term, 10);
 
     try {
       const createdProperty = await prisma.property.create({
@@ -73,6 +75,7 @@ export default async function handler(
           loanAmount: parsedLoanAmount,
           yieldPercent: parsedYieldPercent,
           maturityDate,
+          term: parsedTerm,
           borrower,
           rehabBudget: parsedRehabBudget,
           exitStrategy,

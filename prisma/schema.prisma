@@ -39,6 +39,7 @@ model Property {
     loanAmount               Float
     yieldPercent             Float
     maturityDate             String
+    term                     Int
     borrower                 String
     rehabBudget              Float
     exitStrategy             String
