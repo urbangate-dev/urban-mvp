@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import PropertyCard from "@/components/property-card";
 import { Property } from "@/utils/props";
 import Link from "next/link";
+import PropertyCardAdmin from "@/components/property-card-admin";
 
 export default function Dashboard() {
   const [properties, setProperties] = useState<Property[]>([]);
@@ -40,20 +40,11 @@ export default function Dashboard() {
         {properties
           .filter((property) => !property.draft)
           .map((property) => (
-            <div className="py-4 border px-6 flex justify-between">
-              <p>{property.address}</p>
-              <div className="flex gap-4">
-                <Link href={`/admin/edit-property/${property.id}`}>
-                  Edit Property
-                </Link>
-                <p
-                  className="text-red-500 cursor-pointer"
-                  onClick={() => deleteProperty(property.id)}
-                >
-                  Delete Property
-                </p>
-              </div>
-            </div>
+            <PropertyCardAdmin
+              property={property}
+              deleteProperty={deleteProperty}
+              draft={property.draft}
+            />
           ))}
       </div>
       <p className="mt-10 text-2xl mb-4">Drafts</p>
@@ -61,20 +52,11 @@ export default function Dashboard() {
         {properties
           .filter((property) => property.draft)
           .map((property) => (
-            <div className="py-4 border px-6 flex justify-between">
-              <p>{property.address}</p>
-              <div className="flex gap-4">
-                <Link href={`/admin/edit-property/${property.id}`}>
-                  Edit Draft
-                </Link>
-                <p
-                  className="text-red-500 cursor-pointer"
-                  onClick={() => deleteProperty(property.id)}
-                >
-                  Delete Draft
-                </p>
-              </div>
-            </div>
+            <PropertyCardAdmin
+              property={property}
+              deleteProperty={deleteProperty}
+              draft={property.draft}
+            />
           ))}
       </div>
     </div>

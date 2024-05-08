@@ -8,25 +8,14 @@ import { NextRouter, useRouter } from "next/router";
 import Image from "next/image";
 import LogoSVG from "../public/logo.svg";
 import Link from "next/link";
-
-type User = {
-  name: string;
-  email: string;
-  role: string;
-};
-
-interface ChildProps {
-  isConnected: boolean;
-  address: string;
-  user: User;
-  router: NextRouter;
-}
+import { User, ChildPageProps } from "../utils/props";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>({
     name: "",
     email: "",
     role: "",
+    id: "",
   });
   const { address, isConnected } = useAccount();
   const isMounted = useIsMounted();
@@ -35,7 +24,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     fetchUser();
-    console.log("chungus");
   }, [isConnected]);
 
   // if user is connected and exists, then fetch user data from database
@@ -45,12 +33,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       try {
         const response = await axios.get(`/api/user/${address}`);
         if (isConnected && Object.keys(response.data).length === 0)
-          router.push("/create-account");
+          router.push("/user/create-account");
         else
           setUser({
             name: response.data.user.name,
             email: response.data.user.email,
             role: response.data.user.role,
+            id: response.data.user.id,
           });
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -65,9 +54,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <Image src={LogoSVG} alt="logo" width={70} height={70} />
           </Link>
           <div className="flex items-center gap-6">
-            <p>
-              {isConnected && user?.name != "" ? `Welcome, ${user?.name}` : ""}
-            </p>
+            <Link href="/user/account">
+              {isConnected && user?.name != "" ? `${user?.name}'s Account` : ""}
+            </Link>
             {isConnected && user?.role === "ADMIN" ? (
               <Link href="/admin/dashboard">Admin Dashboard</Link>
             ) : (
@@ -89,7 +78,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     address,
                     user,
                     router,
-                  } as ChildProps)
+                  } as ChildPageProps)
                 : child
             )
           )}

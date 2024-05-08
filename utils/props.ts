@@ -1,8 +1,10 @@
 import { NextRouter } from "next/router";
 
-type User = {
+export type User = {
   name: string;
   email: string;
+  role: string;
+  id: string;
 };
 
 export interface ChildPageProps {
@@ -10,6 +12,31 @@ export interface ChildPageProps {
   address: string;
   user: User;
   router: NextRouter;
+}
+
+export interface LoanCreateProps {
+  loanAmount: number;
+  loanToARV: number;
+  loanToAsIs: number;
+  loanToCost: number;
+  term: number;
+  returnValue: number;
+  propertyId: string;
+  userId: string;
+}
+
+export interface Loan {
+  id: string;
+  loanAmount: number;
+  loanToARV: number;
+  loanToAsIs: number;
+  loanToCost: number;
+  term: number;
+  returnValue: number;
+  propertyId: string;
+  property: Property;
+  userId: string;
+  user: User;
 }
 
 export interface Property {

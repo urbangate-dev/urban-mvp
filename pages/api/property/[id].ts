@@ -11,7 +11,6 @@ export default async function handler(
   if (id && id !== "") {
     if (req.method === "GET") {
       try {
-        console.log(id);
         const property = await prisma.property.findUnique({
           where: {
             id: Number(id),

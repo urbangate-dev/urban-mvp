@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ChildPageProps } from "@/utils/props";
 import { Property as Prop } from "@/utils/props";
+import { LoanCreateProps } from "@/utils/props";
 import axios from "axios";
 import Image from "next/image";
 import PropertyImage from "../../public/testproperty.jpeg";
@@ -14,6 +15,7 @@ const Property: React.FC<ChildPageProps> = ({
 }) => {
   const { id } = router.query;
   const defaultDate = new Date().toISOString().split("T")[0];
+
   const [property, setProperty] = useState<Prop>({
     id: "",
     address: "",
@@ -46,6 +48,9 @@ const Property: React.FC<ChildPageProps> = ({
   const [monthRows, setMonthRows] = useState<number[]>([]);
   const [monthRowsMinusOne, setMonthRowsMinusOne] = useState<number[]>([]);
 
+  const nameURL = user.name.replace(/ /g, "%20");
+  const addressURL = property.address.replace(/ /g, "%20");
+
   useEffect(() => {
     fetchProperty();
   }, [id]);
@@ -69,6 +74,25 @@ const Property: React.FC<ChildPageProps> = ({
       } catch (error) {
         console.error("Error fetching property: ", error);
       }
+  };
+
+  const handleInvest = async (property: Prop) => {
+    try {
+      console.log(property);
+      const loan: LoanCreateProps = {
+        loanAmount: property.loanAmount,
+        loanToARV: property.loanARVValue,
+        loanToAsIs: property.loanAsIsValue,
+        loanToCost: property.loanToCostValue,
+        term: property.term,
+        returnValue: property.loanAmount,
+        propertyId: property.id,
+        userId: user.id,
+      };
+      const response = axios.post("/api/loan", loan);
+    } catch (error) {
+      console.error("Error investing in property: ", error);
+    }
   };
 
   return (
@@ -204,10 +228,17 @@ const Property: React.FC<ChildPageProps> = ({
           </div>
           <div className="flex justify-center">
             <Link
-              href="/"
+              href="/user/account"
               className="text-3xl border px-6 py-3 rounded-md text-center mx-auto"
+              onClick={() => handleInvest(property)}
             >
               Invest In Property
+            </Link>
+            <Link
+              href={`https://demo.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=37958bb5-5b6e-4c08-a06a-d40e800c666e&env=demo&acct=4bb4edce-bff6-49b6-9503-264c6555fee0&v=2&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Address=${addressURL}&Investment=${property.loanAmount}`}
+              target="_blank"
+            >
+              Docusign Test
             </Link>
           </div>
         </div>

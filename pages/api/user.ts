@@ -8,7 +8,6 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     const { name, email, address } = req.body;
-    console.log("chungus");
     try {
       const newUser = await prisma.user.create({
         data: {
