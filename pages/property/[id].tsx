@@ -285,9 +285,6 @@ const Property: React.FC<ChildPageProps> = ({
             </table>
           </div>
           <div className="flex justify-center">
-            <div>
-              <p>{dateBeforeMaturityFormatted} </p>
-            </div>
             {hasLoan ? (
               <p className="text-3xl border px-6 py-3 rounded-md text-center mx-auto text-gray-400">
                 Already Funded

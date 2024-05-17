@@ -56,3 +56,11 @@ export function formatDate(date: Date) {
   const year = date.getFullYear();
   return `${month} ${getDaySuffix(String(day))}, ${year}`;
 }
+
+export function parseDate(dateString: string) {
+  // Ensure the input matches the "YYYY-MM-DD" format
+  const [year, month, day] = dateString.split("-").map(Number);
+
+  // Months are zero-indexed in JavaScript's Date object (0 = January, 11 = December)
+  return new Date(year, month - 1, day);
+}
