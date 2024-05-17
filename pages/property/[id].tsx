@@ -86,10 +86,20 @@ const Property: React.FC<ChildPageProps> = ({
     property.maturityDate,
     property.term
   );
-  const dateBeforeMaturityFormatted = formatDate(dateBeforeMaturity);
+  const dateBeforeMaturityFormatted = formatDate(dateBeforeMaturity).replace(
+    / /g,
+    "%20"
+  );
   const monthAfter = monthNames[monthNumber + 1];
   const parsedMaturityDate = parseDate(property.maturityDate);
-  const formattedMaturityDate = formatDate(parsedMaturityDate);
+  const formattedMaturityDate = formatDate(parsedMaturityDate).replace(
+    / /g,
+    "%20"
+  );
+
+  const powerformURL =
+    process.env.NEXT_PUBLIC_POWERFORM_URL +
+    `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Interest=${property.yieldPercent}`;
 
   useEffect(() => {
     fetchProperty();
@@ -292,7 +302,7 @@ const Property: React.FC<ChildPageProps> = ({
             ) : (
               <Link
                 href={
-                  process.env.NEXT_POWERFORM_URL +
+                  process.env.NEXT_PUBLIC_POWERFORM_URL +
                   `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Interest=${property.yieldPercent}`
                 }
                 target="_blank"

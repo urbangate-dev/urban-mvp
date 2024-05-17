@@ -89,7 +89,12 @@ export default function Dashboard() {
             {loans
               .filter((loan) => loan.pending)
               .map((loan) => (
-                <LoanCardAdmin key={loan.id} loan={loan} />
+                <LoanCardAdmin
+                  key={loan.id}
+                  loan={loan}
+                  loans={loans}
+                  setLoans={setLoans}
+                />
               ))}
           </div>
 
@@ -98,7 +103,12 @@ export default function Dashboard() {
             {loans
               .filter((loan) => !loan.pending)
               .map((loan) => (
-                <LoanCardAdmin key={loan.id} loan={loan} />
+                <LoanCardAdmin
+                  key={loan.id}
+                  loan={loan}
+                  loans={loans}
+                  setLoans={setLoans}
+                />
               ))}
           </div>
         </div>

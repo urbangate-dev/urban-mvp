@@ -3,11 +3,17 @@ import { Loan } from "@/utils/props";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-interface LoanCardProps {
+interface LoanCardAdminProps {
   loan: Loan;
+  loans: Loan[];
+  setLoans: React.Dispatch<React.SetStateAction<Loan[]>>;
 }
 
-export default function LoanCardAdmin({ loan }: LoanCardProps) {
+export default function LoanCardAdmin({
+  loan,
+  loans,
+  setLoans,
+}: LoanCardAdminProps) {
   const [property, setProperty] = useState<string>("");
   const [visible, setVisible] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
@@ -33,10 +39,13 @@ export default function LoanCardAdmin({ loan }: LoanCardProps) {
 
   const approveLoan = async () => {
     try {
-      const response = await axios.put(`/api/loan/${loan.id}`, {
+      await axios.put(`/api/loan/${loan.id}`, {
         ...loan,
         pending: false,
       });
+      setLoans(
+        loans.map((l) => (l.id === loan.id ? { ...l, pending: false } : l))
+      );
     } catch (error) {
       console.error("Error approving loan: ", error);
     }
@@ -44,7 +53,8 @@ export default function LoanCardAdmin({ loan }: LoanCardProps) {
 
   const deleteLoan = async () => {
     try {
-      const response = await axios.delete(`/api/loan/${loan.id}`);
+      await axios.delete(`/api/loan/${loan.id}`);
+      setLoans(loans.filter((loanInState) => loanInState.id !== loan.id));
     } catch (error) {
       console.error("Error deleting loan: ", error);
     }
