@@ -17,6 +17,8 @@ export default async function handler(
         returnValue,
         propertyId,
         userId,
+        walletAddress,
+        pending,
       } = req.body;
 
       // Create the loan in the database
@@ -30,12 +32,21 @@ export default async function handler(
           returnValue,
           propertyId,
           userId,
+          walletAddress,
+          pending,
         },
       });
 
       res.status(201).json(newLoan);
     } catch (error) {
       res.status(500).json({ error: "Error creating loan" });
+    }
+  } else if (req.method === "GET") {
+    try {
+      const loans = await prisma.loan.findMany();
+      res.status(200).json({ loans });
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
     }
   } else {
     res.status(405).json({ error: "Method Not Allowed" });

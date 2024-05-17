@@ -1,11 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { ChildPageProps } from "@/utils/props";
+import { ChildPageProps, Loan } from "@/utils/props";
 import { Property as Prop } from "@/utils/props";
 import { LoanCreateProps } from "@/utils/props";
 import axios from "axios";
 import Image from "next/image";
 import PropertyImage from "../../public/testproperty.jpeg";
 import Link from "next/link";
+import {
+  formatDate,
+  getDaySuffix,
+  getPreviousDateByMonths,
+  parseDate,
+} from "@/utils/functions";
 
 const Property: React.FC<ChildPageProps> = ({
   isConnected,
@@ -47,9 +53,43 @@ const Property: React.FC<ChildPageProps> = ({
   const [exists, setExists] = useState(false);
   const [monthRows, setMonthRows] = useState<number[]>([]);
   const [monthRowsMinusOne, setMonthRowsMinusOne] = useState<number[]>([]);
+  const [hasLoan, setHasLoan] = useState<boolean>(false);
 
   const nameURL = user.name.replace(/ /g, "%20");
   const addressURL = property.address.replace(/ /g, "%20");
+  const today = new Date();
+  const monthNumber = Number(today.getMonth());
+  const day = String(today.getDate());
+  const year = today.getFullYear();
+  const formattedDay = getDaySuffix(day);
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const monthName = monthNames[monthNumber];
+  const sum = Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(property.loanAmount);
+  const yieldFormatted = property.yieldPercent + "%";
+  const dateBeforeMaturity = getPreviousDateByMonths(
+    property.maturityDate,
+    property.term
+  );
+  const dateBeforeMaturityFormatted = formatDate(dateBeforeMaturity);
+  const monthAfter = monthNames[monthNumber + 1];
+  const parsedMaturityDate = parseDate(property.maturityDate);
+  const formattedMaturityDate = formatDate(parsedMaturityDate);
 
   useEffect(() => {
     fetchProperty();
@@ -71,6 +111,8 @@ const Property: React.FC<ChildPageProps> = ({
           setMonthRows(generateArray(response.data.property.term + 1));
           setMonthRowsMinusOne(generateArray(response.data.property.term));
         }
+        console.log(response.data.property);
+        checkLoan(response.data.property.id);
       } catch (error) {
         console.error("Error fetching property: ", error);
       }
@@ -88,10 +130,26 @@ const Property: React.FC<ChildPageProps> = ({
         returnValue: property.loanAmount,
         propertyId: property.id,
         userId: user.id,
+        walletAddress: address,
+        pending: true,
       };
       const response = axios.post("/api/loan", loan);
+      router.push("/user/account");
     } catch (error) {
       console.error("Error investing in property: ", error);
+    }
+  };
+
+  const checkLoan = async (propId: string) => {
+    try {
+      const response = await axios.get("/api/loan");
+      if (
+        response.data.loans.filter((loan: Loan) => loan.propertyId === propId)
+          .length > 0
+      )
+        setHasLoan(true);
+    } catch (error) {
+      console.error("Error checking loan: ", error);
     }
   };
 
@@ -227,19 +285,26 @@ const Property: React.FC<ChildPageProps> = ({
             </table>
           </div>
           <div className="flex justify-center">
-            <Link
-              href="/user/account"
-              className="text-3xl border px-6 py-3 rounded-md text-center mx-auto"
-              onClick={() => handleInvest(property)}
-            >
-              Invest In Property
-            </Link>
-            <Link
-              href={`https://demo.docusign.net/Member/PowerFormSigning.aspx?PowerFormId=37958bb5-5b6e-4c08-a06a-d40e800c666e&env=demo&acct=4bb4edce-bff6-49b6-9503-264c6555fee0&v=2&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Address=${addressURL}&Investment=${property.loanAmount}`}
-              target="_blank"
-            >
-              Docusign Test
-            </Link>
+            <div>
+              <p>{dateBeforeMaturityFormatted} </p>
+            </div>
+            {hasLoan ? (
+              <p className="text-3xl border px-6 py-3 rounded-md text-center mx-auto text-gray-400">
+                Already Funded
+              </p>
+            ) : (
+              <Link
+                href={
+                  process.env.NEXT_POWERFORM_URL +
+                  `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Interest=${property.yieldPercent}`
+                }
+                target="_blank"
+                className="text-3xl border px-6 py-3 rounded-md text-center mx-auto"
+                onClick={() => handleInvest(property)}
+              >
+                Invest In Property
+              </Link>
+            )}
           </div>
         </div>
       ) : (

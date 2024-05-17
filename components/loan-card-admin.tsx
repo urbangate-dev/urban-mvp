@@ -7,9 +7,10 @@ interface LoanCardProps {
   loan: Loan;
 }
 
-export default function LoanCard({ loan }: LoanCardProps) {
+export default function LoanCardAdmin({ loan }: LoanCardProps) {
   const [property, setProperty] = useState<string>("");
   const [visible, setVisible] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
 
   const fetchProperty = async () => {
     try {
@@ -20,29 +21,65 @@ export default function LoanCard({ loan }: LoanCardProps) {
     }
   };
 
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get(`/api/user/${loan.walletAddress}`);
+      console.log("user: ", response.data);
+      setName(response.data.user.name);
+    } catch (error) {
+      console.error("Error fetching user: ", error);
+    }
+  };
+
+  const approveLoan = async () => {
+    try {
+      const response = await axios.put(`/api/loan/${loan.id}`, {
+        ...loan,
+        pending: false,
+      });
+    } catch (error) {
+      console.error("Error approving loan: ", error);
+    }
+  };
+
+  const deleteLoan = async () => {
+    try {
+      const response = await axios.delete(`/api/loan/${loan.id}`);
+    } catch (error) {
+      console.error("Error deleting loan: ", error);
+    }
+  };
+
   useEffect(() => {
     fetchProperty();
+    fetchUser();
   }, []);
 
   return (
     <div className="px-6 py-4 border">
       <div className="flex justify-between">
         <div className="flex gap-8">
-          <p>Loan for {property}</p>
+          <p>
+            Loan for {property} by {name}
+          </p>
           <p>Amount: ${loan.loanAmount}</p>
         </div>
 
         <div className="flex gap-8">
-          <p className="cursor-pointer">Docusign</p>
           <p className="cursor-pointer" onClick={() => setVisible(!visible)}>
             {visible ? "Hide" : "View"} Loan Details
           </p>
           <Link href={`/property/${loan.propertyId}`}>View Property</Link>
           {loan.pending ? (
-            <p className="text-orange-400">Pending</p>
+            <p className="text-green-500 cursor-pointer" onClick={approveLoan}>
+              Approve Loan
+            </p>
           ) : (
-            <p className="text-green-500">Approved</p>
+            ""
           )}
+          <p onClick={deleteLoan} className="cursor-pointer text-red-500">
+            Delete Loan
+          </p>
         </div>
       </div>
       {visible ? (
