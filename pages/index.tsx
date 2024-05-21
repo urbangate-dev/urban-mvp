@@ -39,7 +39,7 @@ const Home: React.FC<ChildPageProps> = ({
         </p>
         <a
           href="#loan"
-          className="text-center inline-block px-10 py-6 mt-8 mb-24 text-white bg-black text-3xl rounded-full cursor-pointer"
+          className="text-center inline-block px-10 py-6 mt-8 mb-24 text-white bg-black text-3xl rounded-full cursor-pointer hover:bg-gray-900 transition"
         >
           Invest Now
         </a>

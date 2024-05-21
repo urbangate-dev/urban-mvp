@@ -68,7 +68,6 @@ const CreateProperty: React.FC<ChildPageProps> = ({
         ...formData,
         draft: false,
       });
-      console.log("Property created:", response.data.property);
       router.push("/admin/dashboard");
     } catch (error) {
       console.error("Error creating property: ", error);
@@ -81,7 +80,6 @@ const CreateProperty: React.FC<ChildPageProps> = ({
         ...formData,
         draft: true,
       });
-      console.log("Draft saved:", response.data.property);
       router.push("/admin/dashboard");
     } catch (error) {
       console.error("Error saving draft: ", error);
@@ -94,7 +92,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
         <p className="font-bold text-5xl mt-8">Create New Property</p>
         <Link
           href="/admin/dashboard"
-          className=" text-gold px-4 py-2 border border-gold rounded-full self-end text-xl"
+          className=" text-gold px-4 py-2 border border-gold rounded-full self-end text-xl hover:text-dark-gold hover:border-dark-gold transition"
         >
           Back to Dashboard
         </Link>
@@ -364,13 +362,13 @@ const CreateProperty: React.FC<ChildPageProps> = ({
           <button
             type="button"
             onClick={saveDraft}
-            className="text-gold text-xl px-4 py-2 border border-gold rounded-full"
+            className="text-gold text-xl px-4 py-2 border border-gold rounded-full hover:text-dark-gold hover:border-dark-gold transition"
           >
             Save as Draft
           </button>
           <button
             type="submit"
-            className="px-4 py-2 text-white bg-gold text-xl rounded-full"
+            className="px-4 py-2 text-white bg-gold text-xl rounded-full hover:bg-dark-gold transition"
           >
             Submit
           </button>

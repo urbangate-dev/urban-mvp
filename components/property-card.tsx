@@ -18,8 +18,8 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property }: PropertyCardProps) {
   return (
-    <div className="flex flex-col rounded-[50px] overflow-hidden border shadow-lg">
-      <Link href={`/property/${property.id}`}>
+    <div className="flex flex-col rounded-[50px] overflow-hidden border shadow-lg hover:shadow-xl transition">
+      <Link className="h-full" href={`/property/${property.id}`}>
         <Image src={PropertyImage} alt="property" className="" />
         <div className="p-4">
           <p className="text-2xl mb-1 font-bold">{property.address}</p>
@@ -28,7 +28,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               <span className="font-medium">
                 {formatCurrency(property.loanAmount)}
               </span>{" "}
-              loan
+              Loan
             </p>
 
             <div className="border-l"></div>
@@ -37,7 +37,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             </p>
             <div className="border-l"></div>
             <p>
-              <span className="font-medium">{property.term}m</span> term
+              <span className="font-medium">{property.term} Month</span> Term
             </p>
           </div>
           <p className="font-light mb-3">{property.propertyDescription}</p>

@@ -26,7 +26,6 @@ const Account: React.FC<ChildPageProps> = ({
   useEffect(() => {
     if (!isConnected) router.push("/");
     else fetchLoans();
-    console.log(loans);
   }, [user]);
 
   return (

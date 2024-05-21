@@ -86,11 +86,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="flex items-center gap-6 text-lg">
             {isConnected && user?.role === "ADMIN" ? (
-              <Link href="/admin/dashboard">Admin Dashboard</Link>
+              <Link href="/admin/dashboard" className="hover:text-gray-500">
+                Admin Dashboard
+              </Link>
             ) : (
               ""
             )}
-            {isConnected ? <Link href="/user/account">My Account</Link> : ""}
+            {isConnected ? (
+              <Link href="/user/account" className="hover:text-gray-500">
+                My Account
+              </Link>
+            ) : (
+              ""
+            )}
 
             <ConnectKitButton label="Login with Wallet" />
           </div>

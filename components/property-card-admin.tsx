@@ -43,20 +43,20 @@ export default function PropertyCardAdmin({
             ""
           ) : (
             <Link
-              className="font-light text-xl"
+              className="font-light text-xl hover:text-gray-500 transition"
               href={`/property/${property.id}`}
             >
               View
             </Link>
           )}
           <Link
-            className="font-light text-xl"
+            className="font-light text-xl hover:text-gray-500 transition"
             href={`/admin/edit-property/${property.id}`}
           >
             Edit
           </Link>
           <p
-            className="text-red-500 font-light text-xl cursor-pointer"
+            className="text-red-500 font-light text-xl cursor-pointer hover:text-red-400 transition"
             onClick={() => deleteProperty(property.id)}
           >
             Delete

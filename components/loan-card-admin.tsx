@@ -33,7 +33,6 @@ export default function LoanCardAdmin({
   const fetchUser = async () => {
     try {
       const response = await axios.get(`/api/user/${loan.walletAddress}`);
-      console.log("user: ", response.data);
       setName(response.data.user.name);
     } catch (error) {
       console.error("Error fetching user: ", error);
@@ -93,7 +92,7 @@ export default function LoanCardAdmin({
           <div className="flex gap-4 mt-3">
             {loan.pending ? (
               <p
-                className="text-green-500 cursor-pointer font-light text-xl"
+                className="text-green-500 cursor-pointer font-light text-xl hover:text-green-400 transition"
                 onClick={approveLoan}
               >
                 Approve
@@ -102,21 +101,21 @@ export default function LoanCardAdmin({
               ""
             )}
             <Link
-              className="font-light text-xl"
+              className="font-light text-xl hover:text-gray-500 transition"
               href={`/property/${loan.propertyId}`}
             >
               View
             </Link>
 
             <p
-              className="cursor-pointer font-light text-xl"
+              className="cursor-pointer font-light text-xl hover:text-gray-500 transition"
               onClick={() => setVisible(!visible)}
             >
               Details
             </p>
             <p
               onClick={deleteLoan}
-              className="cursor-pointer text-red-500 font-light text-xl"
+              className="cursor-pointer text-red-500 font-light text-xl hover:text-red-400 transition"
             >
               Delete
             </p>

@@ -114,6 +114,14 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
     fetchProperty();
   }, []);
 
+  const fundLoan = async () => {
+    /*
+  
+      Write function here? You may not need the async.
+
+    */
+  };
+
   return (
     <div className="p-5 rounded-3xl bg-white shadow-lg flex gap-6">
       <div>
@@ -160,7 +168,7 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
         <div className="flex gap-8 mt-3">
           <Link
             href={`/property/${loan.propertyId}`}
-            className="text-2xl font-extralight"
+            className="text-2xl font-extralight hover:text-gray-500 transition"
           >
             View Property
           </Link>
@@ -170,13 +178,16 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
                 process.env.NEXT_PUBLIC_POWERFORM_URL +
                 `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Year2=${year2}&Address=${formattedAddressFull}`
               }
-              className="text-2xl font-extralight"
+              className="text-2xl font-extralight hover:text-gray-500 transition"
               target="_blank"
             >
               Docusign Link
             </a>
           ) : (
-            <p className="text-2xl font-medium cursor-pointer text-gold">
+            <p
+              onClick={fundLoan}
+              className="text-2xl font-medium cursor-pointer text-gold hover:text-dark-gold transition"
+            >
               Fund Loan
             </p>
           )}

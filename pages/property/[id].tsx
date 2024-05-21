@@ -6,6 +6,7 @@ import axios from "axios";
 import Image from "next/image";
 import PropertyImage from "../../public/testproperty.jpeg";
 import Link from "next/link";
+import { formatNumberWithCommas } from "../../utils/functions";
 import {
   formatCurrency,
   formatDate,
@@ -57,7 +58,6 @@ const Property: React.FC<ChildPageProps> = ({
   const [hasLoan, setHasLoan] = useState<boolean>(false);
 
   const nameURL = user.name.replace(/ /g, "%20");
-  const addressURL = property.address.replace(/ /g, "%20");
   const today = new Date();
   const monthNumber = Number(today.getMonth());
   const day = String(today.getDate());
@@ -128,7 +128,6 @@ const Property: React.FC<ChildPageProps> = ({
           setMonthRows(generateArray(response.data.property.term + 1));
           setMonthRowsMinusOne(generateArray(response.data.property.term));
         }
-        console.log(response.data.property);
         checkLoan(response.data.property.id);
       } catch (error) {
         console.error("Error fetching property: ", error);
@@ -137,7 +136,6 @@ const Property: React.FC<ChildPageProps> = ({
 
   const handleInvest = async (property: Prop) => {
     try {
-      console.log(property);
       const loan: LoanCreateProps = {
         loanAmount: property.loanAmount,
         loanToARV: property.loanARVValue,
@@ -220,7 +218,9 @@ const Property: React.FC<ChildPageProps> = ({
                 <div className="border-l border-gray-300"></div>
                 <p className="text-2xl">{property.bathroom} Bath</p>
                 <div className="border-l border-gray-300"></div>
-                <p className="text-2xl">{property.sqft} sqft</p>
+                <p className="text-2xl">
+                  {formatNumberWithCommas(property.sqft)} SQFT
+                </p>
               </div>
               <div className="flex mt-16 gap-12">
                 <div className="flex flex-col">

@@ -77,3 +77,7 @@ export const formatCurrency = (
     maximumFractionDigits: 0,
   }).format(amount);
 };
+
+export const formatNumberWithCommas = (number: number): string => {
+  return new Intl.NumberFormat("en-US").format(number);
+};

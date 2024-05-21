@@ -60,7 +60,7 @@ const Dashboard: React.FC<ChildPageProps> = ({
         <div className="grid grid-cols-2 gap-12">
           <Link
             href="/admin/create-property"
-            className="text-xl text-gold font-light px-4 py-2 border border-gold absolute rounded-full right-20 cursor-pointer mt-6"
+            className="text-xl text-gold font-light px-4 py-2 border border-gold absolute rounded-full right-20 cursor-pointer mt-6 hover:text-dark-gold hover:border-dark-gold transition"
           >
             Create New Property
           </Link>
