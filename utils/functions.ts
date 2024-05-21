@@ -64,3 +64,20 @@ export function parseDate(dateString: string) {
   // Months are zero-indexed in JavaScript's Date object (0 = January, 11 = December)
   return new Date(year, month - 1, day);
 }
+
+export const formatCurrency = (
+  amount: number,
+  locale: string = "en-US",
+  currency: string = "USD"
+): string => {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+};
+
+export const formatNumberWithCommas = (number: number): string => {
+  return new Intl.NumberFormat("en-US").format(number);
+};

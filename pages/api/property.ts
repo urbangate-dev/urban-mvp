@@ -86,7 +86,7 @@ export default async function handler(
           draft,
         },
       });
-      console.log("Property created:", createdProperty);
+      // console.log("Property created:", createdProperty);
       res.status(201).json({ property: createdProperty });
     } catch (error) {
       console.error("Error creating property:", error);

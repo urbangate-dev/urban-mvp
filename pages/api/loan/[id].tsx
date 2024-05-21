@@ -21,7 +21,7 @@ export default async function handler(
         return [];
       }
 
-      console.log(user.loans);
+      // console.log(user.loans);
 
       res.status(201).json(user.loans);
     } catch (error) {

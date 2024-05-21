@@ -6,7 +6,9 @@ import axios from "axios";
 import Image from "next/image";
 import PropertyImage from "../../public/testproperty.jpeg";
 import Link from "next/link";
+import { formatNumberWithCommas } from "../../utils/functions";
 import {
+  formatCurrency,
   formatDate,
   getDaySuffix,
   getPreviousDateByMonths,
@@ -56,11 +58,11 @@ const Property: React.FC<ChildPageProps> = ({
   const [hasLoan, setHasLoan] = useState<boolean>(false);
 
   const nameURL = user.name.replace(/ /g, "%20");
-  const addressURL = property.address.replace(/ /g, "%20");
   const today = new Date();
   const monthNumber = Number(today.getMonth());
   const day = String(today.getDate());
   const year = today.getFullYear();
+  const year2 = year.toString().slice(-2);
   const formattedDay = getDaySuffix(day);
   const monthNames = [
     "January",
@@ -96,10 +98,15 @@ const Property: React.FC<ChildPageProps> = ({
     / /g,
     "%20"
   );
-
-  const powerformURL =
-    process.env.NEXT_PUBLIC_POWERFORM_URL +
-    `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Interest=${property.yieldPercent}`;
+  const addressFull =
+    property.address +
+    ", " +
+    property.city +
+    ", " +
+    property.state +
+    " " +
+    property.zip;
+  const formattedAddressFull = addressFull.replace(/ /g, "%20");
 
   useEffect(() => {
     fetchProperty();
@@ -121,7 +128,6 @@ const Property: React.FC<ChildPageProps> = ({
           setMonthRows(generateArray(response.data.property.term + 1));
           setMonthRowsMinusOne(generateArray(response.data.property.term));
         }
-        console.log(response.data.property);
         checkLoan(response.data.property.id);
       } catch (error) {
         console.error("Error fetching property: ", error);
@@ -130,7 +136,6 @@ const Property: React.FC<ChildPageProps> = ({
 
   const handleInvest = async (property: Prop) => {
     try {
-      console.log(property);
       const loan: LoanCreateProps = {
         loanAmount: property.loanAmount,
         loanToARV: property.loanARVValue,
@@ -164,154 +169,215 @@ const Property: React.FC<ChildPageProps> = ({
   };
 
   return (
-    <div className="p-10">
+    <div className="p-20">
       {exists ? (
         <div>
-          <div className="text-center">
-            <p className="text-2xl">{property.address}</p>
-            <p className="text-xl">
-              {property.city}, {property.state} {property.zip}
-            </p>
-            <p className="text-3xl mt-6">Loan Amount: ${property.loanAmount}</p>
-            <p className="text-2xl mt-6">
-              {property.bedroom} Beds | {property.bathroom} Bath |{" "}
-              {property.sqft} SQFT
-            </p>
+          <div className="grid grid-cols-4 gap-8">
+            <Image
+              src={PropertyImage}
+              alt="property"
+              className="col-span-2 row-span-2 rounded-tl-3xl rounded-bl-3xl"
+              width={1500}
+            />
+            <Image
+              src={PropertyImage}
+              alt="property"
+              className=""
+              width={1000}
+            />
+            <Image
+              src={PropertyImage}
+              alt="property"
+              className="rounded-tr-3xl"
+              width={1000}
+            />
+            <Image
+              src={PropertyImage}
+              alt="property"
+              className=""
+              width={1000}
+            />
+            <Image
+              src={PropertyImage}
+              alt="property"
+              className="rounded-br-3xl"
+              width={1000}
+            />
           </div>
-          <div className="w-[50%] mx-auto my-10">
-            <Image src={PropertyImage} alt="property" className="" />
-          </div>
-          <div className="flex justify-between w-[40%] mx-auto">
-            <div className="text-center">
-              <p className="text-xl">L-as-is-Value</p>
-              <p className="text-lg">{property.loanAsIsValue}%</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xl">L-ARV</p>
-              <p className="text-lg">{property.loanARVValue}%</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xl">Loan Term</p>
-              <p className="text-lg">{property.term} months</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xl">Loan to Cost</p>
-              <p className="text-lg">{property.loanToCostValue}%</p>
-            </div>
-          </div>
-          <div className="flex justify-between w-[85%] mx-auto mt-16 gap-20 mb-20">
-            <div className="text-xl w-[75%]">
-              <p className="mb-4">
-                Deal Description: {property.dealDescription}
+          <div className="grid grid-cols-4">
+            <div className="col-span-3">
+              <p className="font-bold text-5xl mt-16">
+                {formatCurrency(property.loanAmount)}
               </p>
-              <p className="mb-4">
-                Borrower Description: {property.borrowerDescription}
+              <p className="text-3xl font-light mt-4">
+                {property.address}, {property.city}, {property.state}{" "}
+                {property.zip}
               </p>
-              <Link
-                href={property.investorPresentationLink}
-                className="underline"
-              >
-                Presentation Link
-              </Link>
+              <div className="mt-4 flex gap-4">
+                <p className="text-2xl">{property.bedroom} Bed</p>
+                <div className="border-l border-gray-300"></div>
+                <p className="text-2xl">{property.bathroom} Bath</p>
+                <div className="border-l border-gray-300"></div>
+                <p className="text-2xl">
+                  {formatNumberWithCommas(property.sqft)} SQFT
+                </p>
+              </div>
+              <div className="flex mt-16 gap-12">
+                <div className="flex flex-col">
+                  <p className="text-2xl font-medium">Loan To ARV</p>
+                  <p className="text-2xl mt-2 font-light">
+                    {property.loanARVValue}%
+                  </p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-2xl font-medium">Loan To As-Is</p>
+                  <p className="text-2xl mt-2 font-light">
+                    {property.loanAsIsValue}%
+                  </p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-2xl font-medium">Loan To Cost</p>
+                  <p className="text-2xl mt-2 font-light">
+                    {property.loanToCostValue}%
+                  </p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-2xl font-medium">Loan Term</p>
+                  <p className="text-2xl mt-2 font-light">
+                    {property.term} months
+                  </p>
+                </div>
+              </div>
+              <div className="mt-24">
+                <p className="font-bold text-4xl">About the Deal</p>
+                <p className="text-xl font-light mt-4 mb-4">
+                  {property.dealDescription}
+                </p>
+                <a
+                  className="text-xl font-light"
+                  href={`${property.investorPresentationLink}`}
+                  target="_blank"
+                >
+                  Watch a presentation <span className="underline">here</span>.
+                </a>
+              </div>
+              <div className="mt-12">
+                <p className="font-bold text-4xl">About the Borrower</p>
+                <p className="text-xl font-light mt-4">
+                  {property.borrowerDescription}
+                </p>
+                <div className="flex gap-4 mt-4">
+                  <p className="px-8 py-4 bg-gray-100 inline-block font-extralight text-xl">
+                    {property.borrowerNumberOfDeals} Deals with UrbanGate
+                  </p>
+                  <p className="px-8 py-4 bg-gray-100 inline-block font-extralight text-xl">
+                    {property.borrowerExperience} Years of Experience
+                  </p>
+                </div>
+              </div>
+              <div className="mt-12">
+                <p className="font-bold text-4xl">Investor Returns</p>
+                <p className="text-xl font-light mt-4 mb-4">
+                  Capital contributed: {formatCurrency(property.loanAmount)} at{" "}
+                  {property.yieldPercent}%
+                </p>
+                <table className="border mt-8 text-lg">
+                  <tr>
+                    <td className="border p-3 font-bold">Month</td>
+                    {monthRows.map((_, index) => (
+                      <th className="border p-3 font-bold">{index + 1}</th>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Monthly Interest Income</td>
+                    {monthRows.map((_, index) => (
+                      <td className="border p-3">
+                        {formatCurrency(
+                          Math.round(
+                            (property.loanAmount / 12) *
+                              (property.yieldPercent / 100)
+                          )
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr>
+                    <td className="border p-3">Extension Fee Income</td>
+                    {monthRowsMinusOne.map((_, index) => (
+                      <td className="border p-2"></td>
+                    ))}
+                    <td className="border p-3">
+                      {formatCurrency(Math.round(property.loanAmount * 0.0025))}
+                    </td>
+                  </tr>
+                  {/* <tr>
+                    <td className="border p-2">.25% Point Income</td>
+                    {monthRowsMinusOne.map((_, index) => (
+                      <td className="border p-2"></td>
+                    ))}
+                    <td className="border p-2">
+                      ${Math.round(property.loanAmount * 0.0025)}
+                    </td>
+                  </tr> */}
+                  <tr>
+                    <td className="border p-3 font-bold">Total Income</td>
+                    {monthRowsMinusOne.map((_, index) => (
+                      <td className="border p-3 font-bold">
+                        {formatCurrency(
+                          Math.round(
+                            (property.loanAmount / 12) *
+                              (property.yieldPercent / 100) *
+                              (index + 1)
+                          )
+                        )}
+                      </td>
+                    ))}
+                    <td className="border p-3 font-bold">
+                      {formatCurrency(
+                        Math.round(
+                          (property.loanAmount / 12) *
+                            (property.yieldPercent / 100) *
+                            (property.term + 1) +
+                            0.005 * property.loanAmount
+                        )
+                      )}
+                    </td>
+                  </tr>
+                </table>
+              </div>
             </div>
-            <div className="text-xl flex flex-col gap-2 w-[25%]">
-              <p>Rehab budget: ${property.rehabBudget}</p>
-              <p>Exit Strategy: {property.exitStrategy}</p>
-              <p>Borrower Experience: {property.borrowerExperience}</p>
-              <p>Deals with UrbanGate: {property.borrowerNumberOfDeals}</p>
-            </div>
-          </div>
-          <div className="mb-20">
-            <p className="text-2xl text-center mb-4">Investor Return</p>
-            <table className="border mx-auto">
-              <tr>
-                <th className="border p-2" rowSpan={2}>
-                  Capital Contributed ({property.yieldPercent}% return)
-                </th>
-                <th className="border p-2" colSpan={property.term + 2}>
-                  Investor Returns
-                </th>
-              </tr>
-              <tr>
-                <th className="border p-2">Month</th>
-                {monthRows.map((_, index) => (
-                  <th className="border p-2">{index + 1}</th>
-                ))}
-              </tr>
-              <tr>
-                <th className="border p-2" rowSpan={4}>
-                  ${property.loanAmount}
-                </th>
-                <td className="border p-2">Monthly Interest Income</td>
-                {monthRows.map((_, index) => (
-                  <td className="border p-2">
-                    $
-                    {Math.round(
-                      (property.loanAmount / 12) * (property.yieldPercent / 100)
-                    )}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td className="border p-2">Extension Fee Income</td>
-                {monthRowsMinusOne.map((_, index) => (
-                  <td className="border p-2"></td>
-                ))}
-                <td className="border p-2">
-                  ${Math.round(property.loanAmount * 0.0025)}
-                </td>
-              </tr>
-              <tr>
-                <td className="border p-2">.25% Point Income</td>
-                {monthRowsMinusOne.map((_, index) => (
-                  <td className="border p-2"></td>
-                ))}
-                <td className="border p-2">
-                  ${Math.round(property.loanAmount * 0.0025)}
-                </td>
-              </tr>
-              <tr>
-                <td className="border p-2 font-bold">Total Income</td>
-                {monthRowsMinusOne.map((_, index) => (
-                  <td className="border p-2 font-bold">
-                    $
-                    {Math.round(
-                      (property.loanAmount / 12) *
-                        (property.yieldPercent / 100) *
-                        (index + 1)
-                    )}
-                  </td>
-                ))}
-                <td className="border p-2 font-bold">
-                  $
-                  {Math.round(
-                    (property.loanAmount / 12) *
-                      (property.yieldPercent / 100) *
-                      (property.term + 1) +
-                      0.005 * property.loanAmount
+            <div className="ml-8">
+              <div className="border rounded-3xl mt-16 sticky top-11">
+                <div className="flex justify-center mt-4 flex-col items-center gap-2">
+                  {hasLoan ? (
+                    <p className="text-xl border px-6 py-3 rounded-md text-center mx-auto text-gray-400">
+                      Already Funded
+                    </p>
+                  ) : isConnected ? (
+                    <Link
+                      href={
+                        process.env.NEXT_PUBLIC_POWERFORM_URL +
+                        `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Year2=${year2}&Address=${formattedAddressFull}`
+                      }
+                      target="_blank"
+                      className="text-xl text-white bg-gold px-6 py-3 rounded-md text-center mx-auto"
+                      onClick={() => handleInvest(property)}
+                    >
+                      Invest Now
+                    </Link>
+                  ) : (
+                    <p className="text-xl border px-6 py-3 rounded-md text-center mx-auto text-gray-400">
+                      Log In To Invest
+                    </p>
                   )}
-                </td>
-              </tr>
-            </table>
-          </div>
-          <div className="flex justify-center">
-            {hasLoan ? (
-              <p className="text-3xl border px-6 py-3 rounded-md text-center mx-auto text-gray-400">
-                Already Funded
-              </p>
-            ) : (
-              <Link
-                href={
-                  process.env.NEXT_PUBLIC_POWERFORM_URL +
-                  `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Interest=${property.yieldPercent}`
-                }
-                target="_blank"
-                className="text-3xl border px-6 py-3 rounded-md text-center mx-auto"
-                onClick={() => handleInvest(property)}
-              >
-                Invest In Property
-              </Link>
-            )}
+                  <a href="mailto:will@urbangatecapital.com">
+                    <p className="text-xl text-gold border border-gold rounded-md px-6 py-3 mb-4">
+                      Contact Borrower
+                    </p>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ) : (
