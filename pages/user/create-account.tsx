@@ -12,7 +12,6 @@ const CreateAccount: React.FC<ChildPageProps> = ({
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    console.log(user);
     if (!isConnected || (isConnected && user?.name != "" && user)) {
       router.push("/");
     }
@@ -26,7 +25,6 @@ const CreateAccount: React.FC<ChildPageProps> = ({
         email,
         address,
       });
-      console.log("New user created:", response.data);
       router.push("/");
     } catch (error) {
       console.error("Error creating user:", error);

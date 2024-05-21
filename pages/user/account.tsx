@@ -30,13 +30,20 @@ const Account: React.FC<ChildPageProps> = ({
   }, [user]);
 
   return (
-    <div className="p-10">
+    <div className="px-20 min-h-screen bg-gray-50">
       {isConnected && user?.name != "" ? (
         <div>
-          <p className="text-3xl mb-4">Your Loans</p>
-          {loans.map((loan) => (
-            <LoanCard key={loan.id} loan={loan} />
-          ))}
+          <p className="font-bold text-5xl pt-20">Welcome, {user.name}</p>
+          <p className="text-3xl mb-4 mt-8">Your Loans</p>
+          <p className="text-2xl font-light mb-6">
+            Active loan requests and successfully funded loans will be shown
+            below.
+          </p>
+          <div className="flex flex-col gap-4">
+            {loans.map((loan) => (
+              <LoanCard key={loan.id} loan={loan} user={user} />
+            ))}
+          </div>
         </div>
       ) : (
         <div>
