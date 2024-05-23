@@ -25,6 +25,7 @@ export interface LoanCreateProps {
   userId: string;
   walletAddress: string;
   pending: boolean;
+  funding: boolean;
 }
 
 export interface Loan {
@@ -36,11 +37,12 @@ export interface Loan {
   term: number;
   returnValue: number;
   propertyId: string;
-  property: Property;
+
   userId: string;
-  user: User;
+
   walletAddress: string;
   pending: boolean;
+  funding: boolean;
 }
 
 export interface Property {

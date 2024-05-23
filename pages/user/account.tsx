@@ -23,6 +23,12 @@ const Account: React.FC<ChildPageProps> = ({
       }
   };
 
+  const updateLoan = (updatedLoan: Loan) => {
+    setLoans((prevLoans) =>
+      prevLoans.map((loan) => (loan.id === updatedLoan.id ? updatedLoan : loan))
+    );
+  };
+
   useEffect(() => {
     if (!isConnected) router.push("/");
     else fetchLoans();
@@ -34,13 +40,15 @@ const Account: React.FC<ChildPageProps> = ({
         <div>
           <p className="font-bold text-5xl pt-20">Welcome, {user.name}</p>
           <p className="text-3xl mb-4 mt-8">Your Loans</p>
-          <p className="text-2xl font-light mb-6">
-            Active loan requests and successfully funded loans will be shown
-            below.
-          </p>
+
           <div className="flex flex-col gap-4">
             {loans.map((loan) => (
-              <LoanCard key={loan.id} loan={loan} user={user} />
+              <LoanCard
+                key={loan.id}
+                loan={loan}
+                user={user}
+                updateLoan={updateLoan}
+              />
             ))}
           </div>
         </div>

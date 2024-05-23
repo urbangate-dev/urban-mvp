@@ -54,6 +54,7 @@ model Property {
 // Define the data model for the Loan
 model Loan {
     id            Int       @id @default(autoincrement())
+    loanIndex     String?
     createdAt     DateTime  @default(now())
     loanAmount    Float
     loanToARV     Float     @map("ARV")
@@ -67,4 +68,15 @@ model Loan {
     userId        Int?      @map("user") // Foreign key reference to User
     walletAddress String?
     pending       Boolean
+    payments      Payment[] @relation("payments")
+    funding       Boolean
+}
+
+model Payment {
+    id          Int      @id @default(autoincrement())
+    createdAt   DateTime @default(now())
+    balance     Int
+    paymentDate String
+    Loan        Loan?    @relation("payments", fields: [loanId], references: [id])
+    loanId      Int?
 }

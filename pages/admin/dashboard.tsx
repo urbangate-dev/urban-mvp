@@ -4,10 +4,6 @@ import { ChildPageProps, Loan, Property } from "@/utils/props";
 import Link from "next/link";
 import PropertyCardAdmin from "@/components/property-card-admin";
 import LoanCardAdmin from "@/components/loan-card-admin";
-import LoanCard from "@/components/loan-card";
-
-// add area for pending loans waiting for approval
-// once signed and approved by admin, send confirmation email and start contract (bring to page, ask user to click to fund loan)
 
 const Dashboard: React.FC<ChildPageProps> = ({
   isConnected,
