@@ -1,7 +1,7 @@
 import React from "react";
 
 import Link from "next/link";
-import { Loan } from "@/utils/props";
+import { Loan, PaymentCreateProps, Property as Prop } from "@/utils/props";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -24,7 +24,35 @@ export default function LoanCardAdmin({
   loans,
   setLoans,
 }: LoanCardAdminProps) {
-  const [property, setProperty] = useState<string>("");
+  const defaultDate = new Date().toISOString().split("T")[0];
+  const [property, setProperty] = useState<Prop>({
+    id: "",
+    address: "",
+    dealDescription: "",
+    propertyDescription: "",
+    city: "",
+    state: "",
+    zip: "",
+    propertyType: "",
+    bathroom: 0,
+    bedroom: 0,
+    sqft: 0,
+    loanAsIsValue: 0,
+    loanARVValue: 0,
+    loanToCostValue: 0,
+    loanAmount: 0,
+    yieldPercent: 0,
+    maturityDate: defaultDate,
+    term: 0,
+    borrower: "",
+    rehabBudget: 0,
+    exitStrategy: "",
+    borrowerExperience: "",
+    borrowerNumberOfDeals: 0,
+    borrowerDescription: "",
+    investorPresentationLink: "",
+    draft: true,
+  });
   const [visible, setVisible] = useState<boolean>(false);
   const [user, setUser] = useState<User>({
     name: "",
@@ -34,7 +62,7 @@ export default function LoanCardAdmin({
   const fetchProperty = async () => {
     try {
       const response = await axios.get(`/api/property/${loan.propertyId}`);
-      setProperty(response.data.property.address);
+      setProperty(response.data.property);
     } catch (error) {
       console.error("Error fetching property: ", error);
     }
@@ -78,6 +106,23 @@ export default function LoanCardAdmin({
     }
   };
 
+  const createPayment = async () => {
+    try {
+      const payment: PaymentCreateProps = {
+        balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
+        paymentDate: defaultDate,
+        loanId: loan.id,
+      };
+      const response = await axios.post("/api/payment", payment);
+
+      /*
+        Ruohan write code here for contract payment
+      */
+    } catch (error) {
+      console.error("Error creating payment: ", error);
+    }
+  };
+
   useEffect(() => {
     fetchProperty();
     fetchUser();
@@ -91,7 +136,7 @@ export default function LoanCardAdmin({
         </div>
         <div>
           <div className="flex gap-3">
-            <p className="font-semibold text-xl">{property}</p>
+            <p className="font-semibold text-xl">{property.address}</p>
             <div className="border-r"></div>
             <p className="font-semibold text-xl">
               {formatCurrency(loan.loanAmount)}
@@ -112,6 +157,13 @@ export default function LoanCardAdmin({
                 onClick={approveLoan}
               >
                 Approve
+              </p>
+            ) : loan.funding ? (
+              <p
+                className="text-gold cursor-pointer font-light text-xl hover:text-dark-gold transition"
+                onClick={createPayment}
+              >
+                Pay Interest
               </p>
             ) : (
               ""

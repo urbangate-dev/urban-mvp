@@ -92,12 +92,29 @@ const Dashboard: React.FC<ChildPageProps> = ({
       </div>
 
       <div className="px-20 pt-20 pb-40">
+        <div className="grid grid-cols-2 gap-12 mb-12">
+          <div>
+            <p className="font-medium text-3xl mt-8">Loans In Funding</p>
+            <div className="mt-4 flex flex-col gap-4">
+              {loans
+                .filter((loan) => !loan.pending)
+                .map((loan) => (
+                  <LoanCardAdmin
+                    key={loan.id}
+                    loan={loan}
+                    loans={loans}
+                    setLoans={setLoans}
+                  />
+                ))}
+            </div>
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-12">
           <div>
             <p className="font-medium text-3xl mt-8">Approved Loans</p>
             <div className="mt-4 flex flex-col gap-4">
               {loans
-                .filter((loan) => !loan.pending)
+                .filter((loan) => !loan.pending && !loan.funding)
                 .map((loan) => (
                   <LoanCardAdmin
                     key={loan.id}

@@ -37,9 +37,7 @@ export interface Loan {
   term: number;
   returnValue: number;
   propertyId: string;
-
   userId: string;
-
   walletAddress: string;
   pending: boolean;
   funding: boolean;
@@ -100,4 +98,17 @@ export interface PropertyWithoutId {
   borrowerDescription: string;
   investorPresentationLink: string;
   draft: boolean;
+}
+
+export interface PaymentCreateProps {
+  balance: number;
+  paymentDate: string;
+  loanId: string;
+}
+
+export interface Payment {
+  id: string;
+  balance: number;
+  paymentDate: string;
+  loanId: string;
 }

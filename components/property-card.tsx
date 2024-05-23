@@ -8,14 +8,6 @@ interface PropertyCardProps {
   property: Property;
 }
 
-//picture
-
-//address
-
-//1-2 sentences ahout property
-
-//laon amount, term elngth (with maturity date), yield, loan as is value, loan arv, loan to cost
-
 export default function PropertyCard({ property }: PropertyCardProps) {
   return (
     <div className="flex flex-col rounded-[50px] overflow-hidden border shadow-lg hover:shadow-xl transition">
