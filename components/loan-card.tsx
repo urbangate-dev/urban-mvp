@@ -13,6 +13,11 @@ import {
   parseDate,
 } from "../utils/functions";
 
+import { useWriteContract } from 'wagmi'
+import { abi } from '../abi/loan'
+import { abi as erc20abi} from '../abi/erc20'
+
+
 interface LoanCardProps {
   loan: Loan;
   user: User;
@@ -114,14 +119,32 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
     fetchProperty();
   }, []);
 
+
+  const { data: hash, writeContract, isPending, isSuccess, isError } = useWriteContract();
+  const [index, setIndex] = useState("")
+
   const fundLoan = async () => {
-    /*
   
-      Write function here? You may not need the async.
+  await writeContract({
+      abi: erc20abi,
+      address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
+      functionName: 'approve',
+      args: ['0x163aD5b66D50F228ca4Ec7B60DB6A3828aCb6128', parseInt(loan.loanAmount)],
+  });
 
-    */
+  await writeContract({
+      abi,
+      address: '0x163aD5b66D50F228ca4Ec7B60DB6A3828aCb6128',
+      functionName: 'fundLoan',
+      args: [16],
+    });
+
   };
-
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("Contract written successfully.", hash);
+    }
+  }, [isSuccess, hash]);
   return (
     <div className="p-5 rounded-3xl bg-white shadow-lg flex gap-6">
       <div>

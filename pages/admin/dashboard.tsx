@@ -8,6 +8,7 @@ import LoanCard from "@/components/loan-card";
 
 // add area for pending loans waiting for approval
 // once signed and approved by admin, send confirmation email and start contract (bring to page, ask user to click to fund loan)
+import { KYC } from "../../components/setkyc";
 
 const Dashboard: React.FC<ChildPageProps> = ({
   isConnected,
@@ -96,6 +97,7 @@ const Dashboard: React.FC<ChildPageProps> = ({
       </div>
 
       <div className="px-20 pt-20 pb-40">
+        <KYC/>
         <div className="grid grid-cols-2 gap-12">
           <div>
             <p className="font-medium text-3xl mt-8">Approved Loans</p>
