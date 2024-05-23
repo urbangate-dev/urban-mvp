@@ -16,9 +16,10 @@ import {
 interface LoanCardProps {
   loan: Loan;
   user: User;
+  updateLoan: (loan: Loan) => void;
 }
 
-export default function LoanCard({ loan, user }: LoanCardProps) {
+export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
   const defaultDate = new Date().toISOString().split("T")[0];
 
   const [property, setProperty] = useState<Prop>({
@@ -115,11 +116,15 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
   }, []);
 
   const fundLoan = async () => {
-    /*
-  
-      Write function here? You may not need the async.
-
-    */
+    try {
+      const response = await axios.put(`/api/loan/${loan.id}`, {
+        ...loan,
+        funding: true,
+      });
+      updateLoan(response.data.loan);
+    } catch (error) {
+      console.error("Error funding loan: ", error);
+    }
   };
 
   return (
@@ -141,6 +146,8 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
           </div>
           {loan.pending ? (
             <p className="text-orange-400 text-xl">Pending</p>
+          ) : loan.funding ? (
+            <p className="text-gold text-xl">Funding in Progress</p>
           ) : (
             <p className="text-green-500 text-xl">Approved</p>
           )}
@@ -183,6 +190,13 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
             >
               Docusign Link
             </a>
+          ) : loan.funding ? (
+            <Link
+              href={`/user/payment/${loan.id}`}
+              className="text-2xl font-extralight cursor-pointer  hover:text-gray-500 transition"
+            >
+              Payment History
+            </Link>
           ) : (
             <p
               onClick={fundLoan}

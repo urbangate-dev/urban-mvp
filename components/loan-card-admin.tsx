@@ -1,3 +1,5 @@
+import React from "react";
+
 import Link from "next/link";
 import { Loan } from "@/utils/props";
 import axios from "axios";
@@ -5,6 +7,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import PropertyImage from "../public/testproperty.jpeg";
 import { formatCurrency } from "@/utils/functions";
+
+type User = {
+  name: string;
+  email: string;
+};
 
 interface LoanCardAdminProps {
   loan: Loan;
@@ -19,7 +26,10 @@ export default function LoanCardAdmin({
 }: LoanCardAdminProps) {
   const [property, setProperty] = useState<string>("");
   const [visible, setVisible] = useState<boolean>(false);
-  const [name, setName] = useState<string>("");
+  const [user, setUser] = useState<User>({
+    name: "",
+    email: "",
+  });
 
   const fetchProperty = async () => {
     try {
@@ -33,7 +43,7 @@ export default function LoanCardAdmin({
   const fetchUser = async () => {
     try {
       const response = await axios.get(`/api/user/${loan.walletAddress}`);
-      setName(response.data.user.name);
+      setUser(response.data.user);
     } catch (error) {
       console.error("Error fetching user: ", error);
     }
@@ -48,6 +58,12 @@ export default function LoanCardAdmin({
       setLoans(
         loans.map((l) => (l.id === loan.id ? { ...l, pending: false } : l))
       );
+      const props = {
+        name: user.name,
+        email: user.email,
+        address: property,
+      };
+      await axios.post("/api/email", props);
     } catch (error) {
       console.error("Error approving loan: ", error);
     }
@@ -83,7 +99,7 @@ export default function LoanCardAdmin({
           </div>
           <div className="flex gap-4 mt-2">
             <p className="text-lg">
-              Investor: <span className="font-light">{name}</span>
+              Investor: <span className="font-light">{user.name}</span>
             </p>
             <p className="text-lg">
               ARV: <span className="font-light">{loan.loanToARV}%</span>

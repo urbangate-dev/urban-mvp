@@ -25,7 +25,7 @@ export default async function handler(
 
       res.status(201).json(user.loans);
     } catch (error) {
-      res.status(500).json({ error: "Error creating loan" });
+      res.status(500).json({ error: "Error fetching loan" });
     }
   } else if (req.method === "PUT") {
     try {
