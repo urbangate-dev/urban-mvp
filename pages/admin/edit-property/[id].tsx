@@ -3,6 +3,8 @@ import React, { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import { PropertyWithoutId as Property } from "@/utils/props";
+import { UploadButton } from "../../../utils/uploadthing";
+import { truncateFileName } from "../../../utils/functions";
 
 const EditProperty: React.FC<ChildPageProps> = ({
   isConnected,
@@ -37,7 +39,11 @@ const EditProperty: React.FC<ChildPageProps> = ({
     borrowerDescription: "",
     investorPresentationLink: "",
     draft: true,
+    thumbnail: "",
+    additional: [],
   });
+  const [thumbnail, setThumbnail] = useState<string>("");
+  const [additional, setAdditional] = useState<string[]>([]);
 
   const { id } = router.query;
 
@@ -372,6 +378,65 @@ const EditProperty: React.FC<ChildPageProps> = ({
               className="border border-gray-300  rounded-xl px-4 py-2"
             />
           </label>
+        </div>
+
+        <div className="mt-10 flex gap-8 justify-center">
+          <div>
+            <p className="text-lg text-center mb-2">Upload Thumbail</p>
+            <UploadButton
+              endpoint="thumbnail"
+              onClientUploadComplete={(res) => {
+                setFormData({
+                  ...formData,
+                  thumbnail: res[0].url,
+                });
+                setThumbnail(res[0].name);
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
+            {thumbnail === "" ? (
+              ""
+            ) : (
+              <p className="text-center mt-2 font-light text-sm">
+                Uploaded: {truncateFileName(thumbnail)}
+              </p>
+            )}
+          </div>
+          <div>
+            <p className="text-lg text-center mb-2">Upload Additional</p>
+            <UploadButton
+              endpoint="additional"
+              onClientUploadComplete={(res) => {
+                console.log(res);
+                const images = formData.additional;
+                res.forEach((image) => {
+                  images.unshift(image.url);
+                  additional.push(image.name);
+                });
+                setFormData({
+                  ...formData,
+                  additional: images,
+                });
+              }}
+              onUploadError={(error: Error) => {
+                // Do something with the error.
+                alert(`ERROR! ${error.message}`);
+              }}
+            />
+            {additional.length === 0 ? (
+              ""
+            ) : (
+              <div className="text-sm font-light mt-2 text-center">
+                <p>Uploaded:</p>
+                {additional.map((name) => (
+                  <p>{truncateFileName(name)}</p>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-center gap-4 mt-8">

@@ -1,7 +1,12 @@
 import React from "react";
 
 import Link from "next/link";
-import { Loan, PaymentCreateProps, Property as Prop } from "@/utils/props";
+import {
+  Loan,
+  Payment,
+  PaymentCreateProps,
+  Property as Prop,
+} from "@/utils/props";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Image from "next/image";
@@ -17,12 +22,14 @@ interface LoanCardAdminProps {
   loan: Loan;
   loans: Loan[];
   setLoans: React.Dispatch<React.SetStateAction<Loan[]>>;
+  addPayment: (payment: Payment) => void;
 }
 
 export default function LoanCardAdmin({
   loan,
   loans,
   setLoans,
+  addPayment,
 }: LoanCardAdminProps) {
   const defaultDate = new Date().toISOString().split("T")[0];
   const [property, setProperty] = useState<Prop>({
@@ -52,6 +59,8 @@ export default function LoanCardAdmin({
     borrowerDescription: "",
     investorPresentationLink: "",
     draft: true,
+    thumbnail: "",
+    additional: [],
   });
   const [visible, setVisible] = useState<boolean>(false);
   const [user, setUser] = useState<User>({
@@ -89,7 +98,7 @@ export default function LoanCardAdmin({
       const props = {
         name: user.name,
         email: user.email,
-        address: property,
+        address: property.address,
       };
       await axios.post("/api/email", props);
     } catch (error) {
@@ -98,11 +107,13 @@ export default function LoanCardAdmin({
   };
 
   const deleteLoan = async () => {
-    try {
-      await axios.delete(`/api/loan/${loan.id}`);
-      setLoans(loans.filter((loanInState) => loanInState.id !== loan.id));
-    } catch (error) {
-      console.error("Error deleting loan: ", error);
+    if (window.confirm("Are you sure you want to delete this loan?")) {
+      try {
+        await axios.delete(`/api/loan/${loan.id}`);
+        setLoans(loans.filter((loanInState) => loanInState.id !== loan.id));
+      } catch (error) {
+        console.error("Error deleting loan: ", error);
+      }
     }
   };
 
@@ -112,8 +123,10 @@ export default function LoanCardAdmin({
         balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
         paymentDate: defaultDate,
         loanId: loan.id,
+        status: "Due",
       };
       const response = await axios.post("/api/payment", payment);
+      addPayment(response.data);
 
       /*
         Ruohan write code here for contract payment
@@ -131,36 +144,39 @@ export default function LoanCardAdmin({
   return (
     <div className="p-5 rounded-3xl bg-white shadow-lg">
       <div className="flex gap-6">
-        <div>
-          <Image src={PropertyImage} alt="property" className="" width={160} />
-        </div>
+        {/* <div>
+          <Image src={PropertyImage} alt="property" className="" width={120} />
+        </div> */}
         <div>
           <div className="flex gap-3">
-            <p className="font-semibold text-xl">{property.address}</p>
+            <p className="font-semibold text-lg">{property.address}</p>
             <div className="border-r"></div>
-            <p className="font-semibold text-xl">
+            <p className="font-semibold text-lg">
               {formatCurrency(loan.loanAmount)}
             </p>
           </div>
-          <div className="flex gap-4 mt-2">
-            <p className="text-lg">
+          <div className="flex gap-4">
+            <p className="text-md">
               Investor: <span className="font-light">{user.name}</span>
             </p>
-            <p className="text-lg">
+            <p className="text-md">
               ARV: <span className="font-light">{loan.loanToARV}%</span>
             </p>
+            <p className="text-md">
+              Term: <span className="font-light">{loan.term} Months</span>
+            </p>
           </div>
-          <div className="flex gap-4 mt-3">
+          <div className="flex gap-3 mt-1">
             {loan.pending ? (
               <p
-                className="text-green-500 cursor-pointer font-light text-xl hover:text-green-400 transition"
+                className="text-green-500 cursor-pointer font-light text-lg hover:text-green-400 transition"
                 onClick={approveLoan}
               >
                 Approve
               </p>
             ) : loan.funding ? (
               <p
-                className="text-gold cursor-pointer font-light text-xl hover:text-dark-gold transition"
+                className="text-gold cursor-pointer font-light text-lg hover:text-dark-gold transition"
                 onClick={createPayment}
               >
                 Pay Interest
@@ -169,14 +185,14 @@ export default function LoanCardAdmin({
               ""
             )}
             <Link
-              className="font-light text-xl hover:text-gray-500 transition"
+              className="font-light text-lg hover:text-gray-500 transition"
               href={`/property/${loan.propertyId}`}
             >
               View
             </Link>
 
             <p
-              className="cursor-pointer font-light text-xl hover:text-gray-500 transition"
+              className="cursor-pointer font-light text-lg hover:text-gray-500 transition"
               onClick={() => setVisible(!visible)}
             >
               Details
@@ -191,29 +207,18 @@ export default function LoanCardAdmin({
         </div>
       </div>
       {visible ? (
-        <div className="mt-4">
+        <div className="mt-2">
           <div className="flex gap-6">
-            <p className="text-lg">
+            <p className="text-md">
               Loan to ARV: <span className="font-light">{loan.loanToARV}%</span>
             </p>
-            <p className="text-lg">
+            <p className="text-md">
               Loan to As-Is:{" "}
               <span className="font-light">{loan.loanToAsIs}%</span>
             </p>
-            <p className="text-lg">
+            <p className="text-md">
               Loan to Cost:{" "}
               <span className="font-light">{loan.loanToCost}%</span>
-            </p>
-          </div>
-          <div className="mt-1 gap-6 flex">
-            <p className="text-lg">
-              Term: <span className="font-light">{loan.term} months</span>
-            </p>
-            <p className="text-lg">
-              Return Value:{" "}
-              <span className="font-light">
-                {formatCurrency(loan.loanAmount)}
-              </span>
             </p>
           </div>
         </div>

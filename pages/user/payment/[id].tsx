@@ -41,9 +41,11 @@ const Account: React.FC<ChildPageProps> = ({
       const foundLoan = loans.find((loan) => loan.id == id);
       console.log(foundLoan);
       if (foundLoan) {
-        setLoan(foundLoan);
-        fetchProperty(foundLoan.propertyId);
-        fetchPayments(foundLoan.id);
+        if (foundLoan.userId == user.id) {
+          setLoan(foundLoan);
+          fetchProperty(foundLoan.propertyId);
+          fetchPayments(foundLoan.id);
+        }
       } else {
         console.error("Loan not found");
       }
@@ -81,26 +83,56 @@ const Account: React.FC<ChildPageProps> = ({
   }, [id]);
 
   return (
-    <div className="px-20 min-h-screen bg-gray-50">
-      <p className="font-semibold text-4xl pt-20">
-        Payment History for {property}
-      </p>
-      <div className="flex gap-4 mt-4">
-        <p className="text-2xl font-light">
-          Balance:{" "}
-          <span className="font-normal">{formatCurrency(loan.loanAmount)}</span>
-        </p>
-        <div className="border-r"></div>
-        <p className="text-2xl font-light">
-          Net Earned:{" "}
-          <span className="font-normal">{formatCurrency(totalBalance)}</span>
-        </p>
-      </div>
-      <div className="flex flex-col gap-3 mt-8">
+    <div className="px-20 pb-20 min-h-screen bg-gray-50">
+      {loan.userId === "" ? (
+        <p>Unauthorized</p>
+      ) : (
+        <div>
+          <p className="font-semibold text-4xl pt-20">
+            Payment History for {property}
+          </p>
+          <div className="flex gap-4 mt-4">
+            <p className="text-2xl font-light">
+              Balance:{" "}
+              <span className="font-normal">
+                {formatCurrency(loan.loanAmount)}
+              </span>
+            </p>
+            <div className="border-r"></div>
+            <p className="text-2xl font-light">
+              Net Earned:{" "}
+              <span className="font-normal">
+                {formatCurrency(totalBalance)}
+              </span>
+            </p>
+          </div>
+          <table className="bg-white border mt-8 text-xl py-4">
+            <tr className="border-t border-b font-semibold">
+              <td className="py-4 pl-4 pr-20">Transaction Id</td>
+              <td className="py-4 pl-8 pr-20">Transaction Date</td>
+              <td className="py-4 pl-8 pr-20">Amount</td>
+              <td className="py-4 pl-8 pr-20">Status</td>
+            </tr>
+            {payments
+              ? payments.map((payment) => (
+                  <tr>
+                    <td className="py-4 pl-4 pr-20">{payment.id}</td>
+                    <td className="py-4 pl-8 pr-20">{payment.paymentDate}</td>
+                    <td className="py-4 pl-8 pr-20">
+                      {formatCurrency(payment.balance)}
+                    </td>
+                    <td className="py-4 pl-8 pr-20">{payment.status}</td>
+                  </tr>
+                ))
+              : ""}
+          </table>
+          {/* <div className="flex flex-col gap-3 mt-8">
         {payments
           ? payments.map((payment) => <PaymentCard payment={payment} />)
           : ""}
-      </div>
+      </div> */}
+        </div>
+      )}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { Property as Prop } from "@/utils/props";
 import { LoanCreateProps } from "@/utils/props";
 import axios from "axios";
 import Image from "next/image";
-import PropertyImage from "../../public/testproperty.jpeg";
+import PropertyImage from "../../public/noimage.png";
 import Link from "next/link";
 import { formatNumberWithCommas } from "../../utils/functions";
 import {
@@ -51,6 +51,8 @@ const Property: React.FC<ChildPageProps> = ({
     borrowerDescription: "",
     investorPresentationLink: "",
     draft: true,
+    thumbnail: "",
+    additional: [],
   });
   const [exists, setExists] = useState(false);
   const [monthRows, setMonthRows] = useState<number[]>([]);
@@ -174,25 +176,90 @@ const Property: React.FC<ChildPageProps> = ({
       {exists ? (
         <div>
           <div className="grid grid-cols-4 gap-8">
-            <Image
-              src={PropertyImage}
-              alt="property"
-              className="col-span-2 row-span-2 rounded-tl-3xl rounded-bl-3xl"
-              width={1500}
-            />
-            <Image
-              src={PropertyImage}
-              alt="property"
-              className=""
-              width={1000}
-            />
-            <Image
-              src={PropertyImage}
-              alt="property"
-              className="rounded-tr-3xl"
-              width={1000}
-            />
-            <Image
+            <div className="col-span-2 row-span-2 rounded-tl-3xl rounded-bl-3xl relative overflow-hidden">
+              <Image
+                src={property.thumbnail}
+                alt="property"
+                layout="fill"
+                objectFit="cover"
+              />
+            </div>
+
+            <div className="relative">
+              {property.additional[0] ? (
+                <Image
+                  src={property.additional[0]}
+                  alt="property"
+                  layout="fill"
+                  objectFit="cover"
+                />
+              ) : (
+                <Image
+                  src={PropertyImage}
+                  alt="property"
+                  className=""
+                  width={1000}
+                />
+              )}
+            </div>
+
+            <div className="relative rounded-tr-3xl overflow-hidden">
+              {property.additional[1] ? (
+                <Image
+                  src={property.additional[1]}
+                  alt="property"
+                  objectFit="cover"
+                  width={1000}
+                  height={1000}
+                />
+              ) : (
+                <Image
+                  src={PropertyImage}
+                  alt="property"
+                  className=""
+                  width={1000}
+                />
+              )}
+            </div>
+
+            <div className="relative">
+              {property.additional[2] ? (
+                <Image
+                  src={property.additional[2]}
+                  alt="property"
+                  objectFit="cover"
+                  layout="fill"
+                />
+              ) : (
+                <Image
+                  src={PropertyImage}
+                  alt="property"
+                  className=""
+                  width={1000}
+                />
+              )}
+            </div>
+
+            <div className="relative rounded-br-3xl overflow-hidden">
+              {property.additional[3] ? (
+                <Image
+                  src={property.additional[3]}
+                  alt="property"
+                  objectFit="cover"
+                  width={1000}
+                  height={1000}
+                />
+              ) : (
+                <Image
+                  src={PropertyImage}
+                  alt="property"
+                  className=""
+                  width={1000}
+                />
+              )}
+            </div>
+
+            {/* <Image
               src={PropertyImage}
               alt="property"
               className=""
@@ -203,7 +270,7 @@ const Property: React.FC<ChildPageProps> = ({
               alt="property"
               className="rounded-br-3xl"
               width={1000}
-            />
+            /> */}
           </div>
           <div className="grid grid-cols-4">
             <div className="col-span-3">
@@ -348,7 +415,7 @@ const Property: React.FC<ChildPageProps> = ({
               </div>
             </div>
             <div className="ml-8">
-              <div className="border rounded-3xl mt-16 sticky top-11">
+              <div className="border rounded-3xl mt-16 sticky top-[10rem]">
                 <div className="flex justify-center mt-4 flex-col items-center gap-2">
                   {hasLoan ? (
                     <p className="text-xl border px-6 py-3 rounded-md text-center mx-auto text-gray-400">
@@ -373,7 +440,7 @@ const Property: React.FC<ChildPageProps> = ({
                   )}
                   <a href="mailto:will@urbangatecapital.com">
                     <p className="text-xl text-gold border border-gold rounded-md px-6 py-3 mb-4">
-                      Contact Borrower
+                      Contact UrbanGate
                     </p>
                   </a>
                 </div>

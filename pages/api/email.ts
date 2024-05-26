@@ -13,7 +13,7 @@ export default async function handler(
     host: "smtp.gmail.com",
     auth: {
       user: process.env.NEXT_PUBLIC_USERNAME,
-      pass: process.env.NEXT_PUBLIC_PASSWORD,
+      pass: process.env.EMAIL_PASSWORD,
     },
     secure: false,
   });

@@ -12,7 +12,6 @@ export default async function handler(
       const properties = await prisma.property.findMany();
       res.status(200).json({ properties });
     } catch (error) {
-      console.error("Error fetching properties:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   } else if (req.method === "POST") {
@@ -42,6 +41,8 @@ export default async function handler(
       borrowerDescription,
       investorPresentationLink,
       draft,
+      thumbnail,
+      additional,
     } = req.body;
 
     const parsedBathroom = parseInt(bathroom, 10);
@@ -84,6 +85,8 @@ export default async function handler(
           borrowerDescription,
           investorPresentationLink,
           draft,
+          thumbnail,
+          additional,
         },
       });
       // console.log("Property created:", createdProperty);

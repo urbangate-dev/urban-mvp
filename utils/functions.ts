@@ -81,3 +81,23 @@ export const formatCurrency = (
 export const formatNumberWithCommas = (number: number): string => {
   return new Intl.NumberFormat("en-US").format(number);
 };
+
+export const truncateFileName = (fileName: string): string => {
+  // Find the last dot in the filename to separate the name and extension
+  const lastDotIndex = fileName.lastIndexOf(".");
+
+  // If there's no dot, the file has no extension
+  if (lastDotIndex === -1) {
+    return fileName.substring(0, 10);
+  }
+
+  // Separate the file name and the extension
+  const name = fileName.substring(0, lastDotIndex);
+  const extension = fileName.substring(lastDotIndex);
+
+  // Truncate the name to the first 10 characters
+  const truncatedName = name.substring(0, 10);
+
+  // Combine the truncated name with the extension
+  return truncatedName + extension;
+};

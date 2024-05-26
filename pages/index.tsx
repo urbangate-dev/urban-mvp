@@ -29,7 +29,7 @@ const Home: React.FC<ChildPageProps> = ({
   return (
     <div className="">
       <div className="flex flex-col items-center">
-        <p className="font-semibold mt-24 bg-gradient-to-r from-gold to-dark-gold inline-block text-transparent bg-clip-text text-6xl text-center">
+        <p className="font-semibold mt-40 bg-gradient-to-r from-gold to-dark-gold inline-block text-transparent bg-clip-text text-6xl text-center">
           Your Capital Partner.
         </p>
         <p className="text-center font-light mt-8 text-3xl w-[65%] leading-relaxed">

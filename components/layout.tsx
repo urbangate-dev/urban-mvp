@@ -52,6 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isMounted = useIsMounted();
   const router = useRouter();
   const isAdminRoute = router.pathname.startsWith("/admin");
+  const isUserRoute = router.pathname.startsWith("/user");
 
   useEffect(() => {
     fetchUser();
@@ -75,12 +76,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error("Error fetching user:", error);
       }
+    else
+      setUser({
+        name: "",
+        email: "",
+        role: "",
+        id: "",
+      });
   };
 
   if (isMounted)
     return (
       <div className={`${poppins.variable} font-sans`}>
-        <header className="flex justify-between items-center px-8 py-6">
+        <header className="flex justify-between items-center px-8 py-6 shadow-sm sticky top-0 bg-white z-20">
           <Link href="/">
             <Image src={Logo} alt="logo" width={180} height={100} />
           </Link>
@@ -107,6 +115,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <main>
           {isAdminRoute && user?.role !== "ADMIN" ? (
             <p>Unauthorized</p>
+          ) : isUserRoute && !isConnected ? (
+            <p>Not Logged In</p>
           ) : (
             React.Children.map(children, (child) =>
               React.isValidElement(child)
