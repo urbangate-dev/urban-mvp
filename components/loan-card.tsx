@@ -21,7 +21,6 @@ interface LoanCardProps {
 
 export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
   const defaultDate = new Date().toISOString().split("T")[0];
-
   const [property, setProperty] = useState<Prop>({
     id: "",
     address: "",
@@ -49,6 +48,8 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     borrowerDescription: "",
     investorPresentationLink: "",
     draft: true,
+    thumbnail: "",
+    additional: [],
   });
 
   const nameURL = user.name.replace(/ /g, "%20");
@@ -129,8 +130,14 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
 
   return (
     <div className="p-5 rounded-3xl bg-white shadow-lg flex gap-6">
-      <div>
-        <Image src={PropertyImage} alt="property" className="" width={200} />
+      <div className="flex">
+        <Image
+          src={property.thumbnail}
+          alt="property"
+          className=""
+          width={200}
+          height={200}
+        />
       </div>
       <div className="w-full">
         <div className="flex justify-between">
@@ -165,10 +172,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
             Loan to Cost: <span className="font-light">{loan.loanToCost}%</span>
           </p>
           <p className="text-xl">
-            Return Value:{" "}
-            <span className="font-light">
-              {formatCurrency(loan.loanAmount)}
-            </span>
+            Loan Term: <span className="font-light">{loan.term} Months</span>
           </p>
         </div>
 

@@ -70,6 +70,8 @@ export interface Property {
   borrowerDescription: string;
   investorPresentationLink: string;
   draft: boolean;
+  thumbnail: string;
+  additional: string[];
 }
 
 export interface PropertyWithoutId {
@@ -98,12 +100,15 @@ export interface PropertyWithoutId {
   borrowerDescription: string;
   investorPresentationLink: string;
   draft: boolean;
+  thumbnail: string;
+  additional: string[];
 }
 
 export interface PaymentCreateProps {
   balance: number;
   paymentDate: string;
   loanId: string;
+  status: string;
 }
 
 export interface Payment {
@@ -111,4 +116,5 @@ export interface Payment {
   balance: number;
   paymentDate: string;
   loanId: string;
+  status: string;
 }

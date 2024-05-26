@@ -49,6 +49,8 @@ model Property {
     investorPresentationLink String
     draft                    Boolean
     loans                    Loan[]   @relation("propertyLoans")
+    thumbnail                String
+    additional               String[]
 }
 
 // Define the data model for the Loan
@@ -73,10 +75,12 @@ model Loan {
 }
 
 model Payment {
-    id          Int      @id @default(autoincrement())
-    createdAt   DateTime @default(now())
-    balance     Int
-    paymentDate String
-    Loan        Loan?    @relation("payments", fields: [loanId], references: [id])
-    loanId      Int?
+    id           Int      @id @default(autoincrement())
+    createdAt    DateTime @default(now())
+    balance      Int
+    paymentIndex String?
+    paymentDate  String
+    Loan         Loan?    @relation("payments", fields: [loanId], references: [id])
+    loanId       Int?
+    status       String
 }
