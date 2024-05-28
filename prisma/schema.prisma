@@ -51,6 +51,7 @@ model Property {
     loans                    Loan[]   @relation("propertyLoans")
     thumbnail                String
     additional               String[]
+    propertyIndex            String?
 }
 
 // Define the data model for the Loan

@@ -43,6 +43,7 @@ export default async function handler(
       draft,
       thumbnail,
       additional,
+      propertyIndex,
     } = req.body;
 
     const parsedBathroom = parseInt(bathroom, 10);
@@ -87,6 +88,7 @@ export default async function handler(
           draft,
           thumbnail,
           additional,
+          propertyIndex,
         },
       });
       // console.log("Property created:", createdProperty);

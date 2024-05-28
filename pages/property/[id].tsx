@@ -53,6 +53,7 @@ const Property: React.FC<ChildPageProps> = ({
     draft: true,
     thumbnail: "",
     additional: [],
+    propertyIndex: "",
   });
   const [exists, setExists] = useState(false);
   const [monthRows, setMonthRows] = useState<number[]>([]);

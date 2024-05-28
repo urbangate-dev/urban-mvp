@@ -41,6 +41,7 @@ const EditProperty: React.FC<ChildPageProps> = ({
     draft: true,
     thumbnail: "",
     additional: [],
+    propertyIndex: "",
   });
   const [thumbnail, setThumbnail] = useState<string>("");
   const [additional, setAdditional] = useState<string[]>([]);

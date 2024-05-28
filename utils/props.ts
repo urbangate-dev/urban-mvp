@@ -72,6 +72,7 @@ export interface Property {
   draft: boolean;
   thumbnail: string;
   additional: string[];
+  propertyIndex: string;
 }
 
 export interface PropertyWithoutId {
@@ -102,6 +103,7 @@ export interface PropertyWithoutId {
   draft: boolean;
   thumbnail: string;
   additional: string[];
+  propertyIndex: string;
 }
 
 export interface PaymentCreateProps {
