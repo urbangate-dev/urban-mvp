@@ -61,6 +61,7 @@ export default function LoanCardAdmin({
     draft: true,
     thumbnail: "",
     additional: [],
+    propertyIndex: "",
   });
   const [visible, setVisible] = useState<boolean>(false);
   const [user, setUser] = useState<User>({

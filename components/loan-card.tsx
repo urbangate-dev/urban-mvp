@@ -50,6 +50,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     draft: true,
     thumbnail: "",
     additional: [],
+    propertyIndex: "",
   });
 
   const nameURL = user.name.replace(/ /g, "%20");
