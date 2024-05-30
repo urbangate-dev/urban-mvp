@@ -73,6 +73,7 @@ model Loan {
     pending       Boolean
     payments      Payment[] @relation("payments")
     funding       Boolean
+    paid          Boolean
 }
 
 model Payment {

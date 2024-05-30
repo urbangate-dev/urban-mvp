@@ -26,6 +26,7 @@ export interface LoanCreateProps {
   walletAddress: string;
   pending: boolean;
   funding: boolean;
+  paid: boolean;
 }
 
 export interface Loan {
@@ -41,6 +42,7 @@ export interface Loan {
   walletAddress: string;
   pending: boolean;
   funding: boolean;
+  paid: boolean;
 }
 
 export interface Property {

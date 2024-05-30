@@ -151,6 +151,7 @@ const Property: React.FC<ChildPageProps> = ({
         walletAddress: address,
         pending: true,
         funding: false,
+        paid: false,
       };
       const response = axios.post("/api/loan", loan);
       router.push("/user/account");

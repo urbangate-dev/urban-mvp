@@ -154,7 +154,9 @@ const Dashboard: React.FC<ChildPageProps> = ({
                   <p className="font-medium text-3xl mt-8">Loans In Funding</p>
                   <div className="mt-4 flex flex-col gap-4">
                     {loans
-                      .filter((loan) => !loan.pending && loan.funding)
+                      .filter(
+                        (loan) => !loan.pending && loan.funding && !loan.paid
+                      )
                       .map((loan) => (
                         <LoanCardAdmin
                           key={loan.id}
@@ -189,6 +191,22 @@ const Dashboard: React.FC<ChildPageProps> = ({
                   <div className="mt-4 flex flex-col gap-4">
                     {loans
                       .filter((loan) => !loan.pending && !loan.funding)
+                      .map((loan) => (
+                        <LoanCardAdmin
+                          key={loan.id}
+                          loan={loan}
+                          loans={loans}
+                          setLoans={setLoans}
+                          addPayment={addPayment}
+                        />
+                      ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="font-medium text-3xl mt-8">Paid Loans</p>
+                  <div className="mt-4 flex flex-col gap-4">
+                    {loans
+                      .filter((loan) => loan.paid)
                       .map((loan) => (
                         <LoanCardAdmin
                           key={loan.id}

@@ -137,6 +137,24 @@ export default function LoanCardAdmin({
     }
   };
 
+  const payLoanInFull = async () => {
+    if (window.confirm("Are you sure you want to pay this loan in full?")) {
+      try {
+        await axios.put(`/api/loan/${loan.id}`, {
+          ...loan,
+          paid: true,
+        });
+        setLoans(
+          loans.map((l) => (l.id === loan.id ? { ...l, paid: true } : l))
+        );
+
+        /* continue logic here */
+      } catch (error) {
+        console.error("Error paying loan in full: ", loan);
+      }
+    }
+  };
+
   useEffect(() => {
     fetchProperty();
     fetchUser();
@@ -175,12 +193,22 @@ export default function LoanCardAdmin({
               >
                 Approve
               </p>
-            ) : loan.funding ? (
+            ) : loan.funding && !loan.paid ? (
               <p
                 className="text-gold cursor-pointer font-light text-lg hover:text-dark-gold transition"
                 onClick={createPayment}
               >
                 Pay Interest
+              </p>
+            ) : (
+              ""
+            )}
+            {loan.funding && !loan.paid ? (
+              <p
+                className="text-gold cursor-pointer font-light text-lg hover:text-dark-gold transition"
+                onClick={payLoanInFull}
+              >
+                Pay Loan
               </p>
             ) : (
               ""
