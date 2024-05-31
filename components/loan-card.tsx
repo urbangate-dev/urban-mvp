@@ -122,32 +122,62 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     fetchProperty();
   }, []);
 
+  const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
-  const { data: hash, writeContract, isPending, isSuccess, isError } = useWriteContract();
-  const [index, setIndex] = useState("")
-
-  const fundLoan = async () => {
-  
-  await writeContract({
-      abi: erc20abi,
-      address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
-      functionName: 'approve',
-      args: ['0x163aD5b66D50F228ca4Ec7B60DB6A3828aCb6128', parseInt(loan.loanAmount)],
+  const {writeContractAsync} = useWriteContract({
+    mutation: {
+    onSuccess: async (data) => {
+      try {
+            const response = await axios.put(`/api/loan/${loan.id}`, {
+            ...loan,
+            funding: true,
+            });
+            updateLoan(response.data.loan);
+            console.log('Transaction successful');
+        }
+      catch (error) {
+        console.error('Updating loan failed:', error);
+      }
+    },
+    onError: (error) => {
+      console.error('FundLoan transaction failed:', error);
+    },
+  },});
+  const { writeContractAsync: writeApprove } = useWriteContract({
+    mutation: {
+      onSuccess: async (data) => {
+        try {
+          await delay(6000);
+          await writeContractAsync({
+            abi,
+            address: '0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E',
+            functionName: 'fundLoan',
+            args: [parseInt(property.propertyIndex)],
+          });
+          console.log('FundLoan transaction successful');
+        } catch (error) {
+          console.error('FundLoan transaction failed:', error);
+        }
+      },
+      onError: (error) => {
+        console.error('Approve transaction failed:', error);
+      },
+    },
   });
 
-  await writeContract({
-      abi,
-      address: '0x163aD5b66D50F228ca4Ec7B60DB6A3828aCb6128',
-      functionName: 'fundLoan',
-      args: [16],
-    });
-
-  };
-  useEffect(() => {
-    if (isSuccess) {
-      console.log("Contract written successfully.", hash);
+  const fundLoan = async () => {
+    try {
+      await writeApprove({
+          abi: erc20abi,
+          address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
+          functionName: 'approve',
+          args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', parseInt(property.loanAmount)],
+      });
+    } catch (error) {
+      console.error(error);
     }
-  }, [isSuccess, hash]);
+  };
+
   return (
     <div className="p-5 rounded-3xl bg-white shadow-lg flex gap-6">
       <div className="flex">

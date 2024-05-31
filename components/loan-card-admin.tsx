@@ -13,6 +13,10 @@ import Image from "next/image";
 import PropertyImage from "../public/testproperty.jpeg";
 import { formatCurrency } from "@/utils/functions";
 
+import { useWriteContract } from 'wagmi'
+import { abi } from '../abi/loan'
+import { abi as erc20abi} from '../abi/erc20'
+
 type User = {
   name: string;
   email: string;
@@ -117,44 +121,154 @@ export default function LoanCardAdmin({
       }
     }
   };
+  const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const {writeContractAsync} = useWriteContract({
+    mutation: {
+    onSuccess: async (data) => {
+      try {
+        const payment: PaymentCreateProps = {
+          balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
+          paymentDate: defaultDate,
+          loanId: loan.id,
+          status: "Due",
+        };
+        const response = await axios.post("/api/payment", payment);
+        addPayment(response.data);
+      } catch (error) {
+        console.error("Error creating payment: ", error);
+      }
+    },
+    onError: (error) => {
+      console.error('FundLoan transaction failed:', error);
+    },
+  },});
+  const { writeContractAsync: writeApprove } = useWriteContract({
+    mutation: {
+      onSuccess: async (data) => {
+        try {
+          await delay(6000);
+          await writeContractAsync({
+            abi,
+            address: '0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E',
+            functionName: 'payInterest',
+            args: [parseInt(property.propertyIndex)],
+          });
+          console.log('FundLoan transaction successful');
+        } catch (error) {
+          console.error('FundLoan transaction failed:', error);
+        }
+      },
+      onError: (error) => {
+        console.error('Approve transaction failed:', error);
+      },
+    },
+  });
 
   const createPayment = async () => {
     try {
-      const payment: PaymentCreateProps = {
-        balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
-        paymentDate: defaultDate,
-        loanId: loan.id,
-        status: "Due",
-      };
-      const response = await axios.post("/api/payment", payment);
-      addPayment(response.data);
-
-      /*
-        Ruohan write code here for contract payment
-      */
+      await writeApprove({
+          abi: erc20abi,
+          address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
+          functionName: 'approve',
+          args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', parseInt((property.loanAmount / 12) * (property.yieldPercent / 100))],
+      });
     } catch (error) {
-      console.error("Error creating payment: ", error);
+      console.error(error);
     }
   };
+  // const createPayment = async () => {
+  //   try {
+  //     const payment: PaymentCreateProps = {
+  //       balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
+  //       paymentDate: defaultDate,
+  //       loanId: loan.id,
+  //       status: "Due",
+  //     };
+  //     const response = await axios.post("/api/payment", payment);
+  //     addPayment(response.data);
 
-  const payLoanInFull = async () => {
-    if (window.confirm("Are you sure you want to pay this loan in full?")) {
+  //     /*
+  //       Ruohan write code here for contract payment
+  //     */
+  //   } catch (error) {
+  //     console.error("Error creating payment: ", error);
+  //   }
+  // };
+
+  // const payLoanInFull = async () => {
+  //     try {
+  //       await axios.put(`/api/loan/${loan.id}`, {
+  //         ...loan,
+  //         paid: true,
+  //       });
+  //       setLoans(
+  //         loans.map((l) => (l.id === loan.id ? { ...l, paid: true } : l))
+  //       );
+
+  //       /* continue logic here */
+  //     } catch (error) {
+  //       console.error("Error paying loan in full: ", loan);
+  //     }
+  //   }
+  // };
+    const {writeContractAsync: writeFullPay} = useWriteContract({
+      mutation: {
+      onSuccess: async (data) => {
+        try {
+          await axios.put(`/api/loan/${loan.id}`, {
+            ...loan,
+            paid: true,
+          });
+          setLoans(
+            loans.map((l) => (l.id === loan.id ? { ...l, paid: true } : l))
+          );
+        } catch (error) {
+          console.error("Error paying loan in full: ", loan);
+        }
+      },
+      onError: (error) => {
+        console.error('FundLoan transaction failed:', error);
+      },
+    },});
+    const { writeContractAsync: writeApprovePay } = useWriteContract({
+      mutation: {
+        onSuccess: async (data) => {
+          try {
+            await delay(6000);
+            await writeFullPay({
+              abi,
+              address: '0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E',
+              functionName: 'payoffLoan',
+              args: [parseInt(property.propertyIndex)],
+            });
+            console.log('FundLoan transaction successful');
+          } catch (error) {
+            console.error('FundLoan transaction failed:', error);
+          }
+        },
+        onError: (error) => {
+          console.error('Approve transaction failed:', error);
+        },
+      },
+    });
+
+    const payLoanInFull = async () => {
+      if (window.confirm("Are you sure you want to pay this loan in full?")) {
+
       try {
-        await axios.put(`/api/loan/${loan.id}`, {
-          ...loan,
-          paid: true,
+        console.log(property.loanAmount*1.0075)
+        await writeApprovePay({
+            abi: erc20abi,
+            address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
+            functionName: 'approve',
+            args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', parseInt((property.loanAmount*2.0075))],
         });
-        setLoans(
-          loans.map((l) => (l.id === loan.id ? { ...l, paid: true } : l))
-        );
-
-        /* continue logic here */
       } catch (error) {
-        console.error("Error paying loan in full: ", loan);
+        console.error(error);
       }
-    }
-  };
-
+    };
+  }
   useEffect(() => {
     fetchProperty();
     fetchUser();

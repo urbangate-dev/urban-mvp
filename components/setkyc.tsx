@@ -11,7 +11,7 @@ export function KYC() {
   async function submit() { 
     writeContract({ 
       abi,
-      address: '0x163aD5b66D50F228ca4Ec7B60DB6A3828aCb6128',
+      address: '0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E',
       functionName: 'setKYCStatus',
       args: [userAddress, kycStatus],
  })

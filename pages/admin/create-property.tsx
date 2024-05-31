@@ -5,8 +5,9 @@ import Link from "next/link";
 import { PropertyWithoutId as Property } from "@/utils/props";
 import { UploadButton } from "../../utils/uploadthing";
 import { truncateFileName } from "../../utils/functions";
-import { useWriteContract, useAccount } from 'wagmi'
+import { useWriteContract, useAccount, useReadContract } from 'wagmi'
 import { abi } from '../../abi/loan'
+import { time } from "console";
 
 const CreateProperty: React.FC<ChildPageProps> = ({
   isConnected,
@@ -69,9 +70,23 @@ const CreateProperty: React.FC<ChildPageProps> = ({
       [name]: parsedValue,
     });
   };
-  const { data: hash, writeContract, isPending, isSuccess, isError } = useWriteContract();
-  const [propertyId, setPropertyId] = useState<string | null>(null);
 
+  const { data: hash, writeContract, isPending, isSuccess, isError } = useWriteContract();
+  const { data, error, isRefetching, refetch, isLoading, isSuccess: success } = useReadContract({
+    abi: abi,
+    address: '0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E',
+    functionName: "loanCounter",
+  });
+  const [propertyId, setPropertyId] = useState<string | null>(null);
+  const handleRefetch = async () => {
+    if (success) {
+      await refetch();
+      if (data) {
+        console.log("PropertyIndex: ", data);
+        return String(data);
+      }
+    }
+  };
   useEffect(() => {
     if (isSuccess) {
       console.log("Contract written successfully.", hash);
@@ -95,32 +110,36 @@ const CreateProperty: React.FC<ChildPageProps> = ({
 
     deleteProperty();
   }, [isError, propertyId]);
-
+  
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { loanAmount, yieldPercent, maturityDate } = formData;
     const dueTime = Math.floor(new Date(maturityDate).getTime() / 1000);
-  
+
+    const currentTime = Math.floor(Date.now() / 1000);
+    const secondsUntilMaturity = dueTime - currentTime;
+    
     try {
+      const propertyIndex = await handleRefetch(); 
       const response = await axios.post("/api/property", {
         ...formData,
         draft: false,
+        propertyIndex: propertyIndex,
       });
       console.log("API response for property creation:", response.data);
-  
+      console.log(response.data.property);
       setPropertyId(response.data.property.id);
       console.log("Created property ID:", propertyId);
-  
+
       try {
         await writeContract({
           abi,
-          address: "0x163aD5b66D50F228ca4Ec7B60DB6A3828aCb6128",
+          address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
           functionName: 'createLoanRequest',
-          args: [loanAmount, yieldPercent, dueTime],
+          args: [loanAmount, yieldPercent, secondsUntilMaturity],
         });
-        // await waitForTransactionReceipt(config, { hash: tx.hash });
-
+              
       } catch (contractError) {
         console.error("Error writing contract: ", contractError);
   
@@ -135,6 +154,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
       console.error("Error creating property: ", error);
     }
   };
+
 
   const saveDraft = async () => {
     try {

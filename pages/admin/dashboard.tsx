@@ -148,36 +148,131 @@ const Dashboard: React.FC<ChildPageProps> = ({
         <div className="">
           <p className="font-bold text-5xl">Welcome, {user.name}!</p>
 
-      <div className="px-20 pt-20 pb-40">
-        <div className="grid grid-cols-2 gap-12">
-          <div>
-            <p className="font-medium text-3xl mt-8">Approved Loans</p>
-            <div className="mt-4 flex flex-col gap-4">
-              {loans
-                .filter((loan) => !loan.pending)
-                .map((loan) => (
-                  <LoanCardAdmin
-                    key={loan.id}
-                    loan={loan}
-                    loans={loans}
-                    setLoans={setLoans}
-                  />
-                ))}
+          {view === "Loan" ? (
+            <div className="pb-40">
+              <div className="grid grid-cols-2 gap-12 mb-12">
+                <div>
+                  <p className="font-medium text-3xl mt-8">Loans In Funding</p>
+                  <div className="mt-4 flex flex-col gap-4">
+                    {loans
+                      .filter(
+                        (loan) => !loan.pending && loan.funding && !loan.paid
+                      )
+                      .map((loan) => (
+                        <LoanCardAdmin
+                          key={loan.id}
+                          loan={loan}
+                          loans={loans}
+                          setLoans={setLoans}
+                          addPayment={addPayment}
+                        />
+                      ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="font-medium text-3xl mt-8">Pending Loans</p>
+                  <div className="mt-4 flex flex-col gap-4">
+                    {loans
+                      .filter((loan) => loan.pending)
+                      .map((loan) => (
+                        <LoanCardAdmin
+                          key={loan.id}
+                          loan={loan}
+                          loans={loans}
+                          setLoans={setLoans}
+                          addPayment={addPayment}
+                        />
+                      ))}
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-12 w-full">
+                <div>
+                  <p className="font-medium text-3xl mt-8">Approved Loans</p>
+                  <div className="mt-4 flex flex-col gap-4">
+                    {loans
+                      .filter((loan) => !loan.pending && !loan.funding)
+                      .map((loan) => (
+                        <LoanCardAdmin
+                          key={loan.id}
+                          loan={loan}
+                          loans={loans}
+                          setLoans={setLoans}
+                          addPayment={addPayment}
+                        />
+                      ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="font-medium text-3xl mt-8">Paid Loans</p>
+                  <div className="mt-4 flex flex-col gap-4">
+                    {loans
+                      .filter((loan) => loan.paid)
+                      .map((loan) => (
+                        <LoanCardAdmin
+                          key={loan.id}
+                          loan={loan}
+                          loans={loans}
+                          setLoans={setLoans}
+                          addPayment={addPayment}
+                        />
+                      ))}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div>
-            <p className="font-medium text-3xl mt-8">Pending Loans</p>
-            <div className="mt-4 flex flex-col gap-4">
-              {loans
-                .filter((loan) => loan.pending)
-                .map((loan) => (
-                  <LoanCardAdmin
-                    key={loan.id}
-                    loan={loan}
-                    loans={loans}
-                    setLoans={setLoans}
-                  />
-                ))}
+          ) : view === "Payment" ? (
+            <div>
+              <table className="bg-white border mt-8 text-lg py-4 w-full">
+                <tr className="border-t border-b font-semibold">
+                  <td className="py-4 pl-4 pr-10">Transaction Id</td>
+                  <td className="py-4 pl-8 pr-10">Transaction Date</td>
+                  <td className="py-4 pl-8 pr-10">Amount</td>
+                  <td className="py-4 pl-8 pr-10">Status</td>
+                  <td className="py-4 pl-8 pr-10"></td>
+                </tr>
+                {currentPayments
+                  ? currentPayments.map((payment) => (
+                      <tr>
+                        <td className="py-4 pl-4 pr-20">{payment.id}</td>
+                        <td className="py-4 pl-8 pr-20">
+                          {payment.paymentDate}
+                        </td>
+                        <td className="py-4 pl-8 pr-20">
+                          {formatCurrency(payment.balance)}
+                        </td>
+                        <td className="py-4 pl-8 pr-6">{payment.status}</td>
+                        <td className="py-4 pl-8 pr-6 text-red-500 text-xl">
+                          <p
+                            onClick={() => deletePayment(payment.id)}
+                            className="cursor-pointer"
+                          >
+                            <MdDeleteOutline />
+                          </p>
+                        </td>
+                      </tr>
+                    ))
+                  : ""}
+              </table>
+              <div className="flex gap-4 mt-4 items-center justify-center">
+                <button
+                  onClick={handlePreviousPage}
+                  disabled={currentPage === 1}
+                  className="px-4 py-2 text-gold border-gold rounded-full border disabled:text-gray-300 disabled:border-gray-200"
+                >
+                  Previous
+                </button>
+                <p>
+                  Page {currentPage} of {totalPages}
+                </p>
+                <button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                  className="px-4 py-2 text-gold border-gold rounded-full border disabled:text-gray-300 disabled:border-gray-200"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-12">
