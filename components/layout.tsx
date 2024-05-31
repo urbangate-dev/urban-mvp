@@ -10,6 +10,7 @@ import Logo from "../public/logo2.png";
 import Link from "next/link";
 import { User, ChildPageProps } from "../utils/props";
 import localFont from "@next/font/local";
+import { Balance } from "./balance";
 
 const poppins = localFont({
   src: [
@@ -101,9 +102,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ""
             )}
             {isConnected ? (
+              <>
               <Link href="/user/account" className="hover:text-gray-500">
                 My Account
               </Link>
+              <Balance/>
+              </>
             ) : (
               ""
             )}

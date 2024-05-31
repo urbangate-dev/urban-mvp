@@ -13,6 +13,11 @@ import {
   parseDate,
 } from "../utils/functions";
 
+import { useWriteContract } from 'wagmi'
+import { abi } from '../abi/loan'
+import { abi as erc20abi} from '../abi/erc20'
+
+
 interface LoanCardProps {
   loan: Loan;
   user: User;
@@ -117,15 +122,59 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     fetchProperty();
   }, []);
 
+  const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const {writeContractAsync} = useWriteContract({
+    mutation: {
+    onSuccess: async (data) => {
+      try {
+            const response = await axios.put(`/api/loan/${loan.id}`, {
+            ...loan,
+            funding: true,
+            });
+            updateLoan(response.data.loan);
+            console.log('Transaction successful');
+        }
+      catch (error) {
+        console.error('Updating loan failed:', error);
+      }
+    },
+    onError: (error) => {
+      console.error('FundLoan transaction failed:', error);
+    },
+  },});
+  const { writeContractAsync: writeApprove } = useWriteContract({
+    mutation: {
+      onSuccess: async (data) => {
+        try {
+          await delay(6000);
+          await writeContractAsync({
+            abi,
+            address: '0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E',
+            functionName: 'fundLoan',
+            args: [parseInt(property.propertyIndex)],
+          });
+          console.log('FundLoan transaction successful');
+        } catch (error) {
+          console.error('FundLoan transaction failed:', error);
+        }
+      },
+      onError: (error) => {
+        console.error('Approve transaction failed:', error);
+      },
+    },
+  });
+
   const fundLoan = async () => {
     try {
-      const response = await axios.put(`/api/loan/${loan.id}`, {
-        ...loan,
-        funding: true,
+      await writeApprove({
+          abi: erc20abi,
+          address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
+          functionName: 'approve',
+          args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', property.loanAmount],
       });
-      updateLoan(response.data.loan);
     } catch (error) {
-      console.error("Error funding loan: ", error);
+      console.error(error);
     }
   };
 
