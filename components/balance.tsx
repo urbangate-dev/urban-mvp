@@ -2,11 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useReadContract, useAccount } from 'wagmi';
 import { abi } from '../abi/erc20'
 
-interface BalanceProps {
-    title: string;
-}
 
-export const Balance: React.FC<BalanceProps> = () => {
+export function Balance() {
     const { address } = useAccount();
     const [balance, setBalance] = useState<string | null>(null);
 

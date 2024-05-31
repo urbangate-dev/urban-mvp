@@ -171,7 +171,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           abi: erc20abi,
           address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
           functionName: 'approve',
-          args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', parseInt(property.loanAmount)],
+          args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', property.loanAmount],
       });
     } catch (error) {
       console.error(error);

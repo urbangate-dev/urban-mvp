@@ -9,11 +9,12 @@ import { baseSepolia } from "wagmi/chains";
 
 const config = createConfig(
   getDefaultConfig({
+    appName: "Urban Gate Capital",
     chains: [baseSepolia],
     transports: {
       // RPC URL for each chain
       [baseSepolia.id]: http(
-        'https://base-sepolia.g.alchemy.com/v2/VQFSLakq8kTcp6ps2EFrJwXWZMYRfrQn',
+        "https://base-sepolia.g.alchemy.com/v2/VQFSLakq8kTcp6ps2EFrJwXWZMYRfrQn",
       ),
     },
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,

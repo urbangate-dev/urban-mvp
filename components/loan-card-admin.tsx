@@ -167,11 +167,13 @@ export default function LoanCardAdmin({
 
   const createPayment = async () => {
     try {
+      const roundedValue = Math.round((property.loanAmount / 12) * (property.yieldPercent / 100));
+
       await writeApprove({
           abi: erc20abi,
           address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
           functionName: 'approve',
-          args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', parseInt((property.loanAmount / 12) * (property.yieldPercent / 100))],
+          args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', roundedValue],
       });
     } catch (error) {
       console.error(error);
@@ -257,12 +259,12 @@ export default function LoanCardAdmin({
       if (window.confirm("Are you sure you want to pay this loan in full?")) {
 
       try {
-        console.log(property.loanAmount*1.0075)
+        const amount = Math.round(property.loanAmount*2.0075)
         await writeApprovePay({
             abi: erc20abi,
             address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
             functionName: 'approve',
-            args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', parseInt((property.loanAmount*2.0075))],
+            args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', amount],
         });
       } catch (error) {
         console.error(error);
