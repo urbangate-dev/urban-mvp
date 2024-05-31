@@ -12,15 +12,27 @@ const Account: React.FC<ChildPageProps> = ({
   router,
 }) => {
   const [loans, setLoans] = useState<Loan[]>([]);
+  const [hasPending, setHasPending] = useState(false);
+  const [hasApproved, setHasApproved] = useState(false);
 
   const fetchLoans = async () => {
     if (user.id !== "")
       try {
         const response = await axios.get(`/api/loan/${user.id}`);
         setLoans(response.data);
+        response.data.forEach((loan: Loan) => {
+          if (loan.pending) setHasPending(true);
+          if (!loan.pending && !loan.funding) setHasApproved(true);
+        });
       } catch (error) {
         console.error("Error fetching loans: ", error);
       }
+  };
+
+  const updateLoan = (updatedLoan: Loan) => {
+    setLoans((prevLoans) =>
+      prevLoans.map((loan) => (loan.id === updatedLoan.id ? updatedLoan : loan))
+    );
   };
 
   useEffect(() => {
@@ -32,16 +44,40 @@ const Account: React.FC<ChildPageProps> = ({
     <div className="px-20 min-h-screen bg-gray-50">
       {isConnected && user?.name != "" ? (
         <div>
-          <p className="font-bold text-5xl pt-20">Welcome, {user.name}</p>
+          <p className="font-bold text-5xl pt-20">Welcome, {user.name}!</p>
+          {hasPending ? (
+            <p className="text-xl font-light mb-4 mt-8">
+              After completing the DocuSign, please be on the lookout for an
+              approval email when UrbanGate approves your loan.
+            </p>
+          ) : (
+            ""
+          )}
+          {hasApproved ? (
+            <p className="text-xl font-light mb-4 mt-8">
+              One of your loans has been approved! Please click "Fund Loan" to
+              begin your investment.
+            </p>
+          ) : (
+            ""
+          )}
           <p className="text-3xl mb-4 mt-8">Your Loans</p>
-          <p className="text-2xl font-light mb-6">
-            Active loan requests and successfully funded loans will be shown
-            below.
-          </p>
+
           <div className="flex flex-col gap-4">
-            {loans.map((loan) => (
-              <LoanCard key={loan.id} loan={loan} user={user} />
-            ))}
+            {loans.length !== 0 ? (
+              loans.map((loan) => (
+                <LoanCard
+                  key={loan.id}
+                  loan={loan}
+                  user={user}
+                  updateLoan={updateLoan}
+                />
+              ))
+            ) : (
+              <p className="text-2xl italic font-light">
+                You currently have no loans.
+              </p>
+            )}
           </div>
         </div>
       ) : (

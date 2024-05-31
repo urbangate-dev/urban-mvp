@@ -21,11 +21,11 @@ import { abi as erc20abi} from '../abi/erc20'
 interface LoanCardProps {
   loan: Loan;
   user: User;
+  updateLoan: (loan: Loan) => void;
 }
 
-export default function LoanCard({ loan, user }: LoanCardProps) {
+export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
   const defaultDate = new Date().toISOString().split("T")[0];
-
   const [property, setProperty] = useState<Prop>({
     id: "",
     address: "",
@@ -53,6 +53,9 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
     borrowerDescription: "",
     investorPresentationLink: "",
     draft: true,
+    thumbnail: "",
+    additional: [],
+    propertyIndex: "",
   });
 
   const nameURL = user.name.replace(/ /g, "%20");
@@ -147,8 +150,14 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
   }, [isSuccess, hash]);
   return (
     <div className="p-5 rounded-3xl bg-white shadow-lg flex gap-6">
-      <div>
-        <Image src={PropertyImage} alt="property" className="" width={200} />
+      <div className="flex">
+        <Image
+          src={property.thumbnail}
+          alt="property"
+          className=""
+          width={200}
+          height={200}
+        />
       </div>
       <div className="w-full">
         <div className="flex justify-between">
@@ -164,6 +173,8 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
           </div>
           {loan.pending ? (
             <p className="text-orange-400 text-xl">Pending</p>
+          ) : loan.funding ? (
+            <p className="text-gold text-xl">Funding in Progress</p>
           ) : (
             <p className="text-green-500 text-xl">Approved</p>
           )}
@@ -181,10 +192,7 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
             Loan to Cost: <span className="font-light">{loan.loanToCost}%</span>
           </p>
           <p className="text-xl">
-            Return Value:{" "}
-            <span className="font-light">
-              {formatCurrency(loan.loanAmount)}
-            </span>
+            Loan Term: <span className="font-light">{loan.term} Months</span>
           </p>
         </div>
 
@@ -206,6 +214,13 @@ export default function LoanCard({ loan, user }: LoanCardProps) {
             >
               Docusign Link
             </a>
+          ) : loan.funding ? (
+            <Link
+              href={`/user/payment/${loan.id}`}
+              className="text-2xl font-extralight cursor-pointer  hover:text-gray-500 transition"
+            >
+              Payment History
+            </Link>
           ) : (
             <p
               onClick={fundLoan}

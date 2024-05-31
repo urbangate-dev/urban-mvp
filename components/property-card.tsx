@@ -8,19 +8,19 @@ interface PropertyCardProps {
   property: Property;
 }
 
-//picture
-
-//address
-
-//1-2 sentences ahout property
-
-//laon amount, term elngth (with maturity date), yield, loan as is value, loan arv, loan to cost
-
 export default function PropertyCard({ property }: PropertyCardProps) {
   return (
     <div className="flex flex-col rounded-[50px] overflow-hidden border shadow-lg hover:shadow-xl transition">
       <Link className="h-full" href={`/property/${property.id}`}>
-        <Image src={PropertyImage} alt="property" className="" />
+        <div className="relative" style={{ width: "100%", height: "250px" }}>
+          <Image
+            src={property.thumbnail}
+            alt="property"
+            layout="fill" // Fill the container
+            objectFit="cover" // Cover the container while maintaining aspect ratio
+            className="rounded-t-[50px]" // Apply rounded corners to the top
+          />
+        </div>
         <div className="p-4">
           <p className="text-2xl mb-1 font-bold">{property.address}</p>
           <div className="flex gap-2 mb-1">

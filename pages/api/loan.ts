@@ -19,6 +19,8 @@ export default async function handler(
         userId,
         walletAddress,
         pending,
+        funding,
+        paid,
       } = req.body;
 
       // Create the loan in the database
@@ -34,6 +36,8 @@ export default async function handler(
           userId,
           walletAddress,
           pending,
+          funding,
+          paid,
         },
       });
 
