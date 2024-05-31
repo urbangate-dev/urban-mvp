@@ -106,7 +106,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/user/account" className="hover:text-gray-500">
                 My Account
               </Link>
-              {/* <Balance/> */}
+              <Balance/>
               </>
             ) : (
               ""
