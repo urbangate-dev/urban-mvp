@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import PropertyImage from "../public/testproperty.jpeg";
-import { Loan, User } from "@/utils/props";
+import { Loan, PaymentCreateProps, User } from "@/utils/props";
 import { Property as Prop } from "@/utils/props";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -13,10 +13,9 @@ import {
   parseDate,
 } from "../utils/functions";
 
-import { useWriteContract } from 'wagmi'
-import { abi } from '../abi/loan'
-import { abi as erc20abi} from '../abi/erc20'
-
+import { useWriteContract } from "wagmi";
+import { abi } from "../abi/loan";
+import { abi as erc20abi } from "../abi/erc20";
 
 interface LoanCardProps {
   loan: Loan;
@@ -122,27 +121,28 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     fetchProperty();
   }, []);
 
-  const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
+  const delay = (ms: number): Promise<void> =>
+    new Promise((resolve) => setTimeout(resolve, ms));
 
-  const {writeContractAsync} = useWriteContract({
+  const { writeContractAsync } = useWriteContract({
     mutation: {
-    onSuccess: async (data) => {
-      try {
-            const response = await axios.put(`/api/loan/${loan.id}`, {
+      onSuccess: async (data) => {
+        try {
+          const response = await axios.put(`/api/loan/${loan.id}`, {
             ...loan,
             funding: true,
-            });
-            updateLoan(response.data.loan);
-            console.log('Transaction successful');
+          });
+          updateLoan(response.data.loan);
+          console.log("Transaction successful");
+        } catch (error) {
+          console.error("Updating loan failed:", error);
         }
-      catch (error) {
-        console.error('Updating loan failed:', error);
-      }
+      },
+      onError: (error) => {
+        console.error("FundLoan transaction failed:", error);
+      },
     },
-    onError: (error) => {
-      console.error('FundLoan transaction failed:', error);
-    },
-  },});
+  });
   const { writeContractAsync: writeApprove } = useWriteContract({
     mutation: {
       onSuccess: async (data) => {
@@ -150,17 +150,17 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           await delay(6000);
           await writeContractAsync({
             abi,
-            address: '0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E',
-            functionName: 'fundLoan',
+            address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
+            functionName: "fundLoan",
             args: [parseInt(property.propertyIndex)],
           });
-          console.log('FundLoan transaction successful');
+          console.log("FundLoan transaction successful");
         } catch (error) {
-          console.error('FundLoan transaction failed:', error);
+          console.error("FundLoan transaction failed:", error);
         }
       },
       onError: (error) => {
-        console.error('Approve transaction failed:', error);
+        console.error("Approve transaction failed:", error);
       },
     },
   });
@@ -168,11 +168,21 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
   const fundLoan = async () => {
     try {
       await writeApprove({
-          abi: erc20abi,
-          address: '0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28',
-          functionName: 'approve',
-          args: ['0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E', property.loanAmount],
+        abi: erc20abi,
+        address: "0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28",
+        functionName: "approve",
+        args: [
+          "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
+          property.loanAmount,
+        ],
       });
+      const payment: PaymentCreateProps = {
+        balance: -property.loanAmount,
+        paymentDate: defaultDate,
+        loanId: loan.id,
+        status: "Funded",
+      };
+      const response = await axios.post("/api/payment", payment);
     } catch (error) {
       console.error(error);
     }
@@ -204,7 +214,9 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           {loan.pending ? (
             <p className="text-orange-400 text-xl">Pending</p>
           ) : loan.funding ? (
-            <p className="text-gold text-xl">Funding in Progress</p>
+            <p className="text-gold text-xl">Funded</p>
+          ) : loan.paid ? (
+            <p className="text-green-500 text-xl">Paid Off</p>
           ) : (
             <p className="text-green-500 text-xl">Approved</p>
           )}

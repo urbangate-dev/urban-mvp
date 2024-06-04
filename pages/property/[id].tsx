@@ -6,7 +6,7 @@ import axios from "axios";
 import Image from "next/image";
 import PropertyImage from "../../public/noimage.png";
 import Link from "next/link";
-import { formatNumberWithCommas } from "../../utils/functions";
+import { formatNumberWithCommas, stringToDate } from "../../utils/functions";
 import {
   formatCurrency,
   formatDate,
@@ -292,7 +292,7 @@ const Property: React.FC<ChildPageProps> = ({
                   {formatNumberWithCommas(property.sqft)} SQFT
                 </p>
               </div>
-              <div className="flex mt-16 gap-12">
+              <div className="flex mt-16 gap-6">
                 <div className="flex flex-col">
                   <p className="text-2xl font-medium">Loan To ARV</p>
                   <p className="text-2xl mt-2 font-light">
@@ -315,6 +315,12 @@ const Property: React.FC<ChildPageProps> = ({
                   <p className="text-2xl font-medium">Loan Term</p>
                   <p className="text-2xl mt-2 font-light">
                     {property.term} months
+                  </p>
+                </div>
+                <div className="flex flex-col">
+                  <p className="text-2xl font-medium">Maturity Date</p>
+                  <p className="text-2xl mt-2 font-light">
+                    {formatDate(stringToDate(property.maturityDate))}
                   </p>
                 </div>
               </div>
