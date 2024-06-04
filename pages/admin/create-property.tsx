@@ -5,8 +5,8 @@ import Link from "next/link";
 import { PropertyWithoutId as Property } from "@/utils/props";
 import { UploadButton } from "../../utils/uploadthing";
 import { truncateFileName } from "../../utils/functions";
-import { useWriteContract, useAccount, useReadContract } from 'wagmi'
-import { abi } from '../../abi/loan'
+import { useWriteContract, useAccount, useReadContract } from "wagmi";
+import { abi } from "../../abi/loan";
 import { time } from "console";
 
 const CreateProperty: React.FC<ChildPageProps> = ({
@@ -71,10 +71,23 @@ const CreateProperty: React.FC<ChildPageProps> = ({
     });
   };
 
-  const { data: hash, writeContract, isPending, isSuccess, isError } = useWriteContract();
-  const { data, error, isRefetching, refetch, isLoading, isSuccess: success } = useReadContract({
+  const {
+    data: hash,
+    writeContract,
+    isPending,
+    isSuccess,
+    isError,
+  } = useWriteContract();
+  const {
+    data,
+    error,
+    isRefetching,
+    refetch,
+    isLoading,
+    isSuccess: success,
+  } = useReadContract({
     abi: abi,
-    address: '0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E',
+    address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
     functionName: "loanCounter",
   });
   const [propertyId, setPropertyId] = useState<string | null>(null);
@@ -90,7 +103,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
   useEffect(() => {
     if (isSuccess) {
       console.log("Contract written successfully.", hash);
-      router.push('/admin/dashboard');
+      router.push("/admin/dashboard");
     }
   }, [isSuccess, hash, router]);
 
@@ -101,16 +114,20 @@ const CreateProperty: React.FC<ChildPageProps> = ({
 
         try {
           await axios.delete(`/api/property/${propertyId}`);
-          console.log("Property deletion successful due to contract write failure.");
+          console.log(
+            "Property deletion successful due to contract write failure."
+          );
         } catch (deleteError) {
-          console.error("Error deleting property after contract write failure: ", deleteError);
+          console.error(
+            "Error deleting property after contract write failure: ",
+            deleteError
+          );
         }
       }
     };
 
     deleteProperty();
   }, [isError, propertyId]);
-  
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -119,9 +136,9 @@ const CreateProperty: React.FC<ChildPageProps> = ({
 
     const currentTime = Math.floor(Date.now() / 1000);
     const secondsUntilMaturity = dueTime - currentTime;
-    
+
     try {
-      const propertyIndex = await handleRefetch(); 
+      const propertyIndex = await handleRefetch();
       const response = await axios.post("/api/property", {
         ...formData,
         draft: false,
@@ -136,25 +153,28 @@ const CreateProperty: React.FC<ChildPageProps> = ({
         await writeContract({
           abi,
           address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
-          functionName: 'createLoanRequest',
+          functionName: "createLoanRequest",
           args: [loanAmount, yieldPercent, secondsUntilMaturity],
         });
-              
       } catch (contractError) {
         console.error("Error writing contract: ", contractError);
-  
+
         try {
           await axios.delete(`/api/property/${propertyId}`);
-          console.log("Property deletion successful due to contract write failure.");
+          console.log(
+            "Property deletion successful due to contract write failure."
+          );
         } catch (deleteError) {
-          console.error("Error deleting property after contract write failure: ", deleteError);
+          console.error(
+            "Error deleting property after contract write failure: ",
+            deleteError
+          );
         }
       }
     } catch (error) {
       console.error("Error creating property: ", error);
     }
   };
-
 
   const saveDraft = async () => {
     try {
@@ -240,21 +260,21 @@ const CreateProperty: React.FC<ChildPageProps> = ({
 
         <div className="grid grid-cols-12 gap-4 mt-2">
           <label className="flex flex-col text-lg">
-            Bathroom:
-            <input
-              type="number"
-              name="bathroom"
-              value={formData.bathroom}
-              onChange={handleChange}
-              className="border border-gray-300  rounded-xl px-4 py-2"
-            />
-          </label>
-          <label className="flex flex-col text-lg">
             Bedroom:
             <input
               type="number"
               name="bedroom"
               value={formData.bedroom}
+              onChange={handleChange}
+              className="border border-gray-300  rounded-xl px-4 py-2"
+            />
+          </label>
+          <label className="flex flex-col text-lg">
+            Bathroom:
+            <input
+              type="number"
+              name="bathroom"
+              value={formData.bathroom}
               onChange={handleChange}
               className="border border-gray-300  rounded-xl px-4 py-2"
             />

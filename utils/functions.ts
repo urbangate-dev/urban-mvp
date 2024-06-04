@@ -101,3 +101,14 @@ export const truncateFileName = (fileName: string): string => {
   // Combine the truncated name with the extension
   return truncatedName + extension;
 };
+
+export const stringToDate = (dateString: string): Date => {
+  const dateParts = dateString.split("-");
+
+  const [year, month, day] = dateParts;
+  const yearNumber = parseInt(year, 10);
+  const monthNumber = parseInt(month, 10);
+  const dayNumber = parseInt(day, 10);
+
+  return new Date(yearNumber, monthNumber - 1, dayNumber);
+};
