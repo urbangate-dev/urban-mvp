@@ -74,7 +74,9 @@ const Account: React.FC<ChildPageProps> = ({
   };
 
   const calculateTotalBalance = (payments: Payment[]): number => {
-    return payments.reduce((total, payment) => total + payment.balance, 0);
+    return payments
+      .filter((payment) => payment.balance >= 0)
+      .reduce((total, payment) => total + payment.balance, 0);
   };
 
   const totalBalance = calculateTotalBalance(payments);
