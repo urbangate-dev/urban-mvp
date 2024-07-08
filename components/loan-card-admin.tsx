@@ -133,6 +133,7 @@ export default function LoanCardAdmin({
             paymentDate: defaultDate,
             loanId: loan.id,
             status: "Paid",
+            tx: data,
           };
           const response = await axios.post("/api/payment", payment);
           addPayment(response.data);
@@ -183,41 +184,7 @@ export default function LoanCardAdmin({
       console.error(error);
     }
   };
-  // const createPayment = async () => {
-  //   try {
-  //     const payment: PaymentCreateProps = {
-  //       balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
-  //       paymentDate: defaultDate,
-  //       loanId: loan.id,
-  //       status: "Due",
-  //     };
-  //     const response = await axios.post("/api/payment", payment);
-  //     addPayment(response.data);
 
-  //     /*
-  //       Ruohan write code here for contract payment
-  //     */
-  //   } catch (error) {
-  //     console.error("Error creating payment: ", error);
-  //   }
-  // };
-
-  // const payLoanInFull = async () => {
-  //     try {
-  //       await axios.put(`/api/loan/${loan.id}`, {
-  //         ...loan,
-  //         paid: true,
-  //       });
-  //       setLoans(
-  //         loans.map((l) => (l.id === loan.id ? { ...l, paid: true } : l))
-  //       );
-
-  //       /* continue logic here */
-  //     } catch (error) {
-  //       console.error("Error paying loan in full: ", loan);
-  //     }
-  //   }
-  // };
   const { writeContractAsync: writeFullPay } = useWriteContract({
     mutation: {
       onSuccess: async (data) => {
