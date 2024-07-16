@@ -1,21 +1,28 @@
 import React from "react";
 
 import Link from "next/link";
-import {
-  Loan,
-  Payment,
-  PaymentCreateProps,
-  Property as Prop,
-} from "@/utils/props";
+import { Loan, PaymentCreateProps, Property as Prop } from "@/utils/props";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import PropertyImage from "../public/testproperty.jpeg";
-import { formatCurrency } from "@/utils/functions";
+import { formatCurrency, formatDate, parseDate } from "@/utils/functions";
 
 import { useWriteContract } from "wagmi";
 import { abi } from "../abi/loan";
 import { abi as erc20abi } from "../abi/erc20";
+import localFont from "@next/font/local";
+import { Payment } from "@prisma/client";
+
+const robotoMono = localFont({
+  src: [
+    {
+      path: "../public/fonts/RobotoMono-Regular.ttf",
+      weight: "400",
+    },
+  ],
+  variable: "--font-roboto-mono",
+});
 
 type User = {
   name: string;
@@ -72,6 +79,8 @@ export default function LoanCardAdmin({
     name: "",
     email: "",
   });
+
+  const parsedMaturityDate = parseDate(property.maturityDate);
 
   const fetchProperty = async () => {
     try {
@@ -281,41 +290,51 @@ export default function LoanCardAdmin({
   }, []);
 
   return (
-    <div className="p-5 rounded-3xl bg-white shadow-lg">
+    <div className="p-5 border border-grey-border shadow-lg text-white">
       <div className="flex gap-6">
         {/* <div>
           <Image src={PropertyImage} alt="property" className="" width={120} />
         </div> */}
         <div>
           <div className="flex gap-3">
-            <p className="font-semibold text-lg">{property.address}</p>
-            <div className="border-r"></div>
-            <p className="font-semibold text-lg">
-              {formatCurrency(loan.loanAmount)}
-            </p>
+            <p className="uppercase font-light text-2xl">{property.address}</p>
           </div>
-          <div className="flex gap-4">
-            <p className="text-md">
-              Investor: <span className="font-light">{user.name}</span>
-            </p>
-            <p className="text-md">
-              ARV: <span className="font-light">{loan.loanToARV}%</span>
-            </p>
-            <p className="text-md">
-              Term: <span className="font-light">{loan.term} Months</span>
-            </p>
+          <div
+            className={`flex gap-x-4 mt-2 ${robotoMono.variable} font-roboto-mono text-xl flex-wrap gap-y-1`}
+          >
+            <div className="flex gap-2">
+              <p className="text-grey-text">Loan</p>
+              <p className="text-grey-text">•</p>
+              <p>{formatCurrency(loan.loanAmount)}</p>
+            </div>
+            <div className="flex gap-2">
+              <p className="text-grey-text">Annual Return</p>
+              <p className="text-grey-text">•</p>
+              <p>10%</p>
+            </div>
+            <div className="flex gap-2">
+              <p className="text-grey-text">Maturity Date</p>
+              <p className="text-grey-text">•</p>
+              <p>{formatDate(parsedMaturityDate)}</p>
+            </div>
+            <div className="flex gap-2">
+              <p className="text-grey-text">Investor</p>
+              <p className="text-grey-text">•</p>
+              <p>{user.name}</p>
+            </div>
           </div>
-          <div className="flex gap-3 mt-1">
+
+          <div className="flex gap-3 mt-3">
             {loan.pending ? (
               <p
-                className="text-green-500 cursor-pointer font-light text-lg hover:text-green-400 transition"
+                className={`text-lg font-extralight border border-green-500 rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-green-500 hover:text-green-400 hover:border-green-400 cursor-pointer`}
                 onClick={approveLoan}
               >
                 Approve
               </p>
             ) : loan.funding && !loan.paid ? (
               <p
-                className="text-gold cursor-pointer font-light text-lg hover:text-dark-gold transition"
+                className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
                 onClick={createPayment}
               >
                 Pay Interest
@@ -325,7 +344,7 @@ export default function LoanCardAdmin({
             )}
             {loan.funding && !loan.paid ? (
               <p
-                className="text-gold cursor-pointer font-light text-lg hover:text-dark-gold transition"
+                className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
                 onClick={payLoanInFull}
               >
                 Pay Loan
@@ -334,21 +353,15 @@ export default function LoanCardAdmin({
               ""
             )}
             <Link
-              className="font-light text-lg hover:text-gray-500 transition"
+              className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
               href={`/property/${loan.propertyId}`}
             >
               View
             </Link>
 
             <p
-              className="cursor-pointer font-light text-lg hover:text-gray-500 transition"
-              onClick={() => setVisible(!visible)}
-            >
-              Details
-            </p>
-            <p
               onClick={deleteLoan}
-              className="cursor-pointer text-red-500 font-light text-xl hover:text-red-400 transition"
+              className={`text-lg font-extralight border border-red-600 rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-red-600 hover:text-red-400 hover:border-red-400 cursor-pointer`}
             >
               Delete
             </p>

@@ -6,6 +6,27 @@ import { useEffect, useState } from "react";
 import LoanCard from "@/components/loan-card";
 import { formatCurrency } from "../../../utils/functions";
 import PaymentCard from "@/components/payment-card";
+import localFont from "@next/font/local";
+
+const robotoCondensed = localFont({
+  src: [
+    {
+      path: "../../../public/fonts/RobotoCondensed-Regular.ttf",
+      weight: "400",
+    },
+  ],
+  variable: "--font-roboto-condensed",
+});
+
+const robotoMono = localFont({
+  src: [
+    {
+      path: "../../../public/fonts/RobotoMono-Regular.ttf",
+      weight: "400",
+    },
+  ],
+  variable: "--font-roboto-mono",
+});
 
 const Account: React.FC<ChildPageProps> = ({
   isConnected,
@@ -86,54 +107,74 @@ const Account: React.FC<ChildPageProps> = ({
   }, [id]);
 
   return (
-    <div className="px-20 pb-20 min-h-screen bg-gray-50">
+    <div className="px-20 pb-20 min-h-screen text-white">
       {loan.userId === "" ? (
         <p>Unauthorized</p>
       ) : (
         <div>
-          <p className="font-semibold text-4xl pt-20">
-            Payment History for {property}
-          </p>
-          <div className="flex gap-4 mt-4">
-            <p className="text-2xl font-light">
-              Balance:{" "}
-              <span className="font-normal">
-                {formatCurrency(loan.loanAmount)}
-              </span>
+          <div className=" mt-16 py-8">
+            <p
+              className={`text-4xl ${robotoCondensed.variable} font-roboto-condensed text-white font-light uppercase text-center`}
+            >
+              Payment History for
             </p>
-            <div className="border-r"></div>
-            <p className="text-2xl font-light">
-              Net Earned:{" "}
-              <span className="font-normal">
-                {formatCurrency(totalBalance)}
-              </span>
+            <p
+              className="text-gold text-center text-4xl"
+              style={{ fontVariant: "all-small-caps" }}
+            >
+              {property}
             </p>
           </div>
-          <table className="bg-white border mt-8 text-xl py-4">
-            <tr className="border-t border-b font-semibold">
-              <td className="py-4 pl-4 pr-20">Transaction Id</td>
-              <td className="py-4 pl-8 pr-20">Transaction Date</td>
-              <td className="py-4 pl-8 pr-20">Amount</td>
-              <td className="py-4 pl-8 pr-20">Status</td>
-            </tr>
-            {payments
-              ? payments.map((payment) => (
-                  <tr>
-                    <td className="py-4 pl-4 pr-20">{payment.id}</td>
-                    <td className="py-4 pl-8 pr-20">{payment.paymentDate}</td>
-                    <td className="py-4 pl-8 pr-20">
-                      {formatCurrency(payment.balance)}
-                    </td>
-                    <td className="py-4 pl-8 pr-20">{payment.status}</td>
-                  </tr>
-                ))
-              : ""}
-          </table>
-          {/* <div className="flex flex-col gap-3 mt-8">
+          <div className="flex items-start gap-8">
+            <div className="flex flex-col">
+              <div className="border border-grey-border px-20 py-10 flex flex-col items-center">
+                <p className="text-2xl uppercase font-light">Balance</p>
+                <p className="text-gold text-4xl">
+                  {formatCurrency(loan.loanAmount)}
+                </p>
+              </div>
+
+              <div className="border-l border-r border-b border-grey-border px-20 py-10 flex flex-col items-center">
+                <p className="text-2xl uppercase font-light">Net Profits</p>
+                <p className="text-gold text-4xl">
+                  {" "}
+                  {formatCurrency(totalBalance)}
+                </p>
+              </div>
+
+              <div className="border-l border-r border-b border-grey-border px-20 py-10 flex flex-col items-center">
+                <p className="text-2xl uppercase font-light">
+                  Duration Remaining
+                </p>
+                <p className="text-gold text-4xl uppercase">5 Months</p>
+              </div>
+            </div>
+            <table className="border border-grey-border text-xl uppercase font-light py-4">
+              <tr className="border-t border-b border-grey-border ">
+                <td className="py-4 pl-4 pr-20">Id</td>
+                <td className="py-4 pl-8 pr-20">Date</td>
+                <td className="py-4 pl-8 pr-20">Amount</td>
+                <td className="py-4 pl-8 pr-20">Status</td>
+              </tr>
+              {payments
+                ? payments.map((payment) => (
+                    <tr>
+                      <td className="py-4 pl-4 pr-20">{payment.id}</td>
+                      <td className="py-4 pl-8 pr-20">{payment.paymentDate}</td>
+                      <td className="py-4 pl-8 pr-20">
+                        {formatCurrency(payment.balance)}
+                      </td>
+                      <td className="py-4 pl-8 pr-20">{payment.status}</td>
+                    </tr>
+                  ))
+                : ""}
+            </table>
+            {/* <div className="flex flex-col gap-3 mt-8">
         {payments
           ? payments.map((payment) => <PaymentCard payment={payment} />)
           : ""}
       </div> */}
+          </div>
         </div>
       )}
     </div>
