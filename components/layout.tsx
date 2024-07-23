@@ -11,6 +11,8 @@ import Link from "next/link";
 import { User, ChildPageProps } from "../utils/props";
 import localFont from "@next/font/local";
 import { Balance } from "./balance";
+import AuthButtonGoogle from "./AuthButtonGoogle";
+import { useSession } from "next-auth/react";
 
 const poppins = localFont({
   src: [
@@ -97,13 +99,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isAdminRoute = router.pathname.startsWith("/admin");
   const isUserRoute = router.pathname.startsWith("/user");
 
+  const { data } = useSession();
+
   useEffect(() => {
     fetchUser();
-  }, [isConnected]);
+  }, [isConnected, router.pathname]);
 
   // if user is connected and exists, then fetch user data from database
 
   const fetchUser = async () => {
+    // if (!address && !data?.user) {
+    //   router.push("/user/login");
+    // }
     if (address)
       try {
         const response = await axios.get(`/api/user/${address}`);
@@ -119,22 +126,47 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error("Error fetching user:", error);
       }
-    else
+    else if (data && data.user) {
+      try {
+        const response = await axios.get(`/api/user/${data.user.email}`);
+        setUser({
+          name: response.data.user.name,
+          email: response.data.user.email,
+          role: response.data.user.role,
+          id: response.data.user.id,
+        });
+        if (router.pathname === "/user/login") {
+          router.push("/");
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    } else {
       setUser({
         name: "",
         email: "",
         role: "",
         id: "",
       });
+      router.push("/user/login");
+    }
   };
 
   if (isMounted)
     return (
-      <div className={`${roboto.variable} font-sans`}>
+      <div
+        className={`${roboto.variable} font-sans ${robotoCondensed.variable} ${robotoMono.variable}`}
+      >
         <header
           className={`flex ${robotoMono.variable} justify-between items-center px-8 py-6 shadow-sm sticky top-0 bg-background-black z-20 text-gold uppercase font-roboto-mono h-full border-b border-grey-border`}
         >
-          <Link href="/">
+          <Link
+            href={
+              isConnected || data?.user
+                ? "/"
+                : "https://www.urbangatecapital.com/"
+            }
+          >
             <Image src={Logo} alt="logo" width={180} height={100} />
           </Link>
           <div className="flex gap-6 text-lg h-full">
@@ -149,7 +181,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ) : (
                 ""
               )}
-              {isConnected ? (
+              {isConnected || data?.user ? (
                 <>
                   <Link
                     href="/user/account"
@@ -171,16 +203,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div className="border-l border-grey-border"></div>
-            <ConnectKitButton label="Login with Wallet" />
+            {isConnected ? (
+              <ConnectKitButton label="Login with Wallet" theme="midnight" />
+            ) : (
+              ""
+            )}
+            {data && data.user ? <AuthButtonGoogle /> : ""}
           </div>
         </header>
 
         <main>
           {isAdminRoute && user?.role !== "ADMIN" ? (
             <p>Unauthorized</p>
-          ) : isUserRoute && !isConnected ? (
-            <p>Not Logged In</p>
           ) : (
+            // ) : isUserRoute && !isConnected ? (
+            //   <p>Not Logged In</p>
+            // ) : (
             React.Children.map(children, (child) =>
               React.isValidElement(child)
                 ? React.cloneElement(child, {
@@ -188,6 +226,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     address,
                     user,
                     router,
+                    data,
                   } as ChildPageProps)
                 : child
             )

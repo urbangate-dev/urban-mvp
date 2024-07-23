@@ -1,3 +1,4 @@
+import { Session } from "next-auth";
 import { NextRouter } from "next/router";
 
 export type User = {
@@ -12,6 +13,7 @@ export interface ChildPageProps {
   address: string;
   user: User;
   router: NextRouter;
+  data: Session | null;
 }
 
 export interface LoanCreateProps {
