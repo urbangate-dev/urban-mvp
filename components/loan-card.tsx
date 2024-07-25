@@ -16,6 +16,17 @@ import {
 import { useWriteContract } from "wagmi";
 import { abi } from "../abi/loan";
 import { abi as erc20abi } from "../abi/erc20";
+import localFont from "@next/font/local";
+
+const robotoMono = localFont({
+  src: [
+    {
+      path: "../public/fonts/RobotoMono-Regular.ttf",
+      weight: "400",
+    },
+  ],
+  variable: "--font-roboto-mono",
+});
 
 interface LoanCardProps {
   loan: Loan;
@@ -190,30 +201,41 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
   };
 
   return (
-    <div className="p-5 rounded-3xl bg-white shadow-lg flex gap-6">
-      <div className="flex">
+    <div className="p-5 text-white border border-grey-border gap-6 flex">
+      {/* <div className="relative overflow-hidden col-span-1 max-w-20 aspect-video">
         <Image
           src={property.thumbnail}
           alt="property"
-          className=""
+          className="opacity-80 h-full w-full aspect-video"
           width={200}
           height={200}
+          objectFit="cover"
+        />
+      </div> */}
+      <div className="relative" style={{ width: "200px", height: "100" }}>
+        <Image
+          src={property.thumbnail}
+          alt="property"
+          layout="fill" // Fill the container
+          objectFit="cover" // Cover the container while maintaining aspect ratio
+          className="opacity-80 " // Apply rounded corners to the top
         />
       </div>
-      <div className="w-full">
+      <div className="w-full col-span-5">
         <div className="flex justify-between">
           <div className="flex gap-4">
-            <p className="font-semibold text-3xl">
+            <p className="uppercase font-light text-2xl">
               {property.address}, {property.city}, {property.state}{" "}
               {property.zip}
             </p>
-            <div className="border-r"></div>
-            <p className="font-semibold text-3xl">
-              {formatCurrency(loan.loanAmount)}
-            </p>
           </div>
           {loan.pending ? (
-            <p className="text-orange-400 text-xl">Pending</p>
+            <p
+              className="text-gold text-2xl font-light"
+              style={{ fontVariant: "all-small-caps" }}
+            >
+              Pending
+            </p>
           ) : loan.funding ? (
             <p className="text-gold text-xl">Funded</p>
           ) : loan.paid ? (
@@ -223,26 +245,30 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           )}
         </div>
 
-        <div className="flex gap-4 mt-2">
-          <p className="text-xl">
-            Loan to ARV: <span className="font-light">{loan.loanToARV}%</span>
-          </p>
-          <p className="text-xl">
-            Loan to As-Is:{" "}
-            <span className="font-light">{loan.loanToAsIs}%</span>
-          </p>
-          <p className="text-xl">
-            Loan to Cost: <span className="font-light">{loan.loanToCost}%</span>
-          </p>
-          <p className="text-xl">
-            Loan Term: <span className="font-light">{loan.term} Months</span>
-          </p>
+        <div
+          className={`flex gap-x-4 mt-2 ${robotoMono.variable} font-roboto-mono text-xl flex-wrap gap-y-1`}
+        >
+          <div className="flex gap-2">
+            <p className="text-grey-text">Loan</p>
+            <p className="text-grey-text">•</p>
+            <p>{formatCurrency(loan.loanAmount)}</p>
+          </div>
+          <div className="flex gap-2">
+            <p className="text-grey-text">Annual Return</p>
+            <p className="text-grey-text">•</p>
+            <p>10%</p>
+          </div>
+          <div className="flex gap-2">
+            <p className="text-grey-text">Maturity Date</p>
+            <p className="text-grey-text">•</p>
+            <p>{formatDate(parsedMaturityDate)}</p>
+          </div>
         </div>
 
-        <div className="flex gap-8 mt-3">
+        <div className="flex gap-4 mt-3">
           <Link
             href={`/property/${loan.propertyId}`}
-            className="text-2xl font-extralight hover:text-gray-500 transition"
+            className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
           >
             View Property
           </Link>
@@ -252,7 +278,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
                 process.env.NEXT_PUBLIC_POWERFORM_URL +
                 `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Year2=${year2}&Address=${formattedAddressFull}`
               }
-              className="text-2xl font-extralight hover:text-gray-500 transition"
+              className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
               target="_blank"
             >
               Docusign Link
@@ -260,16 +286,16 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           ) : loan.funding ? (
             <Link
               href={`/user/payment/${loan.id}`}
-              className="text-2xl font-extralight cursor-pointer  hover:text-gray-500 transition"
+              className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
             >
               Payment History
             </Link>
           ) : (
             <p
               onClick={fundLoan}
-              className="text-2xl font-medium cursor-pointer text-gold hover:text-dark-gold transition"
+              className={`text-lg font-extralight border border-white rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-white hover:text-gray-200 hover:border-gray-200 cursor-pointer`}
             >
-              Fund Loan
+              Fund Now
             </p>
           )}
           {/* {loan.pending ? (

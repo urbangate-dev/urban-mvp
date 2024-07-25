@@ -12,10 +12,16 @@ export default withUt({
     extend: {
       fontFamily: {
         sans: ["var(--font-poppins)"],
+        "roboto-mono": ["var(--font-roboto-mono)"],
+        "roboto-condensed": ["var(--font-roboto-condensed)"],
       },
       colors: {
         gold: "#D19B01",
         "dark-gold": "#AC8000",
+        "background-black": "#0f0f0f",
+        "grey-border": "#262626",
+        "grey-text": "#676665",
+        "grey-input": "#1a1a1a",
       },
     },
   },
