@@ -234,7 +234,11 @@ const Dashboard: React.FC<ChildPageProps> = ({
                 {currentPayments
                   ? currentPayments.map((payment) => (
                       <tr>
-                        <td className="py-4 pl-4 pr-20">{payment.id}</td>
+                        <td className="py-4 pl-4 pr-20">
+                          <a href={`https://base-sepolia.blockscout.com/tx/${payment.tx}`} className="text-blue-500 hover:underline">
+                          {payment.id}
+                          </a>
+                          </td>
                         <td className="py-4 pl-8 pr-20">
                           {payment.paymentDate}
                         </td>
