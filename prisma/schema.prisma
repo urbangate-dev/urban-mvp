@@ -85,4 +85,5 @@ model Payment {
     Loan         Loan?    @relation("payments", fields: [loanId], references: [id])
     loanId       Int?
     status       String
+    tx           String
 }

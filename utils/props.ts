@@ -115,6 +115,7 @@ export interface PaymentCreateProps {
   paymentDate: string;
   loanId: string;
   status: string;
+  tx: string;
 }
 
 export interface Payment {
@@ -123,4 +124,5 @@ export interface Payment {
   paymentDate: string;
   loanId: string;
   status: string;
+  tx: string;
 }

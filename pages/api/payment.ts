@@ -8,7 +8,7 @@ export default async function handler(
 ) {
   if (req.method === "POST") {
     try {
-      const { balance, paymentDate, loanId, status } = req.body;
+      const { balance, paymentDate, loanId, status, tx } = req.body;
 
       const newPayment = await prisma.payment.create({
         data: {
@@ -16,6 +16,7 @@ export default async function handler(
           paymentDate,
           loanId,
           status,
+          tx,
         },
       });
 

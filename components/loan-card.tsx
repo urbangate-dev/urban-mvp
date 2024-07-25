@@ -192,6 +192,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
         paymentDate: defaultDate,
         loanId: loan.id,
         status: "Funded",
+        tx: "",
       };
       const response = await axios.post("/api/payment", payment);
     } catch (error) {
