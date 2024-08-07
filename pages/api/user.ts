@@ -7,20 +7,27 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { name, email, address } = req.body;
+    const { name, email, address, state, investor } = req.body;
+    console.log(name, email, address, state, investor);
     try {
       const newUser = await prisma.user.create({
         data: {
           name: name,
           email: email,
           walletAddress: address,
-          role:
-            address === "0x25fbc9a7fe83a8be6ba19775d8966c0db19a7411"
-              ? "ADMIN"
-              : "INVESTOR",
+          role: "INVESTOR",
+          state: state,
+          investorType: investor,
         },
       });
       res.status(201).json(newUser);
+    } catch (error) {
+      res.status(500).json({ error: "Error creating user" });
+    }
+  } else if (req.method === "GET") {
+    try {
+      const users = await prisma.user.findMany();
+      res.status(201).json(users);
     } catch (error) {
       res.status(500).json({ error: "Error creating user" });
     }

@@ -220,7 +220,39 @@ const Property: React.FC<ChildPageProps> = ({
           <iframe
             src={
               process.env.NEXT_PUBLIC_POWERFORM_URL +
-              `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Year2=${year2}&Address=${formattedAddressFull}`
+              `&Investor_UserName=${nameURL}&Investor_Email=${
+                user.email
+              }&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${
+                property.term
+              }&Year2=${year2}&Address=${formattedAddressFull}&${
+                user.investorType === "net-worth-over-1-million"
+                  ? "investor1"
+                  : user.investorType === "income-over-200k"
+                  ? "investor2"
+                  : user.investorType === "holds-licenses"
+                  ? "investor3"
+                  : user.investorType === "bank-or-institution"
+                  ? "investor4"
+                  : user.investorType === "registered-investment-adviser"
+                  ? "investor5"
+                  : user.investorType === "private-business-development-company"
+                  ? "investor6"
+                  : user.investorType === "rural-business-investment-company"
+                  ? "investor7"
+                  : user.investorType === "organization-over-5-million"
+                  ? "investor8"
+                  : user.investorType === "director-executive-officer"
+                  ? "investor9"
+                  : user.investorType === "trust-over-5-million"
+                  ? "investor10"
+                  : user.investorType === "family-office"
+                  ? "investor11"
+                  : user.investorType === "entity-over-5-million"
+                  ? "investor12"
+                  : user.investorType === "entity-all-accredited-investors"
+                  ? "investor13"
+                  : ""
+              }=x&State=${user.state}`
             }
             className="w-[90%] mx-auto h-full"
           ></iframe>
@@ -601,8 +633,8 @@ const Property: React.FC<ChildPageProps> = ({
                         Invest Now
                       </p>
                     ) : (
-                      <p className="text-xl border px-6 py-3 rounded-md text-center mx-auto text-gray-400">
-                        Log In To Invest
+                      <p className="text-xl border border-grey-border px-6 py-3 rounded-md text-center mx-auto text-grey-text uppercase font-roboto-mono">
+                        Connect Wallet To Invest
                       </p>
                     )}
                     <p className="text-grey-text">

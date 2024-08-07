@@ -6,6 +6,8 @@ export type User = {
   email: string;
   role: string;
   id: string;
+  state: string;
+  investorType: string;
 };
 
 export interface ChildPageProps {

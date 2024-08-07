@@ -1,8 +1,8 @@
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState, useEffect, ChangeEvent } from "react";
 import axios from "axios";
-import { ChildPageProps } from "@/utils/props";
+import { ChildPageProps, User } from "@/utils/props";
 
-const CreateAccount: React.FC<ChildPageProps> = ({
+const Settings: React.FC<ChildPageProps> = ({
   isConnected,
   address,
   user,
@@ -12,7 +12,14 @@ const CreateAccount: React.FC<ChildPageProps> = ({
   const [email, setEmail] = useState("");
   const [state, setState] = useState("");
   const [investor, setInvestor] = useState("");
-  const [validated, setValidated] = useState(true);
+  const [userData, setUserData] = useState<User>({
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    id: user.id,
+    state: user.state,
+    investorType: user.investorType,
+  });
 
   const states = [
     "Alabama",
@@ -148,60 +155,45 @@ const CreateAccount: React.FC<ChildPageProps> = ({
     },
   ];
 
-  const validateAddress = async () => {
-    try {
-      const response = await axios.get(`/api/wallet/${address}`);
-      console.log(response.data);
-      if (response.data === "Address not found") {
-        setValidated(false);
-      }
-    } catch (error) {
-      console.error("Could not retrieve address", error);
-    }
-  };
-
   useEffect(() => {
-    if (!isConnected || (isConnected && user?.name != "" && user)) {
-      router.push("/user/login");
-    }
-    validateAddress();
-  }, [isConnected]);
+    setUserData(user);
+  }, [user]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/api/user", {
-        name,
-        email,
-        address,
-        state,
-        investor,
+      const response = await axios.put(`/api/user/${address}`, {
+        name: userData.name,
+        email: userData.email,
+        state: userData.state,
+        investorType: userData.investorType,
       });
-      router.push("/");
+      window.alert("Account updated successfully!");
     } catch (error) {
       console.error("Error creating user:", error);
+      window.alert("Error updating account!" + error);
     }
+  };
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    e.preventDefault();
+    const { name, value } = e.target;
+    setUserData({
+      ...userData,
+      [name]: value,
+    });
   };
 
   return (
     <div className="p-20">
-      <div className="flex justify-center">
-        {validated ? (
-          ""
-        ) : (
-          <p className="text-gold text-lg text-center border border-gold inline-block self-center rounded-2xl px-8 py-4">
-            Your wallet address has not been verified by UrbanGate yet. Please
-            disconnect your wallet and sign up!
-          </p>
-        )}
-      </div>
-
       <div className="border border-grey-border rounded-t-3xl mx-40 px-20 py-10">
         <p
           className={`text-5xl mb-2 mt-4 font-roboto-condensed hover:text-white transition font-light uppercase text-center text-white`}
           style={{ fontVariant: "all-small-caps" }}
         >
-          Finish Creating Your Account
+          Your Settings
         </p>
       </div>
       <form
@@ -210,30 +202,34 @@ const CreateAccount: React.FC<ChildPageProps> = ({
       >
         <div className="grid grid-cols-3 gap-4">
           <label className="flex flex-col text-xl col-span-7">
+            <p className="text-grey-text font-light mb-1">Name</p>
             <input
               type="text"
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="First and Last Name"
+              name="name"
+              value={userData.name}
+              onChange={handleChange}
               className="border border-grey-border bg-grey-input text-grey-text rounded-md p-5 font-light placeholder:text-grey-text outline-dark-gold"
             />
           </label>
           <label className="flex flex-col text-xl col-span-7">
+            <p className="text-grey-text font-light mb-1">Email</p>
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email Address"
+              name="email"
+              value={userData.email}
+              onChange={handleChange}
               className="border border-grey-border bg-grey-input text-grey-text rounded-md p-5 font-light placeholder:text-grey-text outline-dark-gold"
             />
           </label>
           <label className="flex flex-col text-xl col-span-7">
+            <p className="text-grey-text font-light mb-1">State of Residency</p>
             <select
               id="state"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
+              name="state"
+              value={userData.state}
+              onChange={handleChange}
               className="border border-grey-border bg-grey-input text-grey-text rounded-md p-5 font-light placeholder:text-grey-text outline-dark-gold"
             >
               <option value="" disabled>
@@ -247,10 +243,12 @@ const CreateAccount: React.FC<ChildPageProps> = ({
             </select>
           </label>
           <label className="flex flex-col text-xl col-span-7">
+            <p className="text-grey-text font-light mb-1">Investor Type</p>
             <select
-              id="accredited-investor"
-              value={investor}
-              onChange={(e) => setInvestor(e.target.value)}
+              id="investorType"
+              name="investorType"
+              value={userData.investorType}
+              onChange={handleChange}
               className="border border-grey-border bg-grey-input text-grey-text rounded-md p-5 font-light placeholder:text-grey-text outline-dark-gold"
             >
               <option value="" disabled>
@@ -271,9 +269,8 @@ const CreateAccount: React.FC<ChildPageProps> = ({
           <button
             className={`text-gold text-xl px-4 py-2 border border-gold rounded-xl uppercase hover:text-dark-gold hover:border-dark-gold disabled:text-grey-text disabled:border-grey-border disabled:hover:text-grey-text disabled:hover:border-grey-border transition font-roboto-condensed`}
             type="submit"
-            disabled={!validated}
           >
-            Create Account
+            Update Account
           </button>
         </div>
         <div className="mt-8">
@@ -291,4 +288,4 @@ const CreateAccount: React.FC<ChildPageProps> = ({
   );
 };
 
-export default CreateAccount;
+export default Settings;

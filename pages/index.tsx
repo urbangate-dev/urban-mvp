@@ -95,24 +95,6 @@ const Home: React.FC<ChildPageProps> = ({
             ))}
         </div>
       </div>
-
-      <div className="border border-grey-border mx-32 p-16 flex flex-col items-center gap-2 rounded-3xl mb-40">
-        <p
-          className={`text-4xl mb-2 font-roboto-condensed ${robotoCondensed.variable} uppercase font-light text-white`}
-        >
-          Have Questions About Anything Here?
-        </p>
-        <p className="text-grey-text">
-          If you're unfamiliar with how to invest in loans, or have any other
-          questions, please check out our FAQ below!
-        </p>
-        <Link
-          href={"/"}
-          className={`${robotoMono.variable} font-roboto-mono uppercase text-gold border-gold border px-6 py-3 rounded-xl hover:text-dark-gold hover:border-dark-gold transition mt-2`}
-        >
-          View Our FAQ
-        </Link>
-      </div>
     </div>
   );
 };

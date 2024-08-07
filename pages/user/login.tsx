@@ -61,8 +61,8 @@ const Login: React.FC<ChildPageProps> = ({
           </p>
           <p className="text-grey-text text-center">
             Login with either your Google account or your crypto wallet. Please
-            note: To invest with USD, you must use your Google account. To
-            invest with crypto, you must use your wallet.
+            note: If you login with your Google Account, you can only view
+            loans. To invest with crypto, you must use your wallet.
           </p>
           <AuthButtonGoogle />
           <p className="text-grey-text text-lg">OR</p>

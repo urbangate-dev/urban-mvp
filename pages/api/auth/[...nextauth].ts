@@ -42,7 +42,7 @@ export const authOptions: NextAuthOptions = {
 
             const users = await prisma.user.findMany({
               where: {
-                walletAddress: "",
+                walletAddress: profile.email,
                 email: profile.email,
               },
             });
@@ -52,8 +52,10 @@ export const authOptions: NextAuthOptions = {
                 data: {
                   name: profile.name ?? "",
                   email: profile.email,
-                  walletAddress: "",
+                  walletAddress: profile.email,
                   role: "INVESTOR",
+                  state: "",
+                  investorType: "",
                 },
               });
             }

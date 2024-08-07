@@ -34,6 +34,22 @@ export default async function handler(
         res.status(500).json({ error: "Internal server error" });
       }
     }
+  } else if (req.method === "PUT") {
+    const { id } = req.query;
+    try {
+      const updatedUser = await prisma.user.update({
+        where: {
+          walletAddress: String(id),
+        },
+        data: {
+          ...req.body,
+        },
+      });
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json(error);
+    }
   } else {
     res.status(405).json({ error: "Method Not Allowed" });
   }

@@ -13,10 +13,12 @@ model User {
     id            Int      @id @default(autoincrement())
     createdAt     DateTime @default(now())
     name          String
-    email         String
-    walletAddress String
+    email         String   @unique
+    walletAddress String   @unique
     role          String
     loans         Loan[]   @relation("userLoans")
+    state         String
+    investorType  String
 }
 
 // Define the data model for the Property
@@ -86,4 +88,9 @@ model Payment {
     loanId       Int?
     status       String
     tx           String
+}
+
+model WalletAddress {
+    id      Int    @id @default(autoincrement())
+    address String @unique
 }
