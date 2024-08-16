@@ -94,6 +94,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     id: "",
     state: "",
     investorType: "",
+    approved: false,
   });
   const { address, isConnected } = useAccount();
   const isMounted = useIsMounted();
@@ -126,6 +127,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             id: response.data.user.id,
             state: response.data.user.state,
             investorType: response.data.user.investorType,
+            approved: response.data.user.approved,
           });
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -133,13 +135,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     else if (data && data.user) {
       try {
         const response = await axios.get(`/api/user/${data.user.email}`);
+        console.log(response.data);
         setUser({
-          name: response.data.user.name,
-          email: response.data.user.email,
-          role: response.data.user.role,
-          id: response.data.user.id,
-          state: response.data.user.state,
-          investorType: response.data.user.investorType,
+          name: response.data.name,
+          email: response.data.email,
+          role: response.data.role,
+          id: response.data.id,
+          state: response.data.state,
+          investorType: response.data.investorType,
+          approved: response.data.approved,
         });
         if (router.pathname === "/user/login") {
           router.push("/");
@@ -155,6 +159,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         id: "",
         state: "",
         investorType: "",
+        approved: false,
       });
       router.push("/user/login");
     }
@@ -190,19 +195,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 ""
               )}
               {isConnected &&
-              !router.pathname.startsWith("/user/create-account") ? (
+              !router.pathname.startsWith("/user/create-account") &&
+              user.approved ? (
                 <>
                   <Link
                     href="/user/account"
                     className="hover:text-dark-gold transition"
                   >
                     My Account
-                  </Link>
-                  <Link
-                    href="/user/settings"
-                    className="hover:text-dark-gold transition"
-                  >
-                    Settings
                   </Link>
                   {/* <Balance /> */}
                 </>
@@ -223,7 +223,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
         <main>
           {isAdminRoute && user?.role !== "ADMIN" ? (
-            <p>Unauthorized</p>
+            <p className="text-white">Unauthorized</p>
+          ) : user.name !== "" && !user.approved ? (
+            <p className="text-white">
+              Your account has not been approved yet.
+            </p>
           ) : (
             // ) : isUserRoute && !isConnected ? (
             //   <p>Not Logged In</p>
@@ -252,9 +256,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/">Home</Link>
               <Link href="/user/account" className="hover:text-gray-500">
                 My Account
-              </Link>
-              <Link href="/user/settings" className="hover:text-gray-500">
-                Settings
               </Link>
               <Link href="/faq">FAQ</Link>
               {isConnected && user?.role === "ADMIN" ? (

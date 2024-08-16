@@ -11,12 +11,26 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const { body } = req;
+    try {
+      const id =
+        req.body.data.envelopeSummary.recipients.signers[0].tabs.textTabs.find(
+          (tab: any) => tab.tabLabel === "LoanID"
+        ).value;
+      const updatedLoan = await prisma.loan.update({
+        where: {
+          id: Number(id),
+        },
+        data: {
+          pending: false,
+        },
+      });
+
+      res.status(200).json(updatedLoan);
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
 
     // Ensure the body is typed correctly
-    const { envelopeId, status }: DocusignWebhookRequest = body;
-
-    console.log(envelopeId, status);
 
     // Verify the request (you may want to add HMAC verification here)
 

@@ -137,14 +137,27 @@ const Dashboard: React.FC<ChildPageProps> = ({
     }
   };
 
-  const addAddress = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const addAddress = async (e: FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   try {
+  //     const response = await axios.post("/api/wallet", {
+  //       walletAddress: addressToValidate,
+  //     });
+  //     window.alert("Address successfully verified!");
+  //     setAddressToValidate("");
+  //   } catch (error) {
+  //     console.error("Error creating address: ", error);
+  //   }
+  // };
+
+  const approveUser = async (walletAddress: string) => {
     try {
-      const response = await axios.post("/api/wallet", {
-        walletAddress: addressToValidate,
+      const response = await axios.put(`/api/user/${walletAddress}`, {
+        approved: true,
       });
-      window.alert("Address successfully verified!");
-      setAddressToValidate("");
+      window.alert("User approved!");
+
+      //send email to user saying they are approved
     } catch (error) {
       console.error("Error creating address: ", error);
     }
@@ -288,7 +301,7 @@ const Dashboard: React.FC<ChildPageProps> = ({
                 }`}
                 onClick={() => setSecondaryView("Unapproved Loans")}
               >
-                Unapproved Loans
+                Unsigned Loans
               </p>
               <p
                 className={`text-lg font-extralight border  rounded-2xl py-3 px-6 transition ${
@@ -579,13 +592,48 @@ const Dashboard: React.FC<ChildPageProps> = ({
                             ? "Google Account"
                             : user.walletAddress}
                         </td>
+                        <td></td>
                       </tr>
                     ))
                   : ""}
               </table>
             ) : (
               <div>
-                <form onSubmit={addAddress} className="mt-8 flex gap-4 w-full">
+                <table className="border border-grey-border text-white mt-8 text-xl py-4 w-full">
+                  <tr className="border-b border-grey-border uppercase">
+                    <td className="py-4 pl-4 pr-10">Name</td>
+                    <td className="py-4 pl-8 pr-10">Email</td>
+                    <td className="py-4 pl-8 pr-10">Wallet Address</td>
+                    <td className="py-4 pl-8 pr-10"></td>
+                  </tr>
+                  {users
+                    ? users
+                        .filter((user) => !user.approved)
+                        .map((user) => (
+                          <tr
+                            className={`${robotoMono.variable} font-roboto-mono uppercase border-b border-grey-border`}
+                          >
+                            <td className="py-4 pl-4 pr-20">{user.name}</td>
+
+                            <td className="py-4 pl-8 pr-20">{user.email}</td>
+                            <td className="py-4 pl-8 pr-20">
+                              {user.walletAddress === ""
+                                ? "Google Account"
+                                : user.walletAddress}
+                            </td>
+                            <td className="pr-4">
+                              <p
+                                className="cursor-pointer rounded-2xl px-4 py-2 border border-gold text-gold hover:text-dark-gold hover:border-dark-gold"
+                                onClick={() => approveUser(user.walletAddress)}
+                              >
+                                Approve
+                              </p>
+                            </td>
+                          </tr>
+                        ))
+                    : ""}
+                </table>
+                {/* <form onSubmit={addAddress} className="mt-8 flex gap-4 w-full">
                   <label className="flex flex-col text-lg w-full">
                     <input
                       type="text"
@@ -602,7 +650,7 @@ const Dashboard: React.FC<ChildPageProps> = ({
                   >
                     Verify Address
                   </button>
-                </form>
+                </form> */}
               </div>
             )}
           </div>

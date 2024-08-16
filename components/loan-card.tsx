@@ -237,11 +237,13 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
               Pending
             </p>
           ) : loan.funding ? (
-            <p className="text-gold text-xl">Funded</p>
+            <p className="text-gold text-xl font-roboto-mono">Funded</p>
           ) : loan.paid ? (
-            <p className="text-green-500 text-xl">Paid Off</p>
+            <p className="text-green-500 text-xl font-roboto-mono">Paid Off</p>
           ) : (
-            <p className="text-green-500 text-xl">Approved</p>
+            <p className="text-green-500 text-xl font-roboto-mono">
+              Ready To Fund
+            </p>
           )}
         </div>
 
@@ -309,7 +311,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
                     : user.investorType === "entity-all-accredited-investors"
                     ? "investor13"
                     : ""
-                }=x&State=${user.state}`
+                }=x&State=${user.state}&LoanID=${loan.id}`
               }
               className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
               target="_blank"

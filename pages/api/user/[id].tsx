@@ -22,13 +22,13 @@ export default async function handler(
       }
     } else if (id && id.indexOf("@") > -1) {
       try {
-        const users = await prisma.user.findMany({
+        const user = await prisma.user.findUnique({
           where: {
-            walletAddress: "",
+            walletAddress: String(id),
             email: String(id),
           },
         });
-        res.status(200).json({ user: users[0] });
+        res.status(200).json(user);
       } catch (error) {
         console.error("Error fetching user:", error);
         res.status(500).json({ error: "Internal server error" });

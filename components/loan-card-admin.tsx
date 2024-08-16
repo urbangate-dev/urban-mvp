@@ -100,25 +100,25 @@ export default function LoanCardAdmin({
     }
   };
 
-  const approveLoan = async () => {
-    try {
-      await axios.put(`/api/loan/${loan.id}`, {
-        ...loan,
-        pending: false,
-      });
-      setLoans(
-        loans.map((l) => (l.id === loan.id ? { ...l, pending: false } : l))
-      );
-      const props = {
-        name: user.name,
-        email: user.email,
-        address: property.address,
-      };
-      await axios.post("/api/email", props);
-    } catch (error) {
-      console.error("Error approving loan: ", error);
-    }
-  };
+  // const approveLoan = async () => {
+  //   try {
+  //     await axios.put(`/api/loan/${loan.id}`, {
+  //       ...loan,
+  //       pending: false,
+  //     });
+  //     setLoans(
+  //       loans.map((l) => (l.id === loan.id ? { ...l, pending: false } : l))
+  //     );
+  //     const props = {
+  //       name: user.name,
+  //       email: user.email,
+  //       address: property.address,
+  //     };
+  //     await axios.post("/api/email", props);
+  //   } catch (error) {
+  //     console.error("Error approving loan: ", error);
+  //   }
+  // };
 
   const deleteLoan = async () => {
     if (window.confirm("Are you sure you want to delete this loan?")) {
@@ -287,19 +287,20 @@ export default function LoanCardAdmin({
             <div className="flex gap-2">
               <p className="text-grey-text">Investor</p>
               <p className="text-grey-text">•</p>
-              <p>{user.name}</p>
+              <p>{user?.name}</p>
             </div>
           </div>
 
           <div className="flex gap-3 mt-3">
             {loan.pending ? (
-              <p
-                className={`text-lg font-extralight border border-green-500 rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-green-500 hover:text-green-400 hover:border-green-400 cursor-pointer`}
-                onClick={approveLoan}
-              >
-                Approve
-              </p>
-            ) : loan.funding && !loan.paid ? (
+              ""
+            ) : // <p
+            //   className={`text-lg font-extralight border border-green-500 rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-green-500 hover:text-green-400 hover:border-green-400 cursor-pointer`}
+            //   onClick={approveLoan}
+            // >
+            //   Approve
+            // </p>
+            loan.funding && !loan.paid ? (
               <p
                 className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
                 onClick={createPayment}

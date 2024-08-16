@@ -176,6 +176,7 @@ const CreateAccount: React.FC<ChildPageProps> = ({
         address,
         state,
         investor,
+        approved: false,
       });
       router.push("/");
     } catch (error) {
