@@ -6,6 +6,9 @@ export type User = {
   email: string;
   role: string;
   id: string;
+  state: string;
+  investorType: string;
+  approved: boolean;
 };
 
 export interface ChildPageProps {
@@ -29,6 +32,7 @@ export interface LoanCreateProps {
   pending: boolean;
   funding: boolean;
   paid: boolean;
+  address: string;
 }
 
 export interface Loan {
@@ -45,6 +49,7 @@ export interface Loan {
   pending: boolean;
   funding: boolean;
   paid: boolean;
+  address: string;
 }
 
 export interface Property {

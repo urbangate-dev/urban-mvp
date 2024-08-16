@@ -80,6 +80,54 @@ const Property: React.FC<ChildPageProps> = ({
   const [monthRows, setMonthRows] = useState<number[]>([]);
   const [monthRowsMinusOne, setMonthRowsMinusOne] = useState<number[]>([]);
   const [hasLoan, setHasLoan] = useState<boolean>(false);
+  const [loanID, setLoanID] = useState<string>("");
+  const [powerFormUrl, setPowerFormUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (loanID) {
+      generatePowerFormUrl();
+    }
+  }, [loanID]);
+
+  const generatePowerFormUrl = () => {
+    const url =
+      process.env.NEXT_PUBLIC_POWERFORM_URL +
+      `&Investor_UserName=${nameURL}&Investor_Email=${
+        user.email
+      }&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${
+        property.term
+      }&Year2=${year2}&Address=${formattedAddressFull}&${
+        user.investorType === "net-worth-over-1-million"
+          ? "investor1"
+          : user.investorType === "income-over-200k"
+          ? "investor2"
+          : user.investorType === "holds-licenses"
+          ? "investor3"
+          : user.investorType === "bank-or-institution"
+          ? "investor4"
+          : user.investorType === "registered-investment-adviser"
+          ? "investor5"
+          : user.investorType === "private-business-development-company"
+          ? "investor6"
+          : user.investorType === "rural-business-investment-company"
+          ? "investor7"
+          : user.investorType === "organization-over-5-million"
+          ? "investor8"
+          : user.investorType === "director-executive-officer"
+          ? "investor9"
+          : user.investorType === "trust-over-5-million"
+          ? "investor10"
+          : user.investorType === "family-office"
+          ? "investor11"
+          : user.investorType === "entity-over-5-million"
+          ? "investor12"
+          : user.investorType === "entity-all-accredited-investors"
+          ? "investor13"
+          : ""
+      }=x&State=${user.state}&LoanID=${loanID}`;
+
+    setPowerFormUrl(url);
+  };
 
   const nameURL = user.name.replace(/ /g, "%20");
   const today = new Date();
@@ -175,8 +223,11 @@ const Property: React.FC<ChildPageProps> = ({
         pending: true,
         funding: false,
         paid: false,
+        address: property.address,
       };
-      const response = axios.post("/api/loan", loan);
+      const response = await axios.post("/api/loan", loan);
+      console.log(response.data.id);
+      setLoanID(response.data.id);
       setDocusignVisible(true);
     } catch (error) {
       console.error("Error investing in property: ", error);
@@ -213,17 +264,18 @@ const Property: React.FC<ChildPageProps> = ({
         >
           Docusign
         </p>
-        <p className="text-grey-text text-center text-lg">
-          Please complete the Docusign below to begin investing!
+        <p className="text-grey-text text-center text-lg mx-20">
+          Please complete the Docusign below to begin investing! Once you
+          finish, please wait a couple of minutes before funding in your account
+          dashboard.
         </p>
         <div className="h-[80%] pt-2">
-          <iframe
-            src={
-              process.env.NEXT_PUBLIC_POWERFORM_URL +
-              `&Investor_UserName=${nameURL}&Investor_Email=${user.email}&Day1=${formattedDay}&Month1=${monthName}&Year1=${year}&Sum=${sum}&Yield=${yieldFormatted}&Date2=${dateBeforeMaturityFormatted}&Month2=${monthAfter}&MaturityDate=${formattedMaturityDate}&Term=${property.term}&Year2=${year2}&Address=${formattedAddressFull}`
-            }
-            className="w-[90%] mx-auto h-full"
-          ></iframe>
+          {powerFormUrl && (
+            <iframe
+              src={powerFormUrl}
+              className="w-[90%] mx-auto h-full"
+            ></iframe>
+          )}
         </div>
         <div className="flex my-4 gap-4 justify-center">
           <p
@@ -237,7 +289,7 @@ const Property: React.FC<ChildPageProps> = ({
             className={`text-xl text-gold border-gold px-6 py-3 rounded-xl border cursor-pointer text-center ${robotoMono.variable} uppercase font-roboto-mono hover:text-dark-gold hover:border-dark-gold transition`}
             onClick={() => router.push("/user/account")}
           >
-            Complete
+            Go To Dashboard
           </Link>
         </div>
       </div>
@@ -513,7 +565,10 @@ const Property: React.FC<ChildPageProps> = ({
                         Month
                       </td>
                       {monthRows.map((_, index) => (
-                        <th className="border border-grey-border p-3">
+                        <th
+                          key={index}
+                          className="border border-grey-border p-3"
+                        >
                           {index + 1}
                         </th>
                       ))}
@@ -523,7 +578,10 @@ const Property: React.FC<ChildPageProps> = ({
                         Monthly Interest Income
                       </td>
                       {monthRows.map((_, index) => (
-                        <td className="border border-grey-border p-3">
+                        <td
+                          key={index}
+                          className="border border-grey-border p-3"
+                        >
                           {formatCurrency(
                             Math.round(
                               (property.loanAmount / 12) *
@@ -538,7 +596,10 @@ const Property: React.FC<ChildPageProps> = ({
                         Extension Fee Income
                       </td>
                       {monthRowsMinusOne.map((_, index) => (
-                        <td className="border border-grey-border p-2"></td>
+                        <td
+                          key={index}
+                          className="border border-grey-border p-2"
+                        ></td>
                       ))}
                       <td className="border border-grey-border p-3">
                         {formatCurrency(
@@ -560,7 +621,10 @@ const Property: React.FC<ChildPageProps> = ({
                         Total Income
                       </td>
                       {monthRowsMinusOne.map((_, index) => (
-                        <td className="border border-grey-border p-3">
+                        <td
+                          key={index}
+                          className="border border-grey-border p-3"
+                        >
                           {formatCurrency(
                             Math.round(
                               (property.loanAmount / 12) *
@@ -601,8 +665,8 @@ const Property: React.FC<ChildPageProps> = ({
                         Invest Now
                       </p>
                     ) : (
-                      <p className="text-xl border px-6 py-3 rounded-md text-center mx-auto text-gray-400">
-                        Log In To Invest
+                      <p className="text-xl border border-grey-border px-6 py-3 rounded-md text-center mx-auto text-grey-text uppercase font-roboto-mono">
+                        Connect Wallet To Invest
                       </p>
                     )}
                     <p className="text-grey-text">

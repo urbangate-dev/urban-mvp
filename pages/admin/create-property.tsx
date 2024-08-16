@@ -500,8 +500,8 @@ const CreateProperty: React.FC<ChildPageProps> = ({
               ) : (
                 <div className="text-sm font-light mt-2 text-center">
                   <p>Uploaded:</p>
-                  {additional.map((name) => (
-                    <p>{truncateFileName(name)}</p>
+                  {additional.map((name, index) => (
+                    <p key={index}>{truncateFileName(name)}</p>
                   ))}
                 </div>
               )}

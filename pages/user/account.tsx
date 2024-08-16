@@ -163,9 +163,9 @@ const Account: React.FC<ChildPageProps> = ({
               className={`text-2xl text-white ${robotoMono.variable} font-roboto-mono`}
             >
               You currently have no loans. Start investing{" "}
-              <a className="text-gold" href="/">
+              <Link className="text-gold" href="/">
                 here!
-              </a>
+              </Link>
             </p>
           )}
         </div>

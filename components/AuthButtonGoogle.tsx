@@ -1,5 +1,6 @@
 import React from "react";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Google from "next-auth/providers/google";
 
 export default function AuthButtonGoogle() {
   const { data } = useSession();
@@ -20,7 +21,7 @@ export default function AuthButtonGoogle() {
   return (
     <div>
       <button
-        onClick={() => signIn()}
+        onClick={() => signIn("google")}
         className="text-gold border uppercase font-roboto-condensed text-xl border-gold rounded-lg px-4 py-2 hover:text-dark-gold hover:border-dark-gold transition"
       >
         Login with Google
