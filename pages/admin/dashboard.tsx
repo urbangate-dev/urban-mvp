@@ -420,9 +420,10 @@ const Dashboard: React.FC<ChildPageProps> = ({
                 <td className="py-4 pl-8 pr-10"></td>
               </tr>
               {currentPayments
-                ? currentPayments.map((payment) => (
+                ? currentPayments.map((payment, index) => (
                     <tr
                       className={`${robotoMono.variable} font-roboto-mono uppercase border-b border-grey-border`}
+                      key={index}
                     >
                       <td className="py-4 pl-4 pr-20">
                         <a
@@ -521,11 +522,12 @@ const Dashboard: React.FC<ChildPageProps> = ({
                 <div>
                   {properties
                     .filter((property) => !property.draft)
-                    .map((property) => (
+                    .map((property, index) => (
                       <PropertyCardAdmin
                         property={property}
                         deleteProperty={deleteProperty}
                         draft={property.draft}
+                        key={index}
                       />
                     ))}
                 </div>
@@ -539,11 +541,12 @@ const Dashboard: React.FC<ChildPageProps> = ({
                   <div className="flex flex-col gap-4 mt-4">
                     {properties
                       .filter((property) => property.draft)
-                      .map((property) => (
+                      .map((property, index) => (
                         <PropertyCardAdmin
                           property={property}
                           deleteProperty={deleteProperty}
                           draft={property.draft}
+                          key={index}
                         />
                       ))}
                   </div>
@@ -580,9 +583,10 @@ const Dashboard: React.FC<ChildPageProps> = ({
                   <td className="py-4 pl-8 pr-10">Wallet Address</td>
                 </tr>
                 {users
-                  ? users.map((user) => (
+                  ? users.map((user, index) => (
                       <tr
                         className={`${robotoMono.variable} font-roboto-mono uppercase border-b border-grey-border`}
+                        key={index}
                       >
                         <td className="py-4 pl-4 pr-20">{user.name}</td>
 
@@ -609,9 +613,10 @@ const Dashboard: React.FC<ChildPageProps> = ({
                   {users
                     ? users
                         .filter((user) => !user.approved)
-                        .map((user) => (
+                        .map((user, index) => (
                           <tr
                             className={`${robotoMono.variable} font-roboto-mono uppercase border-b border-grey-border`}
+                            key={index}
                           >
                             <td className="py-4 pl-4 pr-20">{user.name}</td>
 
