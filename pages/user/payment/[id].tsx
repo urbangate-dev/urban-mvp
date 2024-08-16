@@ -49,6 +49,7 @@ const Account: React.FC<ChildPageProps> = ({
     pending: false,
     funding: false,
     paid: false,
+    address: "",
   });
   const [property, setProperty] = useState<string>("");
   const [payments, setPayments] = useState<Payment[]>([]);
