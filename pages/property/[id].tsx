@@ -565,7 +565,10 @@ const Property: React.FC<ChildPageProps> = ({
                         Month
                       </td>
                       {monthRows.map((_, index) => (
-                        <th className="border border-grey-border p-3">
+                        <th
+                          key={index}
+                          className="border border-grey-border p-3"
+                        >
                           {index + 1}
                         </th>
                       ))}
@@ -575,7 +578,10 @@ const Property: React.FC<ChildPageProps> = ({
                         Monthly Interest Income
                       </td>
                       {monthRows.map((_, index) => (
-                        <td className="border border-grey-border p-3">
+                        <td
+                          key={index}
+                          className="border border-grey-border p-3"
+                        >
                           {formatCurrency(
                             Math.round(
                               (property.loanAmount / 12) *
@@ -590,7 +596,10 @@ const Property: React.FC<ChildPageProps> = ({
                         Extension Fee Income
                       </td>
                       {monthRowsMinusOne.map((_, index) => (
-                        <td className="border border-grey-border p-2"></td>
+                        <td
+                          key={index}
+                          className="border border-grey-border p-2"
+                        ></td>
                       ))}
                       <td className="border border-grey-border p-3">
                         {formatCurrency(
@@ -612,7 +621,10 @@ const Property: React.FC<ChildPageProps> = ({
                         Total Income
                       </td>
                       {monthRowsMinusOne.map((_, index) => (
-                        <td className="border border-grey-border p-3">
+                        <td
+                          key={index}
+                          className="border border-grey-border p-3"
+                        >
                           {formatCurrency(
                             Math.round(
                               (property.loanAmount / 12) *

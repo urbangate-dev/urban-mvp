@@ -158,8 +158,8 @@ const Account: React.FC<ChildPageProps> = ({
                 <td className="py-4 pl-8 pr-20">Status</td>
               </tr>
               {payments
-                ? payments.map((payment) => (
-                    <tr>
+                ? payments.map((payment, index) => (
+                    <tr key={index}>
                       <td className="py-4 pl-4 pr-20">{payment.id}</td>
                       <td className="py-4 pl-8 pr-20">{payment.paymentDate}</td>
                       <td className="py-4 pl-8 pr-20">
