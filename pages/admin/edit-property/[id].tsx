@@ -331,26 +331,6 @@ const EditProperty: React.FC<ChildPageProps> = ({
                 className="border border-grey-border bg-grey-input text-grey-text rounded-md p-5 font-light placeholder:text-grey-text outline-dark-gold text-xl"
               />
             </label>
-            <label className="flex flex-col text-lg">
-              <input
-                type="number"
-                name="rehabBudget"
-                value={formData.rehabBudget === 0 ? "" : formData.term}
-                onChange={handleChange}
-                placeholder="Rehab Budget ($)"
-                className="border border-grey-border bg-grey-input text-grey-text rounded-md p-5 font-light placeholder:text-grey-text outline-dark-gold text-xl"
-              />
-            </label>
-            <label className="flex flex-col text-lg">
-              <input
-                type="text"
-                name="exitStrategy"
-                value={formData.exitStrategy}
-                onChange={handleChange}
-                placeholder="Exit Strategy"
-                className="border border-grey-border bg-grey-input text-grey-text rounded-md p-5 font-light placeholder:text-grey-text outline-dark-gold text-xl"
-              />
-            </label>
           </div>
 
           <label className="flex flex-col text-lg mt-4">
