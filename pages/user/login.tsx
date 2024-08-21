@@ -74,7 +74,7 @@ const Login: React.FC<ChildPageProps> = ({
             className="text-white text-4xl uppercase font-roboto-condensed"
             style={{ fontVariant: "all-small-caps" }}
           >
-            Apply to be a lending investor
+            Apply to invest in our loan offerings
           </p>
           <p className="text-grey-text text-center">
             If you want to become an investor for our private loans, please fill
