@@ -2,45 +2,34 @@ export const abi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "yieldPercent",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "dueTime",
-				"type": "uint256"
-			}
-		],
-		"name": "createLoanRequest",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "loanId",
-				"type": "uint256"
-			}
-		],
-		"name": "fundLoan",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
 				"internalType": "address",
 				"name": "_usdcToken",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "year",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "month",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "day",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "hour",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "minute",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "nonpayable",
@@ -69,25 +58,6 @@ export const abi = [
 			}
 		],
 		"name": "InterestPaymentMade",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "bool",
-				"name": "status",
-				"type": "bool"
-			}
-		],
-		"name": "KYCStatusChanged",
 		"type": "event"
 	},
 	{
@@ -182,13 +152,221 @@ export const abi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "loanId",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "timeAdded",
 				"type": "uint256"
 			}
 		],
-		"name": "payInterest",
+		"name": "addTime",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "admin",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "baseDate",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "year",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "month",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "day",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "hour",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "minute",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "second",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "blocktime",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "yieldPercent",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "dueTime",
+				"type": "uint256"
+			}
+		],
+		"name": "createLoanRequest",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "currentTime",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "year1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "month1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "day1",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "year2",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "month2",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "day2",
+				"type": "uint256"
+			}
+		],
+		"name": "dateDifference",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "monthsDiff",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "daysDiff",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "year",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "month",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "day",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "hour",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minute",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "second",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "blocktime",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct LendingPlatform.Date",
+				"name": "date",
+				"type": "tuple"
+			}
+		],
+		"name": "dateToTimestamp",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -197,55 +375,16 @@ export const abi = [
 				"internalType": "uint256",
 				"name": "loanId",
 				"type": "uint256"
-			}
-		],
-		"name": "payoffLoan",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
 			},
 			{
-				"internalType": "bool",
-				"name": "status",
-				"type": "bool"
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
 			}
 		],
-		"name": "setKYCStatus",
+		"name": "fundLoan",
 		"outputs": [],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "newAdmin",
-				"type": "address"
-			}
-		],
-		"name": "updateAdmin",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "admin",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -275,45 +414,56 @@ export const abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "interestInterval",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "KYCVerified",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "lateFeePercentage",
-		"outputs": [
-			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "index",
 				"type": "uint256"
+			}
+		],
+		"name": "getLoanCurrentDate",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "year",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "month",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "day",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "hour",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minute",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "second",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "blocktime",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct LendingPlatform.Date",
+				"name": "",
+				"type": "tuple"
 			}
 		],
 		"stateMutability": "view",
@@ -336,6 +486,118 @@ export const abi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
+				"name": "loanIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "loanDate",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "year",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "month",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "day",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "hour",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minute",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "second",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "blocktime",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct LendingPlatform.Date",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			}
+		],
+		"name": "loanDueDate",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "year",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "month",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "day",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "hour",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minute",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "second",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "blocktime",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct LendingPlatform.Date",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
 			}
@@ -344,12 +606,12 @@ export const abi = [
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "id",
+				"name": "amount",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "amount",
+				"name": "paidAmount",
 				"type": "uint256"
 			},
 			{
@@ -363,32 +625,104 @@ export const abi = [
 				"type": "uint256"
 			},
 			{
-				"internalType": "bool",
-				"name": "isFunded",
-				"type": "bool"
-			},
-			{
-				"internalType": "bool",
-				"name": "isPaid",
-				"type": "bool"
-			},
-			{
-				"internalType": "address",
-				"name": "investor",
-				"type": "address"
-			},
-			{
 				"internalType": "uint256",
-				"name": "loanDate",
+				"name": "offset",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "paidInterest",
+				"name": "clientIndex",
 				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "offset",
+		"outputs": [
+			{
+				"internalType": "int256",
+				"name": "",
+				"type": "int256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "loanId",
+				"type": "uint256"
+			}
+		],
+		"name": "payInterest",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "loanId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "bufferPeriod",
+				"type": "uint256"
+			}
+		],
+		"name": "payOffLoanAmount",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "payableAdmin",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "loanId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "bufferPeriod",
+				"type": "uint256"
+			}
+		],
+		"name": "payoffLoan",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -402,6 +736,121 @@ export const abi = [
 			}
 		],
 		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "timestampToDate",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "year",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "month",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "day",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "hour",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "minute",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "second",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "blocktime",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct LendingPlatform.Date",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newAdmin",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "status",
+				"type": "bool"
+			}
+		],
+		"name": "updateAdmin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "dueDate",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "yieldPercent",
+				"type": "uint256"
+			}
+		],
+		"name": "updateLoan",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "newAdmin",
+				"type": "address"
+			}
+		],
+		"name": "updatePayableAdmin",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{

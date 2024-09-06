@@ -63,7 +63,7 @@ export default function PropertyCardAdmin({
           <div className="flex gap-2">
             <p className="text-grey-text">Annual Return</p>
             <p className="text-grey-text">•</p>
-            <p>10%</p>
+            <p>{property.yieldPercent}%</p>
           </div>
           <div className="flex gap-2">
             <p className="text-grey-text">Maturity Date</p>

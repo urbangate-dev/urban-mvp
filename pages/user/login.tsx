@@ -2,8 +2,8 @@ import { FormEvent, useState, useEffect, ChangeEvent } from "react";
 import axios from "axios";
 import { ChildPageProps } from "@/utils/props";
 import AuthButtonGoogle from "@/components/AuthButtonGoogle";
-import { ConnectKitButton } from "connectkit";
-
+import { useSIWE, SIWESession } from "connectkit";
+import CustomSIWEButton from "@/components/siweButton"
 interface FormData {
   name: string;
   email: string;
@@ -27,6 +27,8 @@ const Login: React.FC<ChildPageProps> = ({
     message: "",
   });
 
+  const { data: siweData, isSignedIn, signOut, signIn } = useSIWE();
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -44,7 +46,7 @@ const Login: React.FC<ChildPageProps> = ({
   };
 
   useEffect(() => {
-    if (data?.user || isConnected) {
+    if (data?.user || isConnected && isSignedIn) {
       router.push("/");
     }
   });
@@ -66,7 +68,7 @@ const Login: React.FC<ChildPageProps> = ({
           </p>
           <AuthButtonGoogle />
           <p className="text-grey-text text-lg">OR</p>
-          <ConnectKitButton label="Login with Wallet" theme="midnight" />
+          <CustomSIWEButton />
         </div>
 
         <div className="p-8 flex flex-col gap-4 items-center">

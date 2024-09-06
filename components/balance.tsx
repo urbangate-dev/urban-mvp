@@ -10,7 +10,7 @@ export function Balance() {
   const { data, error, isRefetching, refetch, isLoading, isSuccess } =
     useReadContract({
       abi: abi,
-      address: "0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28",
+      address: process.env.NEXT_PUBLIC_ERC20_ADDRESS as unknown as `0x${string}`,
       functionName: "balanceOf",
       args: [address],
     });
@@ -42,7 +42,7 @@ export function Balance() {
         {isLoading && <p>Loading balance...</p>}
         {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
         {balance !== null && !isLoading && !error && (
-          <p>Balance: {formatCurrency(parseFloat(balance))}</p>
+          <p>Balance: {formatCurrency(parseFloat(balance)/1000000)}</p>
         )}
       </button>
     </>
