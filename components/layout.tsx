@@ -204,7 +204,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   >
                     My Account
                   </Link>
-                  {/* <Balance /> */}
+                  <Balance />
                 </>
               ) : (
                 ""
@@ -259,9 +259,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Link>
               <Link href="/faq">FAQ</Link>
               {isConnected && user?.role === "ADMIN" ? (
+                <>
                 <Link href="/admin/dashboard" className="">
                   Admin Dashboard
                 </Link>
+                </>
               ) : (
                 ""
               )}

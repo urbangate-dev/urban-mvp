@@ -7,10 +7,10 @@ import { UploadButton } from "../../utils/uploadthing";
 import { truncateFileName } from "../../utils/functions";
 import { useWriteContract, useAccount, useReadContract } from "wagmi";
 import { abi } from "../../abi/loan";
-import { time } from "console";
 import { FaArrowLeft } from "react-icons/fa";
 import localFont from "@next/font/local";
-
+import { waitForTransactionReceipt,readContract } from '@wagmi/core';
+import {config} from '../../utils/config'
 const robotoCondensed = localFont({
   src: [
     {
@@ -85,63 +85,9 @@ const CreateProperty: React.FC<ChildPageProps> = ({
     });
   };
 
-  const {
-    data: hash,
-    writeContract,
-    isPending,
-    isSuccess,
-    isError,
-  } = useWriteContract();
-  const {
-    data,
-    error,
-    isRefetching,
-    refetch,
-    isLoading,
-    isSuccess: success,
-  } = useReadContract({
-    abi: abi,
-    address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
-    functionName: "loanCounter",
-  });
+  const {writeContractAsync: writeFundLoan} = useWriteContract();
   const [propertyId, setPropertyId] = useState<string | null>(null);
-  const handleRefetch = async () => {
-    if (success) {
-      await refetch();
-      if (data) {
-        console.log("PropertyIndex: ", data);
-        return String(data);
-      }
-    }
-  };
-  useEffect(() => {
-    if (isSuccess) {
-      console.log("Contract written successfully.", hash);
-      router.push("/admin/dashboard");
-    }
-  }, [isSuccess, hash, router]);
 
-  useEffect(() => {
-    const deleteProperty = async () => {
-      if (isError && propertyId) {
-        console.error("Error writing contract");
-
-        try {
-          await axios.delete(`/api/property/${propertyId}`);
-          console.log(
-            "Property deletion successful due to contract write failure."
-          );
-        } catch (deleteError) {
-          console.error(
-            "Error deleting property after contract write failure: ",
-            deleteError
-          );
-        }
-      }
-    };
-
-    deleteProperty();
-  }, [isError, propertyId]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -150,43 +96,42 @@ const CreateProperty: React.FC<ChildPageProps> = ({
 
     const currentTime = Math.floor(Date.now() / 1000);
     const secondsUntilMaturity = dueTime - currentTime;
-
     try {
-      const propertyIndex = await handleRefetch();
-      const response = await axios.post("/api/property", {
-        ...formData,
-        draft: false,
-        propertyIndex: propertyIndex,
-      });
-      console.log("API response for property creation:", response.data);
-      console.log(response.data.property);
-      setPropertyId(response.data.property.id);
-      console.log("Created property ID:", propertyId);
-
-      try {
-        await writeContract({
-          abi,
-          address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
+        const hash = await writeFundLoan({
+          abi,  
+          address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as unknown as `0x${string}`,
           functionName: "createLoanRequest",
-          args: [loanAmount, yieldPercent, secondsUntilMaturity],
+          args: [BigInt(loanAmount * 1000000), BigInt(yieldPercent*1000), BigInt(secondsUntilMaturity)],
         });
-      } catch (contractError) {
-        console.error("Error writing contract: ", contractError);
-
-        try {
-          await axios.delete(`/api/property/${propertyId}`);
-          console.log(
-            "Property deletion successful due to contract write failure."
-          );
-        } catch (deleteError) {
-          console.error(
-            "Error deleting property after contract write failure: ",
-            deleteError
-          );
+        console.log("hash-"+hash);
+        const transactionReceipt = await waitForTransactionReceipt(config, {
+          hash: hash,
+        })
+        console.log(transactionReceipt);
+        if(transactionReceipt.status == "success"){
+          const propertyIndex = await readContract(config, {
+            abi: abi,
+            address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as unknown as `0x${string}`,
+            functionName: "loanCounter",
+          });
+          console.log(Number(propertyIndex));
+          const response = await axios.post("/api/property", {
+            ...formData,
+            draft: false,
+            propertyIndex: String(Number(propertyIndex)-1),
+          });
+          console.log("API response for property creation:", response.data);
+          console.log(response.data.property);
+          setPropertyId(response.data.property.id);
+          console.log("Created property ID:", propertyId);
+          router.push("/admin/dashboard");
         }
-      }
-    } catch (error) {
+
+      } catch (error) {
+        
       console.error("Error creating property: ", error);
+      router.push("/admin/dashboard");
+
     }
   };
 

@@ -7,12 +7,14 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import PropertyImage from "../public/testproperty.jpeg";
 import { formatCurrency, formatDate, parseDate } from "@/utils/functions";
-
+import { waitForTransactionReceipt, readContract } from '@wagmi/core'
 import { useWriteContract } from "wagmi";
 import { abi } from "../abi/loan";
 import { abi as erc20abi } from "../abi/erc20";
 import localFont from "@next/font/local";
 import { Payment } from "@prisma/client";
+import {config} from '../utils/config'
+import { buffer } from "stream/consumers";
 
 const robotoMono = localFont({
   src: [
@@ -79,7 +81,7 @@ export default function LoanCardAdmin({
     name: "",
     email: "",
   });
-
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const parsedMaturityDate = parseDate(property.maturityDate);
 
   const fetchProperty = async () => {
@@ -100,25 +102,6 @@ export default function LoanCardAdmin({
     }
   };
 
-  // const approveLoan = async () => {
-  //   try {
-  //     await axios.put(`/api/loan/${loan.id}`, {
-  //       ...loan,
-  //       pending: false,
-  //     });
-  //     setLoans(
-  //       loans.map((l) => (l.id === loan.id ? { ...l, pending: false } : l))
-  //     );
-  //     const props = {
-  //       name: user.name,
-  //       email: user.email,
-  //       address: property.address,
-  //     };
-  //     await axios.post("/api/email", props);
-  //   } catch (error) {
-  //     console.error("Error approving loan: ", error);
-  //   }
-  // };
 
   const deleteLoan = async () => {
     if (window.confirm("Are you sure you want to delete this loan?")) {
@@ -130,127 +113,132 @@ export default function LoanCardAdmin({
       }
     }
   };
-  const delay = (ms: number): Promise<void> =>
-    new Promise((resolve) => setTimeout(resolve, ms));
 
-  const { writeContractAsync } = useWriteContract({
-    mutation: {
-      onSuccess: async (data) => {
-        try {
-          const payment: PaymentCreateProps = {
-            balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
-            paymentDate: defaultDate,
-            loanId: loan.id,
-            status: "Paid",
-            tx: data,
-          };
-          const response = await axios.post("/api/payment", payment);
-          addPayment(response.data);
-        } catch (error) {
-          console.error("Error creating payment: ", error);
-        }
-      },
-      onError: (error) => {
-        console.error("FundLoan transaction failed:", error);
-      },
-    },
-  });
-  const { writeContractAsync: writeApprove } = useWriteContract({
-    mutation: {
-      onSuccess: async (data) => {
-        try {
-          await delay(6000);
-          await writeContractAsync({
-            abi,
-            address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
-            functionName: "payInterest",
-            args: [parseInt(property.propertyIndex)],
-          });
-          console.log("FundLoan transaction successful");
-        } catch (error) {
-          console.error("FundLoan transaction failed:", error);
-        }
-      },
-      onError: (error) => {
-        console.error("Approve transaction failed:", error);
-      },
-    },
-  });
-
-  const createPayment = async () => {
-    try {
-      const roundedValue = Math.round(
-        (property.loanAmount / 12) * (property.yieldPercent / 100)
-      );
-
-      await writeApprove({
-        abi: erc20abi,
-        address: "0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28",
-        functionName: "approve",
-        args: ["0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E", roundedValue],
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const { writeContractAsync: writeFullPay } = useWriteContract({
-    mutation: {
-      onSuccess: async (data) => {
-        try {
-          await axios.put(`/api/loan/${loan.id}`, {
-            ...loan,
-            paid: true,
-          });
-          setLoans(
-            loans.map((l) => (l.id === loan.id ? { ...l, paid: true } : l))
-          );
-        } catch (error) {
-          console.error("Error paying loan in full: ", loan);
-        }
-      },
-      onError: (error) => {
-        console.error("FundLoan transaction failed:", error);
-      },
-    },
-  });
-  const { writeContractAsync: writeApprovePay } = useWriteContract({
-    mutation: {
-      onSuccess: async (data) => {
-        try {
-          await delay(6000);
-          await writeFullPay({
-            abi,
-            address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
-            functionName: "payoffLoan",
-            args: [parseInt(property.propertyIndex)],
-          });
-          console.log("FundLoan transaction successful");
-        } catch (error) {
-          console.error("FundLoan transaction failed:", error);
-        }
-      },
-      onError: (error) => {
-        console.error("Approve transaction failed:", error);
-      },
-    },
-  });
-
-  const payLoanInFull = async () => {
-    if (window.confirm("Are you sure you want to pay this loan in full?")) {
+    const { writeContractAsync: writeApprove } = useWriteContract();
+    const { writeContractAsync: writeInterest } = useWriteContract();
+    const createPayment = async () => {
       try {
-        const amount = Math.round(property.loanAmount * 2.0075);
-        await writeApprovePay({
+        const hashApprove = await writeApprove({
           abi: erc20abi,
-          address: "0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28",
+          address: process.env.NEXT_PUBLIC_ERC20_ADDRESS as `0x${string}`,
           functionName: "approve",
-          args: ["0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E", amount],
+          args: [
+            process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+            BigInt(Math.ceil(Number(property.loanAmount*property.yieldPercent * 1000000/12))),
+          ],
         });
+        const transactionReceipt = await waitForTransactionReceipt(config, {
+          hash: hashApprove,
+        })
+        console.log(transactionReceipt);
+        if(transactionReceipt.status == "success"){
+          const hashFund = await writeInterest({
+              abi,
+              address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+              functionName: "payInterest",
+              args: [BigInt(property.propertyIndex)],
+            });
+            const transactionReceiptFund = await waitForTransactionReceipt(config, {
+              hash: hashFund,
+            })
+            console.log(transactionReceipt);
+            if(transactionReceiptFund.status == "success"){
+              try {
+                const payment: PaymentCreateProps = {
+                  balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
+                  paymentDate: defaultDate,
+                  loanId: loan.id,
+                  status: "Paid",
+                  tx: hashFund,
+                };
+                const response = await axios.post("/api/payment", payment);
+                addPayment(response.data);
+              } catch (error) {
+                console.error("Error creating payment: ", error);
+              }
+            }else{
+              console.log(hashFund + "- Interest Reverted");
+            }
+        }
+        else{
+          console.log(hashApprove + "- Aproval Reverted")
+        }
       } catch (error) {
         console.error(error);
+        alert("Error initiating fund loan. Check console for details.");
       }
-    }
-  };
+    };
+
+
+    const { writeContractAsync: writeApproveFull } = useWriteContract();
+    const { writeContractAsync: writeFullLoan } = useWriteContract();
+    const [bufferDays, setBufferDays] = useState<number>(0);
+  
+    const payLoanInFull = async () => {
+      setIsModalOpen(false);
+      try {
+        const amountDue = await readContract(config, {
+          abi,
+          address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+          functionName: "payOffLoanAmount",
+          args: [BigInt(property.propertyIndex), BigInt(bufferDays)]
+        })as bigint;
+
+        if (window.confirm(`Are you sure you want to pay this loan in full? (${Number(amountDue) / 1_000_000})`)) {
+          const approveFullHash = await writeApproveFull({
+            abi: erc20abi,
+            address: process.env.NEXT_PUBLIC_ERC20_ADDRESS as `0x${string}`,
+            functionName: "approve",
+            args: [
+              process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+              amountDue,
+            ],
+          });
+  
+          const transactionReceipt = await waitForTransactionReceipt(config, {
+            hash: approveFullHash,
+          });
+  
+          console.log(transactionReceipt);
+  
+          if (transactionReceipt.status === "success") {
+            const hashFullFund = await writeFullLoan({
+              abi,
+              address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+              functionName: "payoffLoan",
+              args: [BigInt(property.propertyIndex), BigInt(bufferDays)],
+            });
+  
+            const transactionReceiptFund = await waitForTransactionReceipt(config, {
+              hash: hashFullFund,
+            });
+  
+            console.log(transactionReceiptFund);
+  
+            if (transactionReceiptFund.status === "success") {
+              try {
+                await axios.put(`/api/loan/${loan.id}`, {
+                  ...loan,
+                  paid: true,
+                });
+                setLoans(
+                  loans.map((l) => (l.id === loan.id ? { ...l, paid: true } : l))
+                );
+              } catch (error) {
+                console.error("Error paying loan in full: ", error);
+              }
+            } else {
+              console.log(hashFullFund + "- Interest Reverted");
+            }
+          } else {
+            console.log(approveFullHash + "- Approval Reverted");
+          }
+        }
+      } catch (error) {
+        console.log("error - " + error);
+      }
+    };
+
   useEffect(() => {
     fetchProperty();
     fetchUser();
@@ -277,7 +265,7 @@ export default function LoanCardAdmin({
             <div className="flex gap-2">
               <p className="text-grey-text">Annual Return</p>
               <p className="text-grey-text">•</p>
-              <p>10%</p>
+              <p>{property.yieldPercent}%</p>
             </div>
             <div className="flex gap-2">
               <p className="text-grey-text">Maturity Date</p>
@@ -313,7 +301,7 @@ export default function LoanCardAdmin({
             {loan.funding && !loan.paid ? (
               <p
                 className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
-                onClick={payLoanInFull}
+                onClick={() => setIsModalOpen(true)}
               >
                 Pay Loan
               </p>
@@ -336,6 +324,7 @@ export default function LoanCardAdmin({
           </div>
         </div>
       </div>
+      
       {visible ? (
         <div className="mt-2">
           <div className="flex gap-6">
@@ -355,6 +344,38 @@ export default function LoanCardAdmin({
       ) : (
         <div></div>
       )}
+{isModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+    <div className="bg-black border border-gold p-8 rounded-lg shadow-lg max-w-md w-full">
+      <h2 className="text-2xl font-light mb-6 text-gold uppercase" style={{ fontVariant: "all-small-caps" }}>
+        Number of Buffer Days (max is 15)
+      </h2>
+      <input
+        type="number"
+        value={bufferDays}
+        onChange={(e) => setBufferDays(Number(e.target.value))}
+        placeholder="Enter buffer days"
+        min="0"
+        max="15"
+        className="w-full px-4 py-3 mb-6 text-white bg-grey-input border border-grey-border rounded-md placeholder-grey-text focus:outline-none focus:border-dark-gold"
+      />
+      <div className="flex justify-end space-x-4">
+        <button
+          onClick={() => setIsModalOpen(false)}
+          className={`px-6 py-2 border border-gold rounded-full transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold`}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={payLoanInFull}
+          className={`px-6 py-2 bg-gold border border-gold rounded-full transition ${robotoMono.variable} font-roboto-mono uppercase text-black hover:bg-dark-gold hover:border-dark-gold`}
+        >
+          Pay Off Loan
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 }

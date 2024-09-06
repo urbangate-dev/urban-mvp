@@ -5,6 +5,7 @@ import { Loan, PaymentCreateProps, User } from "@/utils/props";
 import { Property as Prop } from "@/utils/props";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import {config} from '../utils/config'
 import {
   formatCurrency,
   formatDate,
@@ -12,6 +13,7 @@ import {
   getPreviousDateByMonths,
   parseDate,
 } from "../utils/functions";
+import { waitForTransactionReceipt } from '@wagmi/core'
 
 import { useWriteContract } from "wagmi";
 import { abi } from "../abi/loan";
@@ -118,7 +120,6 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     " " +
     property.zip;
   const formattedAddressFull = addressFull.replace(/ /g, "%20");
-
   const fetchProperty = async () => {
     try {
       const response = await axios.get(`/api/property/${loan.propertyId}`);
@@ -132,73 +133,76 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     fetchProperty();
   }, []);
 
-  const delay = (ms: number): Promise<void> =>
-    new Promise((resolve) => setTimeout(resolve, ms));
 
-  const { writeContractAsync } = useWriteContract({
-    mutation: {
-      onSuccess: async (data) => {
-        try {
-          const response = await axios.put(`/api/loan/${loan.id}`, {
-            ...loan,
-            funding: true,
-          });
-          updateLoan(response.data.loan);
-          console.log("Transaction successful");
-        } catch (error) {
-          console.error("Updating loan failed:", error);
-        }
-      },
-      onError: (error) => {
-        console.error("FundLoan transaction failed:", error);
-      },
-    },
-  });
-  const { writeContractAsync: writeApprove } = useWriteContract({
-    mutation: {
-      onSuccess: async (data) => {
-        try {
-          await delay(6000);
-          await writeContractAsync({
-            abi,
-            address: "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
-            functionName: "fundLoan",
-            args: [parseInt(property.propertyIndex)],
-          });
-          console.log("FundLoan transaction successful");
-        } catch (error) {
-          console.error("FundLoan transaction failed:", error);
-        }
-      },
-      onError: (error) => {
-        console.error("Approve transaction failed:", error);
-      },
-    },
-  });
+  const [amount, setAmount] = useState('');
+  const { writeContractAsync: writeApprove } = useWriteContract();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { writeContractAsync } = useWriteContract();
+
 
   const fundLoan = async () => {
     try {
-      await writeApprove({
+      const hashApprove = await writeApprove({
         abi: erc20abi,
-        address: "0x1bD42dd90F5256fb0E62CCdAfDa27c25Dc190c28",
+        address: process.env.NEXT_PUBLIC_ERC20_ADDRESS as `0x${string}`,
         functionName: "approve",
         args: [
-          "0xEEA1072eC78fA23BE2A9F9058d68CF969F97A23E",
-          property.loanAmount,
+          process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+          BigInt(Number(amount) * 1000000),
         ],
       });
-      const payment: PaymentCreateProps = {
-        balance: -property.loanAmount,
-        paymentDate: defaultDate,
-        loanId: loan.id,
-        status: "Funded",
-        tx: "",
-      };
-      const response = await axios.post("/api/payment", payment);
+      const transactionReceipt = await waitForTransactionReceipt(config, {
+        hash: hashApprove,
+      })
+      console.log(transactionReceipt);
+      if(transactionReceipt.status == "success"){
+        const hashFund = await writeContractAsync({
+            abi,
+            address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+            functionName: "fundLoan",
+            args: [BigInt(property.propertyIndex), BigInt(Number(amount) * 1000000)],
+          });
+          const transactionReceiptFund = await waitForTransactionReceipt(config, {
+            hash: hashFund,
+          })
+          console.log(transactionReceipt);
+          if(transactionReceiptFund.status == "success"){
+            console.log(hashFund + "- Funding Success");
+            try {
+              const payment: PaymentCreateProps = {
+                balance: -property.loanAmount,
+                paymentDate: defaultDate,
+                loanId: loan.id,
+                status: "Funded",
+                tx: "",
+              };
+              const responsePayment = await axios.post("/api/payment", payment);
+              const responseLoan = await axios.put(`/api/loan/${loan.id}`, {
+                ...loan,
+                funding: true,
+              });
+              updateLoan(responseLoan.data.loan);
+              console.log("Transaction successful");
+            } catch (error) {
+              console.error("Updating loan failed:", error);
+            }
+          }else{
+            console.log(hashFund + "- Funding Reverted");
+          }
+      }
+      else{
+        console.log(hashApprove + "- Aproval Reverted")
+      }
     } catch (error) {
       console.error(error);
+      alert("Error initiating fund loan. Check console for details.");
     }
+    setIsModalOpen(false);
   };
+
+
+
 
   return (
     <div className="p-5 text-white border border-grey-border gap-6 flex">
@@ -258,7 +262,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           <div className="flex gap-2">
             <p className="text-grey-text">Annual Return</p>
             <p className="text-grey-text">•</p>
-            <p>10%</p>
+            <p>{property.yieldPercent}%</p>
           </div>
           <div className="flex gap-2">
             <p className="text-grey-text">Maturity Date</p>
@@ -327,11 +331,39 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
             </Link>
           ) : (
             <p
-              onClick={fundLoan}
+              onClick={() => setIsModalOpen(true)}
               className={`text-lg font-extralight border border-white rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-white hover:text-gray-200 hover:border-gray-200 cursor-pointer`}
             >
               Fund Now
             </p>
+          )}
+          {isModalOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
+              <div className="bg-black border border-gold p-8 rounded-lg shadow-lg max-w-md w-full">
+                <h2 className="text-2xl font-light mb-6 text-gold uppercase" style={{ fontVariant: "all-small-caps" }}>Fund Loan</h2>
+                <input
+                  type="text"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter amount"
+                  className="w-full px-4 py-3 mb-6 text-white bg-grey-input border border-grey-border rounded-md placeholder-grey-text focus:outline-none focus:border-dark-gold"
+                />
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={() => setIsModalOpen(false)}
+                    className={`px-6 py-2 border border-gold rounded-full transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold`}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={fundLoan}
+                    className={`px-6 py-2 bg-gold border border-gold rounded-full transition ${robotoMono.variable} font-roboto-mono uppercase text-black hover:bg-dark-gold hover:border-dark-gold`}
+                  >
+                    Fund Loan
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
           {/* {loan.pending ? (
             <p className="text-2xl font-extralight text-red-500 cursor-pointer">
