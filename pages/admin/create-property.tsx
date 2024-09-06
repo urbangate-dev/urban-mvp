@@ -96,6 +96,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
 
     const currentTime = Math.floor(Date.now() / 1000);
     const secondsUntilMaturity = dueTime - currentTime;
+    alert(secondsUntilMaturity+ " " + yieldPercent + " " + loanAmount);
     try {
         const hash = await writeFundLoan({
           abi,  
