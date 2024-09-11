@@ -16,6 +16,11 @@ export default async function handler(
         req.body.data.envelopeSummary.recipients.signers[0].tabs.textTabs.find(
           (tab: any) => tab.tabLabel === "LoanID"
         ).value;
+      console.log(
+        req.body.data.envelopeSummary.recipients.signers[0].tabs.textTabs.find(
+          (tab: any) => tab.tabLabel === "LoanID"
+        ).value
+      );
       const updatedLoan = await prisma.loan.update({
         where: {
           id: Number(id),
