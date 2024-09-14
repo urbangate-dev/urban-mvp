@@ -68,6 +68,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     thumbnail: "",
     additional: [],
     propertyIndex: "",
+    remainingAmount: 0,
   });
 
   const nameURL = user.name.replace(/ /g, "%20");
@@ -143,6 +144,10 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
 
   const fundLoan = async () => {
     try {
+      if(property.remainingAmount < Number(amount)){
+        alert("amount too high" + property.remainingAmount)
+      }
+      else{
       const hashApprove = await writeApprove({
         abi: erc20abi,
         address: process.env.NEXT_PUBLIC_ERC20_ADDRESS as `0x${string}`,
@@ -171,16 +176,21 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
             console.log(hashFund + "- Funding Success");
             try {
               const payment: PaymentCreateProps = {
-                balance: -property.loanAmount,
+                balance: -amount,
                 paymentDate: defaultDate,
                 loanId: loan.id,
                 status: "Funded",
                 tx: "",
               };
+              const responseProperty = await axios.put(`/api/property/${property.id}` , {
+                ...property,
+                remainingAmount: property.remainingAmount - Number(amount)
+              })
               const responsePayment = await axios.post("/api/payment", payment);
               const responseLoan = await axios.put(`/api/loan/${loan.id}`, {
                 ...loan,
                 funding: true,
+                loanAmount: Number(amount),
               });
               updateLoan(responseLoan.data.loan);
               console.log("Transaction successful");
@@ -194,11 +204,14 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
       else{
         console.log(hashApprove + "- Aproval Reverted")
       }
+    }
     } catch (error) {
       console.error(error);
       alert("Error initiating fund loan. Check console for details.");
     }
+    
     setIsModalOpen(false);
+    
   };
 
 
@@ -254,11 +267,21 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
         <div
           className={`flex gap-x-4 mt-2 ${robotoMono.variable} font-roboto-mono text-xl flex-wrap gap-y-1`}
         >
-          <div className="flex gap-2">
-            <p className="text-grey-text">Loan</p>
+          {loan.funding ? (
+            <div className="flex gap-2">
+              <p className="text-grey-text">Loan</p>
+              <p className="text-grey-text">•</p>
+              <p>{formatCurrency(loan.loanAmount)}</p>
+            </div>
+          ):
+          (
+            <div className="flex gap-2">
+            <p className="text-grey-text">Remaining Amount</p>
             <p className="text-grey-text">•</p>
-            <p>{formatCurrency(loan.loanAmount)}</p>
-          </div>
+            <p>{formatCurrency(property.remainingAmount)}</p>
+            </div>
+          )}
+
           <div className="flex gap-2">
             <p className="text-grey-text">Annual Return</p>
             <p className="text-grey-text">•</p>
@@ -329,10 +352,16 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
             >
               Payment History
             </Link>
+          ) :property.remainingAmount == 0 ? (
+            <p
+              className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-gray-200 hover:border-gray-200 cursor-pointer`}
+            >
+              Loan Expired
+            </p>
           ) : (
             <p
               onClick={() => setIsModalOpen(true)}
-              className={`text-lg font-extralight border border-white rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-white hover:text-gray-200 hover:border-gray-200 cursor-pointer`}
+              className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-gray-200 hover:border-gray-200 cursor-pointer`}
             >
               Fund Now
             </p>

@@ -55,8 +55,9 @@ model Property {
     thumbnail                String
     additional               String[]
     propertyIndex            String?
+    remainingAmount          Int?
 }
-
+// use npx prisma db push
 // Define the data model for the Loan
 model Loan {
     id              Int       @id @default(autoincrement())

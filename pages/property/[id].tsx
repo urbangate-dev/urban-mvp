@@ -75,6 +75,7 @@ const Property: React.FC<ChildPageProps> = ({
     thumbnail: "",
     additional: [],
     propertyIndex: "",
+    remainingAmount: 0,
   });
   const [exists, setExists] = useState(false);
   const [monthRows, setMonthRows] = useState<number[]>([]);
@@ -82,7 +83,7 @@ const Property: React.FC<ChildPageProps> = ({
   const [hasLoan, setHasLoan] = useState<boolean>(false);
   const [loanID, setLoanID] = useState<string>("");
   const [powerFormUrl, setPowerFormUrl] = useState<string | null>(null);
-
+  const [amountRemaining, setAmountRemaining] = useState<number>(0);
   useEffect(() => {
     if (loanID) {
       generatePowerFormUrl();
@@ -201,6 +202,7 @@ const Property: React.FC<ChildPageProps> = ({
           setProperty(response.data.property);
           setMonthRows(generateArray(response.data.property.term + 1));
           setMonthRowsMinusOne(generateArray(response.data.property.term));
+          setAmountRemaining(response.data.property.remainingAmount);
         }
         checkLoan(response.data.property.id);
       } catch (error) {
@@ -411,6 +413,10 @@ const Property: React.FC<ChildPageProps> = ({
                     {property.address}, {property.city}, {property.state}{" "}
                     {property.zip}
                   </p>
+                  <p className="text-xl">
+                      <span className="text-grey-text">Available Balance: </span>
+                      {formatCurrency(property.remainingAmount)}{" "}
+                    </p>
                   <div
                     className={`mt-4 flex gap-4 ${robotoMono.variable} font-roboto-mono`}
                   >
@@ -428,6 +434,7 @@ const Property: React.FC<ChildPageProps> = ({
                       {formatNumberWithCommas(property.sqft)}{" "}
                       <span className="text-grey-text">SQFT</span>
                     </p>
+
                   </div>
                 </div>
 
@@ -651,7 +658,7 @@ const Property: React.FC<ChildPageProps> = ({
               <div className="border-r border-grey-border border-b">
                 <div className=" mt-16 sticky top-[10rem]">
                   <div className="flex justify-center mt-4 flex-col items-center gap-2">
-                    {hasLoan ? (
+                    {(amountRemaining == 0) ? (
                       <p
                         className={`text-xl text-grey-text border-grey-text px-6 py-3 rounded-xl border text-center mx-auto ${robotoMono.variable} uppercase font-roboto-mono`}
                       >

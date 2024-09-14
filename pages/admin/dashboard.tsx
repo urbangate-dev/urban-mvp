@@ -9,7 +9,7 @@ import { PiBankBold } from "react-icons/pi";
 import { FaPiggyBank } from "react-icons/fa6";
 import { formatCurrency } from "@/utils/functions";
 import { MdDeleteOutline } from "react-icons/md";
-import localFont from "@next/font/local";
+ import localFont from "@next/font/local";
 import { Payment, User } from "@prisma/client";
 
 const robotoCondensed = localFont({

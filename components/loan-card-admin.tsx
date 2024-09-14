@@ -75,6 +75,7 @@ export default function LoanCardAdmin({
     thumbnail: "",
     additional: [],
     propertyIndex: "",
+    remainingAmount: 0,
   });
   const [visible, setVisible] = useState<boolean>(false);
   const [user, setUser] = useState<User>({
@@ -182,7 +183,7 @@ export default function LoanCardAdmin({
           address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
           functionName: "payOffLoanAmount",
           args: [BigInt(property.propertyIndex), BigInt(bufferDays)]
-        });
+        }) as bigint;
 
         if (window.confirm(`Are you sure you want to pay this loan in full? (${Number(amountDue) / 1_000_000})`)) {
           const approveFullHash = await writeApproveFull({
@@ -191,7 +192,7 @@ export default function LoanCardAdmin({
             functionName: "approve",
             args: [
               process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
-              BigInt(amountDue),
+              amountDue,
             ],
           });
   
