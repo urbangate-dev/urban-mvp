@@ -56,6 +56,7 @@ model Property {
     additional               String[]
     propertyIndex            String?
     remainingAmount          Int?
+    paid                     Boolean?
 }
 // use npx prisma db push
 // Define the data model for the Loan
@@ -79,6 +80,7 @@ model Loan {
     funding         Boolean
     paid            Boolean
     propertyAddress String    @default("")
+
 }
 
 model Payment {

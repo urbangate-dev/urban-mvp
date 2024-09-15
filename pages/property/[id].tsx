@@ -76,6 +76,7 @@ const Property: React.FC<ChildPageProps> = ({
     additional: [],
     propertyIndex: "",
     remainingAmount: 0,
+    paid: false,
   });
   const [exists, setExists] = useState(false);
   const [monthRows, setMonthRows] = useState<number[]>([]);

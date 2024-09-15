@@ -45,6 +45,7 @@ export default async function handler(
       additional,
       propertyIndex,
       remainingAmount,
+      paid,
     } = req.body;
 
     const parsedBathroom = parseInt(bathroom, 10);
@@ -91,6 +92,7 @@ export default async function handler(
           additional,
           propertyIndex,
           remainingAmount,
+          paid,
         },
       });
       // console.log("Property created:", createdProperty);

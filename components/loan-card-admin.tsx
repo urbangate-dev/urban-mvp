@@ -76,6 +76,7 @@ export default function LoanCardAdmin({
     additional: [],
     propertyIndex: "",
     remainingAmount: 0,
+    paid: false,
   });
   const [visible, setVisible] = useState<boolean>(false);
   const [user, setUser] = useState<User>({

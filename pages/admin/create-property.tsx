@@ -58,6 +58,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
     additional: [],
     propertyIndex: "",
     remainingAmount: 0,
+    paid: false,
   });
   const [thumbnail, setThumbnail] = useState<string>("");
   const [additional, setAdditional] = useState<string[]>([]);
@@ -137,6 +138,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             ...formData,
             draft: false,
             propertyIndex: String(Number(propertyIndex)-1),
+            paid: false,
           });
           console.log("API response for property creation:", response.data);
           console.log(response.data.property);

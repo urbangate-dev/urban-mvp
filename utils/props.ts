@@ -83,6 +83,7 @@ export interface Property {
   additional: string[];
   propertyIndex: string;
   remainingAmount: number;
+  paid: boolean;
 }
 
 export interface PropertyWithoutId {
@@ -115,6 +116,7 @@ export interface PropertyWithoutId {
   additional: string[];
   propertyIndex: string;
   remainingAmount: number;
+  paid: boolean;
 }
 
 export interface PaymentCreateProps {
