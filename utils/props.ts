@@ -82,6 +82,8 @@ export interface Property {
   thumbnail: string;
   additional: string[];
   propertyIndex: string;
+  remainingAmount: number;
+  paid: boolean;
 }
 
 export interface PropertyWithoutId {
@@ -113,6 +115,8 @@ export interface PropertyWithoutId {
   thumbnail: string;
   additional: string[];
   propertyIndex: string;
+  remainingAmount: number;
+  paid: boolean;
 }
 
 export interface PaymentCreateProps {

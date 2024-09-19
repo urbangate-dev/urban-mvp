@@ -54,6 +54,8 @@ const EditProperty: React.FC<ChildPageProps> = ({
     thumbnail: "",
     additional: [],
     propertyIndex: "",
+    remainingAmount: 0,
+    paid: false,
   });
   const [thumbnail, setThumbnail] = useState<string>("");
   const [additional, setAdditional] = useState<string[]>([]);
