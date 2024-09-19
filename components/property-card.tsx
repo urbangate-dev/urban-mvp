@@ -47,13 +47,29 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           </Link>
           <div>
             <div className="border border-gold h-2 rounded-full">
-              <div className={`bg-gold opacity-50 w-[${50}%] h-full`}></div>
+              <div
+                className="bg-gold opacity-50 h-full"
+                style={{
+                  width: `${Math.round(
+                    ((property.loanAmount - property.remainingAmount) /
+                      property.loanAmount) *
+                      100
+                  )}%`,
+                }}
+              ></div>
             </div>
             <p
               className="text-right text-gold font-light my-2"
               style={{ fontVariant: "all-small-caps" }}
             >
-              50% Funded
+              {formatCurrency(property.remainingAmount)} Remaining
+            </p>
+            <p className="text-white">
+              {Math.round(
+                ((property.loanAmount - property.remainingAmount) /
+                  property.loanAmount) *
+                  100
+              )}
             </p>
           </div>
 
