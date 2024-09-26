@@ -14,7 +14,7 @@ import {
   parseDate,
 } from "../utils/functions";
 import { waitForTransactionReceipt } from '@wagmi/core'
-
+import LoadingModal from "./loadingModal";
 import { useWriteContract } from "wagmi";
 import { abi } from "../abi/loan";
 import { abi as erc20abi } from "../abi/erc20";
@@ -130,7 +130,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
       console.error("Error fetching property: ", error);
     }
   };
-
+  const [isTransacting, setIsTreansacting] = useState<boolean>(false);
   useEffect(() => {
     fetchProperty();
   }, []);
@@ -144,6 +144,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
 
 
   const fundLoan = async () => {
+    setIsTreansacting(true);
     try {
       if(property.remainingAmount < Number(amount)){
         alert("amount too high" + property.remainingAmount)
@@ -210,7 +211,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
       console.error(error);
       alert("Error initiating fund loan. Check console for details.");
     }
-    
+    setIsTreansacting(false);
     setIsModalOpen(false);
     
   };
@@ -404,6 +405,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           )} */}
         </div>
       </div>
+      <LoadingModal isLoading={isTransacting} />
     </div>
   );
 }

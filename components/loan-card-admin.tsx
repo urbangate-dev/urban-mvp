@@ -149,9 +149,12 @@ export default function LoanCardAdmin({
         const transactionReceiptFund = await waitForTransactionReceipt(config, {
           hash: hashFund,
         });
-        console.log(transactionReceipt);
         if (transactionReceiptFund.status == "success") {
           try {
+            for (const relatedLoan of loans) {
+              console.log(relatedLoan.id);
+              console.log("hi");
+            }
             const payment: PaymentCreateProps = {
               balance:
                 (property.loanAmount / 12) * (property.yieldPercent / 100),

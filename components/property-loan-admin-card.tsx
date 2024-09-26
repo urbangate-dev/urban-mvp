@@ -11,7 +11,7 @@ import axios from "axios";
 import { Payment } from "@prisma/client";
 import { config } from '../utils/config'
 import localFont from "@next/font/local";
-
+import LoadingModal from './loadingModal';
 const robotoMono = localFont({
   src: [
     {
@@ -53,7 +53,7 @@ export default function PropertyLoanCardAdmin({
   const [propertyLoans, setPropertyLoans] = useState<Loan[]>([]);
   const [users, setUsers] = useState<{[key: string]: User}>({});
   const [amountsDue, setAmountsDue] = useState(0);
-
+  const [isTransacting, setIsTreansacting] = useState<boolean>(false);
   const { writeContractAsync: writeApprove } = useWriteContract();
   const { writeContractAsync: writeInterest } = useWriteContract();
   const { writeContractAsync: writeApproveFull } = useWriteContract();
@@ -97,6 +97,7 @@ export default function PropertyLoanCardAdmin({
 
   const createPayment = async () => {
     setIsInterestModalOpen(false);
+    setIsTreansacting(true);
     try {
       const hashApprove = await writeApprove({
         abi: erc20abi,
@@ -124,17 +125,26 @@ export default function PropertyLoanCardAdmin({
           console.log(transactionReceiptFund);
           if(transactionReceiptFund.status == "success"){
             try {
-              const payment: PaymentCreateProps = {
-                balance: (property.loanAmount / 12) * (property.yieldPercent / 100),
-                paymentDate: defaultDate,
-                loanId: property.id,
-                status: "Paid",
-                tx: hashFund,
-              };
-              console.log(payment);
-              const response = await axios.post("/api/payment", payment);
-              addPayment(response.data);
-              alert("Interest payment successful!");
+              const relatedLoans = loans.filter(loan => loan.propertyId === property.id);
+
+              for (const relatedLoan of relatedLoans) {
+                console.log(relatedLoan.id);
+                console.log("Processing loan:", relatedLoan.id);
+
+                const payment: PaymentCreateProps = {
+                  balance: relatedLoan.loanAmount/12 * (property.yieldPercent / 100),
+                  paymentDate: defaultDate,
+                  loanId: relatedLoan.id,  // Use the current loan's ID
+                  status: "Paid",
+                  tx: hashFund,
+                };
+
+                console.log("Creating payment:", payment);
+
+                const response = await axios.post("/api/payment", payment);
+                addPayment(response.data);
+                console.log("Payment added for loan:", relatedLoan.id);
+              }
             } catch (error) {
               console.error("Error creating payment: ", error);
               alert("Error creating payment record. Please contact support.");
@@ -152,9 +162,11 @@ export default function PropertyLoanCardAdmin({
       console.error(error);
       alert("Error initiating interest payment. Please try again.");
     }
+    setIsTreansacting(false);
   };
 
   const payLoanInFull = async () => {
+    setIsTreansacting(true);
     try {
       setIsPaymentModalOpen(false);
   
@@ -192,7 +204,7 @@ export default function PropertyLoanCardAdmin({
           const transactionReceiptFund = await waitForTransactionReceipt(config, {
             hash: hashFullFund,
           });
-  
+          console.log(transactionReceiptFund);
           if (transactionReceiptFund.status === "success") {
             try {
               const updateData = { paid: true };
@@ -207,6 +219,16 @@ export default function PropertyLoanCardAdmin({
               for (const loan of propertyLoans) {
                 const loanResponse = await axios.put(`/api/loan/${loan.id}`, updateData);
                 console.log(`Loan ${loan.id} update response:`, loanResponse.data);
+                const payment: PaymentCreateProps = {
+                  balance: loan.loanAmount*Number(amountDue)/1000000/(property.loanAmount-property.remainingAmount),
+                  paymentDate: defaultDate,
+                  loanId: loan.id,  // Use the current loan's ID
+                  status: "Paid",
+                  tx: hashFullFund,
+                };
+                console.log(payment);
+                const response = await axios.post("/api/payment", payment);
+                addPayment(response.data);
               }
               setPropertyLoans(prevLoans =>
                 prevLoans.map(loan => ({ ...loan, paid: true }))
@@ -230,6 +252,7 @@ export default function PropertyLoanCardAdmin({
       console.error("Error in payLoanInFull:", error);
       alert(`An error occurred while processing the payment: ${error}`);
     }
+    setIsTreansacting(false);
   };
 
   return (
@@ -422,6 +445,7 @@ export default function PropertyLoanCardAdmin({
           </div>
         </div>
       )}
+      <LoadingModal isLoading={isTransacting} />
     </div>
   );
 }

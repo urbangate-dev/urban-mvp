@@ -11,6 +11,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import localFont from "@next/font/local";
 import { waitForTransactionReceipt,readContract } from '@wagmi/core';
 import {config} from '../../utils/config'
+import LoadingModal from "@/components/loadingModal";
 const robotoCondensed = localFont({
   src: [
     {
@@ -62,7 +63,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
   });
   const [thumbnail, setThumbnail] = useState<string>("");
   const [additional, setAdditional] = useState<string[]>([]);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -110,6 +111,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
 
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     e.preventDefault();
     const { loanAmount, yieldPercent, maturityDate, remainingAmount } = formData;
     const dueTime = Math.floor(new Date(maturityDate).getTime() / 1000);
@@ -153,6 +155,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
       router.push("/admin/dashboard");
 
     }
+    setIsLoading(false);
   };
 
   const saveDraft = async () => {
@@ -529,6 +532,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
           </button>
         </div>
       </form>
+      <LoadingModal isLoading={isLoading} />
     </div>
   );
 };
