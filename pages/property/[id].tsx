@@ -250,6 +250,13 @@ const Property: React.FC<ChildPageProps> = ({
     }
   };
 
+  const finish = () => {
+    window.alert(
+      "It takes a couple of minutes for us to process your DocuSign. Please wait a couple of minutes before refreshing and investing!"
+    );
+    router.push("/user/account");
+  };
+
   return (
     <div className="relative">
       <div
@@ -290,7 +297,7 @@ const Property: React.FC<ChildPageProps> = ({
           <Link
             href={"/user/account"}
             className={`text-xl text-gold border-gold px-6 py-3 rounded-xl border cursor-pointer text-center ${robotoMono.variable} uppercase font-roboto-mono hover:text-dark-gold hover:border-dark-gold transition`}
-            onClick={() => router.push("/user/account")}
+            onClick={finish}
           >
             Go To Dashboard
           </Link>

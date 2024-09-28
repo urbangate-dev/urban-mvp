@@ -5,7 +5,7 @@ import { Loan, PaymentCreateProps, User } from "@/utils/props";
 import { Property as Prop } from "@/utils/props";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {config} from '../utils/config'
+import { config } from "../utils/config";
 import {
   formatCurrency,
   formatDate,
@@ -135,13 +135,11 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     fetchProperty();
   }, []);
 
-
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
   const { writeContractAsync: writeApprove } = useWriteContract();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { writeContractAsync } = useWriteContract();
-
 
   const fundLoan = async () => {
     setIsTreansacting(true);
@@ -161,9 +159,9 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
       });
       const transactionReceipt = await waitForTransactionReceipt(config, {
         hash: hashApprove,
-      })
+      });
       console.log(transactionReceipt);
-      if(transactionReceipt.status == "success"){
+      if (transactionReceipt.status == "success") {
         const hashFund = await writeContractAsync({
             abi,
             address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
@@ -202,9 +200,11 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           }else{
             console.log(hashFund + "- Funding Reverted");
           }
-      }
-      else{
-        console.log(hashApprove + "- Aproval Reverted")
+        } else {
+          console.log(hashFund + "- Funding Reverted");
+        }
+      } else {
+        console.log(hashApprove + "- Aproval Reverted");
       }
     }
     } catch (error) {
@@ -215,9 +215,6 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
     setIsModalOpen(false);
     
   };
-
-
-
 
   return (
     <div className="p-5 text-white border border-grey-border gap-6 flex">
@@ -344,6 +341,11 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
               }
               className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
               target="_blank"
+              onClick={() =>
+                window.alert(
+                  "After completing the DocuSign, please wait a couple of minutes before refreshing your page and investing!"
+                )
+              }
             >
               Docusign Link
             </a>
@@ -371,7 +373,12 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           {isModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
               <div className="bg-black border border-gold p-8 rounded-lg shadow-lg max-w-md w-full">
-                <h2 className="text-2xl font-light mb-6 text-gold uppercase" style={{ fontVariant: "all-small-caps" }}>Fund Loan</h2>
+                <h2
+                  className="text-2xl font-light mb-6 text-gold uppercase"
+                  style={{ fontVariant: "all-small-caps" }}
+                >
+                  Fund Loan
+                </h2>
                 <input
                   type="text"
                   value={amount}
