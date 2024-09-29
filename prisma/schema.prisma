@@ -1,98 +1,97 @@
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider  = "postgresql"
-    url       = env("POSTGRES_PRISMA_URL")
-    directUrl = env("POSTGRES_URL_NON_POOLING")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
-// Define the data model for the User
 model User {
-    id            Int      @id @default(autoincrement())
-    createdAt     DateTime @default(now())
-    name          String
-    email         String   @unique
-    walletAddress String   @unique
-    role          String
-    loans         Loan[]   @relation("userLoans")
-    state         String
-    investorType  String
-    approved      Boolean  @default(false)
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  name          String
+  email         String   @unique
+  walletAddress String   @unique
+  role          String
+  investorType  String
+  state         String
+  approved      Boolean  @default(false)
+  loans         Loan[]   @relation("userLoans")
 }
 
-// Define the data model for the Property
 model Property {
-    id                       Int      @id @default(autoincrement())
-    createdAt                DateTime @default(now())
-    address                  String
-    dealDescription          String
-    propertyDescription      String
-    city                     String
-    state                    String
-    zip                      String
-    propertyType             String
-    bathroom                 Int
-    bedroom                  Int
-    sqft                     Int
-    loanAsIsValue            Float
-    loanARVValue             Float
-    loanToCostValue          Float
-    loanAmount               Float
-    yieldPercent             Float
-    maturityDate             String
-    term                     Int
-    borrower                 String
-    rehabBudget              Float
-    exitStrategy             String
-    borrowerExperience       String
-    borrowerNumberOfDeals    Int
-    borrowerDescription      String
-    investorPresentationLink String
-    draft                    Boolean
-    loans                    Loan[]   @relation("propertyLoans")
-    thumbnail                String
-    additional               String[]
-    propertyIndex            String?
+  id                       Int      @id @default(autoincrement())
+  createdAt                DateTime @default(now())
+  address                  String
+  dealDescription          String
+  propertyDescription      String
+  city                     String
+  state                    String
+  zip                      String
+  propertyType             String
+  bathroom                 Int
+  bedroom                  Int
+  sqft                     Int
+  loanAsIsValue            Float
+  loanARVValue             Float
+  loanToCostValue          Float
+  loanAmount               Float
+  yieldPercent             Float
+  maturityDate             String
+  borrower                 String
+  rehabBudget              Float
+  exitStrategy             String
+  borrowerExperience       String
+  borrowerNumberOfDeals    Int
+  borrowerDescription      String
+  investorPresentationLink String
+  draft                    Boolean
+  term                     Int
+  additional               String[]
+  thumbnail                String
+  propertyIndex            String?
+  remainingAmount          Int?
+  paid                     Boolean?
+  loans                    Loan[]   @relation("propertyLoans")
 }
 
-// Define the data model for the Loan
 model Loan {
-    id              Int       @id @default(autoincrement())
-    loanIndex       String?
-    createdAt       DateTime  @default(now())
-    loanAmount      Float
-    loanToARV       Float     @map("ARV")
-    loanToAsIs      Float     @map("as_is")
-    loanToCost      Float     @map("to_cost")
-    term            Int
-    returnValue     Float
-    property        Property? @relation("propertyLoans", fields: [propertyId], references: [id])
-    propertyId      Int?      @map("property") // Foreign key reference to Property
-    user            User?     @relation("userLoans", fields: [userId], references: [id])
-    userId          Int?      @map("user") // Foreign key reference to User
-    walletAddress   String?
-    pending         Boolean
-    payments        Payment[] @relation("payments")
-    funding         Boolean
-    paid            Boolean
-    propertyAddress String    @default("")
+  id              Int       @id @default(autoincrement())
+  createdAt       DateTime  @default(now())
+  loanAmount      Float
+  loanToARV       Float     @map("ARV")
+  loanToAsIs      Float     @map("as_is")
+  loanToCost      Float     @map("to_cost")
+  term            Int
+  propertyId      Int?      @map("property")
+  userId          Int?      @map("user")
+  returnValue     Float
+  pending         Boolean
+  walletAddress   String?
+  loanIndex       String?
+  funding         Boolean
+  paid            Boolean
+  propertyAddress String    @default("")
+  property        Property? @relation("propertyLoans", fields: [propertyId], references: [id])
+  user            User?     @relation("userLoans", fields: [userId], references: [id])
+  payments        Payment[] @relation("payments")
 }
 
 model Payment {
-    id           Int      @id @default(autoincrement())
-    createdAt    DateTime @default(now())
-    balance      Int
-    paymentIndex String?
-    paymentDate  String
-    Loan         Loan?    @relation("payments", fields: [loanId], references: [id])
-    loanId       Int?
-    status       String
-    tx           String
+  id           Int      @id @default(autoincrement())
+  createdAt    DateTime @default(now())
+  balance      Int
+  paymentDate  String
+  loanId       Int?
+  paymentIndex String?
+  status       String
+  tx           String
+  Loan         Loan?    @relation("payments", fields: [loanId], references: [id])
 }
 
 model WalletAddress {
-    id      Int    @id @default(autoincrement())
-    address String @unique
+  id      Int    @id @default(autoincrement())
+  address String @unique
 }

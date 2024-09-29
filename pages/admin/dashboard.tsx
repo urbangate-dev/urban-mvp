@@ -9,8 +9,9 @@ import { PiBankBold } from "react-icons/pi";
 import { FaPiggyBank } from "react-icons/fa6";
 import { formatCurrency } from "@/utils/functions";
 import { MdDeleteOutline } from "react-icons/md";
-import localFont from "@next/font/local";
+ import localFont from "@next/font/local";
 import { Payment, User } from "@prisma/client";
+import PropertyLoanCardAdmin from "@/components/property-loan-admin-card";
 
 const robotoCondensed = localFont({
   src: [
@@ -282,13 +283,13 @@ const Dashboard: React.FC<ChildPageProps> = ({
                 className={`text-lg font-extralight border  rounded-2xl py-3 px-6 transition ${
                   robotoMono.variable
                 } font-roboto-mono uppercase hover:text-dark-gold hover:border-dark-gold cursor-pointer ${
-                  secondaryView === "Loans in Funding"
+                  secondaryView === "Properties in Funding"
                     ? "border-gold text-gold"
                     : "border-grey-text text-grey-text"
                 }`}
-                onClick={() => setSecondaryView("Loans in Funding")}
+                onClick={() => setSecondaryView("Properties in Funding")}
               >
-                Loans in Funding
+                Properties in Funding
               </p>
               <p
                 className={`text-lg font-extralight border  rounded-2xl py-3 px-6 transition ${
@@ -328,20 +329,29 @@ const Dashboard: React.FC<ChildPageProps> = ({
               </p>
             </div>
             <div className="mb-12 mt-16">
-              {secondaryView === "Loans in Funding" ? (
+              {secondaryView === "Properties in Funding" ? (
                 <div>
-                  {loans
+                  {properties
                     .filter(
-                      (loan) => !loan.pending && loan.funding && !loan.paid
+                      (property) => property.remainingAmount != property.loanAmount && !property.paid
                     )
-                    .map((loan) => (
-                      <LoanCardAdmin
-                        key={loan.id}
-                        loan={loan}
-                        loans={loans}
-                        setLoans={setLoans}
-                        addPayment={addPayment}
-                      />
+                    .map((property) => (
+                      // <LoanCardAdmin
+                      //   key={loan.id}
+                      //   loan={loan}
+                      //   loans={loans}
+                      //   setLoans={setLoans}
+                      //   addPayment={addPayment}
+                      // />
+                      <PropertyLoanCardAdmin
+                      key={property.id}
+                      property={property}
+                      deleteProperty={deleteProperty}
+                      addPayment={addPayment}
+                      loans={loans}
+                      setProperties={setProperties}
+                      properties={properties}
+                    />
                     ))}
                 </div>
               ) : (

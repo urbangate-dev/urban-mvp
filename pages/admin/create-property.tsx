@@ -5,12 +5,13 @@ import Link from "next/link";
 import { PropertyWithoutId as Property } from "@/utils/props";
 import { UploadButton } from "../../utils/uploadthing";
 import { truncateFileName } from "../../utils/functions";
-import { useWriteContract, useAccount, useReadContract } from "wagmi";
+import { useWriteContract } from "wagmi";
 import { abi } from "../../abi/loan";
 import { FaArrowLeft } from "react-icons/fa";
 import localFont from "@next/font/local";
 import { waitForTransactionReceipt,readContract } from '@wagmi/core';
 import {config} from '../../utils/config'
+import LoadingModal from "@/components/loadingModal";
 const robotoCondensed = localFont({
   src: [
     {
@@ -57,31 +58,51 @@ const CreateProperty: React.FC<ChildPageProps> = ({
     thumbnail: "",
     additional: [],
     propertyIndex: "",
+    remainingAmount: 0,
+    paid: false,
   });
   const [thumbnail, setThumbnail] = useState<string>("");
   const [additional, setAdditional] = useState<string[]>([]);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    const parsedValue =
-      name === "bedroom" ||
-      name === "sqft" ||
-      name === "bathroom" ||
-      name === "loanAsIsValue" ||
-      name === "loanAmount" ||
-      name === "yieldPercent" ||
-      name === "loanARVValue" ||
-      name === "loanToCostValue" ||
-      name === "term"
-        ? Number.isNaN(parseInt(value, 10))
-          ? 0
-          : parseInt(value, 10)
-        : value;
-    setFormData({
-      ...formData,
-      [name]: parsedValue,
+  
+    const numericFields = [
+      "bedroom",
+      "sqft",
+      "bathroom",
+      "loanAsIsValue",
+      "loanAmount",
+      "yieldPercent",
+      "loanARVValue",
+      "loanToCostValue",
+      "term"
+    ];
+  
+    let parsedValue: string | number;
+  
+    if (numericFields.includes(name)) {
+      const intValue = parseInt(value, 10);
+      parsedValue = Number.isNaN(intValue) ? 0 : intValue;
+    } else {
+      parsedValue = value;
+    }
+  
+    setFormData(prevFormData => {
+      if (name === "loanAmount") {
+        return {
+          ...prevFormData,
+          loanAmount: Number(parsedValue),
+          remainingAmount: Number(parsedValue),
+        };
+      } else {
+        return {
+          ...prevFormData,
+          [name]: parsedValue,
+        };
+      }
     });
   };
 
@@ -90,10 +111,11 @@ const CreateProperty: React.FC<ChildPageProps> = ({
 
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     e.preventDefault();
-    const { loanAmount, yieldPercent, maturityDate } = formData;
+    const { loanAmount, yieldPercent, maturityDate, remainingAmount } = formData;
     const dueTime = Math.floor(new Date(maturityDate).getTime() / 1000);
-
+    console.log(remainingAmount);
     const currentTime = Math.floor(Date.now() / 1000);
     const secondsUntilMaturity = dueTime - currentTime;
     alert(secondsUntilMaturity+ " " + yieldPercent + " " + loanAmount);
@@ -115,11 +137,11 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as unknown as `0x${string}`,
             functionName: "loanCounter",
           });
-          console.log(Number(propertyIndex));
           const response = await axios.post("/api/property", {
             ...formData,
             draft: false,
             propertyIndex: String(Number(propertyIndex)-1),
+            paid: false,
           });
           console.log("API response for property creation:", response.data);
           console.log(response.data.property);
@@ -134,6 +156,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
       router.push("/admin/dashboard");
 
     }
+    setIsLoading(false);
   };
 
   const saveDraft = async () => {
@@ -510,6 +533,7 @@ const CreateProperty: React.FC<ChildPageProps> = ({
           </button>
         </div>
       </form>
+      <LoadingModal isLoading={isLoading} />
     </div>
   );
 };

@@ -48,6 +48,7 @@ const Home: React.FC<ChildPageProps> = ({
     try {
       const response = await axios.get("/api/property");
       setProperties(response.data.properties);
+      console.log(response.data.properties);
     } catch (error) {
       console.error("Error fetching properties: ", error);
     }
