@@ -13,7 +13,7 @@ import {
   getPreviousDateByMonths,
   parseDate,
 } from "../utils/functions";
-import { waitForTransactionReceipt } from '@wagmi/core'
+import { waitForTransactionReceipt } from "@wagmi/core";
 import LoadingModal from "./loadingModal";
 import { useWriteContract } from "wagmi";
 import { abi } from "../abi/loan";
@@ -144,36 +144,49 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
   const fundLoan = async () => {
     setIsTreansacting(true);
     try {
-      if(property.remainingAmount < Number(amount)){
-        alert("amount too high" + property.remainingAmount)
-      }
-      else{
-      const hashApprove = await writeApprove({
-        abi: erc20abi,
-        address: process.env.NEXT_PUBLIC_ERC20_ADDRESS as `0x${string}`,
-        functionName: "approve",
-        args: [
-          process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
-          BigInt(Number(amount) * 1000000),
-        ],
-      });
-      const transactionReceipt = await waitForTransactionReceipt(config, {
-        hash: hashApprove,
-      });
-      console.log(transactionReceipt);
-      if (transactionReceipt.status == "success") {
-        const hashFund = await writeContractAsync({
+      if (property.remainingAmount < Number(amount)) {
+        alert("Amount too high: " + property.remainingAmount);
+      } else {
+        const hashApprove = await writeApprove({
+          abi: erc20abi,
+          address: process.env.NEXT_PUBLIC_ERC20_ADDRESS as `0x${string}`,
+          functionName: "approve",
+          args: [
+            process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+            BigInt(Number(amount) * 1000000),
+          ],
+        });
+
+        const transactionReceipt = await waitForTransactionReceipt(config, {
+          hash: hashApprove,
+        });
+
+        console.log(transactionReceipt);
+
+        if (transactionReceipt.status == "success") {
+          const hashFund = await writeContractAsync({
             abi,
-            address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
+            address: process.env
+              .NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as `0x${string}`,
             functionName: "fundLoan",
-            args: [BigInt(property.propertyIndex), BigInt(Number(amount) * 1000000)],
+            args: [
+              BigInt(property.propertyIndex),
+              BigInt(Number(amount) * 1000000),
+            ],
           });
-          const transactionReceiptFund = await waitForTransactionReceipt(config, {
-            hash: hashFund,
-          })
-          console.log(transactionReceipt);
-          if(transactionReceiptFund.status == "success"){
-            console.log(hashFund + "- Funding Success");
+
+          const transactionReceiptFund = await waitForTransactionReceipt(
+            config,
+            {
+              hash: hashFund,
+            }
+          );
+
+          console.log(transactionReceiptFund);
+
+          if (transactionReceiptFund.status == "success") {
+            console.log(hashFund + " - Funding Success");
+
             try {
               const payment: PaymentCreateProps = {
                 balance: -amount,
@@ -182,38 +195,41 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
                 status: "Funded",
                 tx: "",
               };
-              const responseProperty = await axios.put(`/api/property/${property.id}` , {
-                ...property,
-                remainingAmount: property.remainingAmount - Number(amount)
-              })
+
+              const responseProperty = await axios.put(
+                `/api/property/${property.id}`,
+                {
+                  ...property,
+                  remainingAmount: property.remainingAmount - Number(amount),
+                }
+              );
+
               const responsePayment = await axios.post("/api/payment", payment);
               const responseLoan = await axios.put(`/api/loan/${loan.id}`, {
                 ...loan,
                 funding: true,
                 loanAmount: Number(amount),
               });
+
               updateLoan(responseLoan.data.loan);
               console.log("Transaction successful");
             } catch (error) {
               console.error("Updating loan failed:", error);
             }
-          }else{
-            console.log(hashFund + "- Funding Reverted");
+          } else {
+            console.log(hashFund + " - Funding Reverted");
           }
         } else {
-          console.log(hashFund + "- Funding Reverted");
+          console.log(hashApprove + " - Approval Reverted");
         }
-      } else {
-        console.log(hashApprove + "- Aproval Reverted");
       }
-    }
     } catch (error) {
       console.error(error);
       alert("Error initiating fund loan. Check console for details.");
+    } finally {
+      setIsTreansacting(false);
+      setIsModalOpen(false);
     }
-    setIsTreansacting(false);
-    setIsModalOpen(false);
-    
   };
 
   return (
@@ -272,12 +288,11 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
               <p className="text-grey-text">•</p>
               <p>{formatCurrency(loan.loanAmount)}</p>
             </div>
-          ):
-          (
+          ) : (
             <div className="flex gap-2">
-            <p className="text-grey-text">Remaining Amount</p>
-            <p className="text-grey-text">•</p>
-            <p>{formatCurrency(property.remainingAmount)}</p>
+              <p className="text-grey-text">Remaining Amount</p>
+              <p className="text-grey-text">•</p>
+              <p>{formatCurrency(property.remainingAmount)}</p>
             </div>
           )}
 
@@ -356,7 +371,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
             >
               Payment History
             </Link>
-          ) :property.remainingAmount == 0 ? (
+          ) : property.remainingAmount == 0 ? (
             <p
               className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-gray-200 hover:border-gray-200 cursor-pointer`}
             >
