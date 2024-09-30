@@ -164,7 +164,7 @@ const CreateAccount: React.FC<ChildPageProps> = ({
     if (!isConnected || (isConnected && user?.name != "" && user)) {
       router.push("/user/login");
     }
-    validateAddress();
+    // validateAddress();
   }, [isConnected]);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -186,7 +186,7 @@ const CreateAccount: React.FC<ChildPageProps> = ({
 
   return (
     <div className="p-20">
-      <div className="flex justify-center">
+      {/* <div className="flex justify-center">
         {validated ? (
           ""
         ) : (
@@ -195,7 +195,7 @@ const CreateAccount: React.FC<ChildPageProps> = ({
             disconnect your wallet and sign up!
           </p>
         )}
-      </div>
+      </div> */}
 
       <div className="border border-grey-border rounded-t-3xl mx-40 px-20 py-10">
         <p

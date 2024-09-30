@@ -225,7 +225,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {isAdminRoute && user?.role !== "ADMIN" ? (
             <p className="text-white">Unauthorized</p>
           ) : user.name !== "" && !user.approved ? (
-            <p className="text-white">
+            <p className="text-white text-lg text-center p-6">
               Your account has not been approved yet.
             </p>
           ) : (
@@ -260,9 +260,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <Link href="/faq">FAQ</Link>
               {isConnected && user?.role === "ADMIN" ? (
                 <>
-                <Link href="/admin/dashboard" className="">
-                  Admin Dashboard
-                </Link>
+                  <Link href="/admin/dashboard" className="">
+                    Admin Dashboard
+                  </Link>
                 </>
               ) : (
                 ""

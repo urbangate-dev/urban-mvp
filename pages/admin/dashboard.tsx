@@ -9,7 +9,7 @@ import { PiBankBold } from "react-icons/pi";
 import { FaPiggyBank } from "react-icons/fa6";
 import { formatCurrency } from "@/utils/functions";
 import { MdDeleteOutline } from "react-icons/md";
- import localFont from "@next/font/local";
+import localFont from "@next/font/local";
 import { Payment, User } from "@prisma/client";
 import PropertyLoanCardAdmin from "@/components/property-loan-admin-card";
 
@@ -155,11 +155,24 @@ const Dashboard: React.FC<ChildPageProps> = ({
       const response = await axios.put(`/api/user/${walletAddress}`, {
         approved: true,
       });
+      sendEmail(response.data);
       window.alert("User approved!");
-
-      //send email to user saying they are approved
     } catch (error) {
       console.error("Error creating address: ", error);
+    }
+  };
+
+  const sendEmail = async (user: User) => {
+    try {
+      const response = await axios.post("/api/email", {
+        name: user.name,
+        email: user.email,
+        address: user.walletAddress,
+      });
+
+      console.log("Response:", response.data);
+    } catch (error) {
+      console.error("Error sending email:", error);
     }
   };
 
@@ -211,7 +224,7 @@ const Dashboard: React.FC<ChildPageProps> = ({
           </p>
         </div>
         <div
-          className="border border-grey-border py-6 mt-4 rounded-tr-3xl"
+          className="border border-grey-border py-6 mt-4"
           onClick={() => setView("Payment")}
         >
           <p
@@ -333,7 +346,9 @@ const Dashboard: React.FC<ChildPageProps> = ({
                 <div>
                   {properties
                     .filter(
-                      (property) => property.remainingAmount != property.loanAmount && !property.paid
+                      (property) =>
+                        property.remainingAmount != property.loanAmount &&
+                        !property.paid
                     )
                     .map((property) => (
                       // <LoanCardAdmin
@@ -344,14 +359,14 @@ const Dashboard: React.FC<ChildPageProps> = ({
                       //   addPayment={addPayment}
                       // />
                       <PropertyLoanCardAdmin
-                      key={property.id}
-                      property={property}
-                      deleteProperty={deleteProperty}
-                      addPayment={addPayment}
-                      loans={loans}
-                      setProperties={setProperties}
-                      properties={properties}
-                    />
+                        key={property.id}
+                        property={property}
+                        deleteProperty={deleteProperty}
+                        addPayment={addPayment}
+                        loans={loans}
+                        setProperties={setProperties}
+                        properties={properties}
+                      />
                     ))}
                 </div>
               ) : (
@@ -571,16 +586,28 @@ const Dashboard: React.FC<ChildPageProps> = ({
           <div>
             <div className="flex justify-center gap-4 border-b border-l border-r border-grey-border py-6">
               <p
-                className={`text-lg font-extralight border  rounded-2xl py-3 px-6 transition ${robotoMono.variable} font-roboto-mono uppercase hover:text-dark-gold hover:border-dark-gold cursor-pointer border-gold text-gold`}
+                className={`text-lg font-extralight border  rounded-2xl py-3 px-6 transition ${
+                  robotoMono.variable
+                } font-roboto-mono uppercase hover:text-dark-gold hover:border-dark-gold cursor-pointer border-gold text-gold ${
+                  quaternaryView === "Users"
+                    ? "border-gold text-gold"
+                    : "border-grey-text text-grey-text"
+                }`}
                 onClick={() => setQuaternaryView("Users")}
               >
-                Users
+                Approved Users
               </p>
               <p
-                className={`text-lg font-extralight border  rounded-2xl py-3 px-6 transition ${robotoMono.variable} font-roboto-mono uppercase hover:text-dark-gold hover:border-dark-gold cursor-pointer border-gold text-gold`}
+                className={`text-lg font-extralight border  rounded-2xl py-3 px-6 transition ${
+                  robotoMono.variable
+                } font-roboto-mono uppercase hover:text-dark-gold hover:border-dark-gold cursor-pointer border-gold text-gold ${
+                  quaternaryView === "Add address"
+                    ? "border-gold text-gold"
+                    : "border-grey-text text-grey-text"
+                }`}
                 onClick={() => setQuaternaryView("Add address")}
               >
-                Add Address
+                Pending Users
               </p>
             </div>
 
@@ -592,22 +619,24 @@ const Dashboard: React.FC<ChildPageProps> = ({
                   <td className="py-4 pl-8 pr-10">Wallet Address</td>
                 </tr>
                 {users
-                  ? users.map((user, index) => (
-                      <tr
-                        className={`${robotoMono.variable} font-roboto-mono uppercase border-b border-grey-border`}
-                        key={index}
-                      >
-                        <td className="py-4 pl-4 pr-20">{user.name}</td>
+                  ? users
+                      .filter((user) => user.approved)
+                      .map((user, index) => (
+                        <tr
+                          className={`${robotoMono.variable} font-roboto-mono uppercase border-b border-grey-border`}
+                          key={index}
+                        >
+                          <td className="py-4 pl-4 pr-20">{user.name}</td>
 
-                        <td className="py-4 pl-8 pr-20">{user.email}</td>
-                        <td className="py-4 pl-8 pr-20">
-                          {user.walletAddress === ""
-                            ? "Google Account"
-                            : user.walletAddress}
-                        </td>
-                        <td></td>
-                      </tr>
-                    ))
+                          <td className="py-4 pl-8 pr-20">{user.email}</td>
+                          <td className="py-4 pl-8 pr-20">
+                            {user.walletAddress === ""
+                              ? "Google Account"
+                              : user.walletAddress}
+                          </td>
+                          <td></td>
+                        </tr>
+                      ))
                   : ""}
               </table>
             ) : (

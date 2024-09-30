@@ -18,11 +18,11 @@ export default async function handler(
     secure: false,
   });
   const mailData = {
-    from: "chungusbig1111@gmail.com",
+    from: "urbangatedev@gmail.com",
     to: `${email}`,
-    subject: `Loan Approved for ${address}`,
-    text: "Your loan has been approved!",
-    html: `<div><p>Dear ${name},</p><p>Your loan for ${address} has been approved! Please login and click "Fund Now" in your account page: https://urban-mvp.vercel.app/user/account</p><p>UrbanGate Capital</p></div>`,
+    subject: `Account Approved for Wallet Address: ${address}`,
+    text: "Your investment account with UrbanGate Capital has been approved!",
+    html: `<div><p>Dear ${name},</p><p>Your account has been approved! Please go to the following link to start investing: https://urbangate.vercel.app</p><p>UrbanGate Capital</p></div>`,
   };
   try {
     transporter.sendMail(mailData, function (err, info) {
