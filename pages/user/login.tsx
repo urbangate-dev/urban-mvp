@@ -76,7 +76,7 @@ const Login: React.FC<ChildPageProps> = ({
             className="text-white text-4xl uppercase font-roboto-condensed"
             style={{ fontVariant: "all-small-caps" }}
           >
-            Lending Investor Login
+            Lending Investor Login (Beta)
           </p>
           <p className="text-grey-text text-center">
             Login with either your Google account or your crypto wallet. Please
