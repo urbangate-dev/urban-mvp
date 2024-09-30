@@ -71,6 +71,7 @@ const Home: React.FC<ChildPageProps> = ({
         <div className="grid grid-cols-3">
           {properties
             .filter((property) => !property.draft)
+            .filter((property) => property.remainingAmount > 0)
             .map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
@@ -91,6 +92,7 @@ const Home: React.FC<ChildPageProps> = ({
         <div className="grid grid-cols-3">
           {properties
             .filter((property) => !property.draft)
+            .filter((property) => property.remainingAmount === 0)
             .map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
