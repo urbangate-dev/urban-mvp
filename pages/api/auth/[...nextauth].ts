@@ -56,6 +56,7 @@ export const authOptions: NextAuthOptions = {
                   role: "INVESTOR",
                   state: "",
                   investorType: "",
+                  approved: true,
                 },
               });
             }
