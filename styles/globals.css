@@ -4,6 +4,20 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap");
 
+.active-campaign-wrapper {
+  position: relative; /* or absolute, fixed */
+  display: flex; /* Try using flex to see if it adjusts */
+  justify-content: center; /* Center the form horizontally */
+  align-items: flex-start; /* Adjust vertical alignment as necessary */
+  width: 100%; /* Make it take up the full width */
+  /* Add padding or margin as needed */
+}
+
+._form_1 {
+  width: 100%; /* Adjust this if needed */
+  max-width: 500px; /* Set a max-width if you want */
+}
+
 /* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;

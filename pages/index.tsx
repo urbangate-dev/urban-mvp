@@ -63,8 +63,7 @@ const Home: React.FC<ChildPageProps> = ({
             Loans Available For Investment
           </p>
           <p className=" text-grey-text">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            Begin investing in our current loans!
           </p>
         </div>
 

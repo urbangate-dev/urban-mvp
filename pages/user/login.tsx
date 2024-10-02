@@ -4,16 +4,7 @@ import { ChildPageProps } from "@/utils/props";
 import AuthButtonGoogle from "@/components/AuthButtonGoogle";
 import { useSIWE } from "connectkit";
 import CustomSIWEButton from "@/components/siweButton";
-
-interface FormData {
-  name: string;
-  email: string;
-  phone: string;
-  message: string;
-}
-
-const ActiveCampaignUrl =
-  "https://urbangatecapital.activehosted.com/proc.php?id=1"; // Replace with your ActiveCampaign form action URL
+import EmbedForm from "@/components/EmbedForm";
 
 const Login: React.FC<ChildPageProps> = ({
   isConnected,
@@ -22,72 +13,41 @@ const Login: React.FC<ChildPageProps> = ({
   router,
   data,
 }) => {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-  });
-
   const { data: siweData, isSignedIn } = useSIWE();
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    try {
-      const response = await axios.post(ActiveCampaignUrl, {
-        // Map your form fields according to ActiveCampaign's required parameters
-        "Full Name": formData.name,
-        Email: formData.email,
-        Phone: formData.phone,
-        Message: formData.message,
-        // Include any additional fields required by your ActiveCampaign form
-      });
-      if (response.status === 200) {
-        alert("Form submitted successfully!");
-      }
-    } catch (error) {
-      console.error("Error submitting the form:", error);
-      alert("There was an error submitting the form. Please try again.");
-    }
-  };
-
   useEffect(() => {
+    console.log("Login component mounted");
+
     if (data?.user || (isConnected && isSignedIn)) {
-      router.push("/");
+      // Ensure the user is not already on the homepage
+      if (router.pathname !== "/") {
+        router.push("/");
+      }
     }
+
+    return () => {
+      console.log("Login component unmounted");
+    };
   }, [data, isConnected, isSignedIn, router]);
 
   return (
     <div className="p-20">
       <div className="grid grid-cols-2 rounded-3xl border border-grey-border">
+        {/* Left side */}
         <div className="p-8 flex flex-col gap-4 items-center border-r border-grey-border">
-          <p
-            className="text-white text-4xl uppercase font-roboto-condensed"
-            style={{ fontVariant: "all-small-caps" }}
-          >
+          {/* Login section content */}
+          <p className="text-white text-4xl uppercase font-roboto-condensed">
             Lending Investor Login (Beta Version)
           </p>
           <p className="text-grey-text text-center">
-            Login with either your Google account or your crypto wallet. Please
-            note: If you login with your Google Account, you can only view
-            loans. To invest with crypto, you must use your wallet.
+            Login with either your Google account or your crypto wallet.
           </p>
           <AuthButtonGoogle />
           <p className="text-grey-text text-lg">OR</p>
           <CustomSIWEButton />
         </div>
 
+        {/* Right side */}
         <div className="p-8 flex flex-col gap-4 items-center">
           <p
             className="text-white text-4xl uppercase font-roboto-condensed"
@@ -100,52 +60,8 @@ const Login: React.FC<ChildPageProps> = ({
             out the form below and we will be in contact with more details
             shortly!
           </p>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4  w-full">
-            <label className="flex flex-col text-lg">
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Full Name"
-                className="border border-grey-border bg-grey-input text-grey-text rounded-md px-4 py-3 font-light placeholder:text-grey-text outline-dark-gold text-lg"
-              />
-            </label>
-            <label className="flex flex-col text-lg">
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email"
-                className="border border-grey-border bg-grey-input text-grey-text rounded-md px-4 py-3 font-light placeholder:text-grey-text outline-dark-gold text-lg"
-              />
-            </label>
-            <label className="flex flex-col text-lg">
-              <input
-                type="text"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                placeholder="Phone Number"
-                className="border border-grey-border bg-grey-input text-grey-text rounded-md px-4 py-3 font-light placeholder:text-grey-text outline-dark-gold text-lg"
-              />
-            </label>
-            <label className="flex flex-col text-lg">
-              <textarea
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                placeholder="Message"
-                className="border border-grey-border bg-grey-input text-grey-text rounded-md px-4 py-3 font-light placeholder:text-grey-text outline-dark-gold text-lg h-28"
-              />
-            </label>
-            <div className="flex justify-center">
-              <button className="text-gold border uppercase font-roboto-condensed text-xl border-gold rounded-lg px-4 py-2 hover:text-dark-gold hover:border-dark-gold transition">
-                Submit
-              </button>
-            </div>
-          </form>
+          <EmbedForm />
+          {/* Ensure this is the last element in this container */}
         </div>
       </div>
     </div>
