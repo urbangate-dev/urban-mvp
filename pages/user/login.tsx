@@ -36,11 +36,17 @@ const Login: React.FC<ChildPageProps> = ({
         {/* Left side */}
         <div className="p-8 flex flex-col gap-4 items-center border-r border-grey-border">
           {/* Login section content */}
-          <p className="text-white text-4xl uppercase font-roboto-condensed">
+          <p
+            className="text-white text-4xl uppercase font-roboto-condensed text-center"
+            style={{ fontVariant: "all-small-caps" }}
+          >
             Lending Investor Login (Beta Version)
           </p>
-          <p className="text-grey-text text-center">
+          <p className="text-grey-text text-center mb-4">
             Login with either your Google account or your crypto wallet.
+            Connecting with your wallet will require account approval before
+            investing. Logging in with Google does not require approval, but you
+            only view loans, not invest in them.
           </p>
           <AuthButtonGoogle />
           <p className="text-grey-text text-lg">OR</p>
