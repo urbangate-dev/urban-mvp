@@ -83,12 +83,17 @@ export default function PropertyCardAdmin({
               View Property
             </Link>
           )}
-          <Link
-            className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
-            href={`/admin/edit-property/${property.id}`}
-          >
-            Edit
-          </Link>
+          {property.loanAmount != property.remainingAmount ? (
+            ""
+          ) : (
+            <Link
+              className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-dark-gold hover:border-dark-gold cursor-pointer`}
+              href={`/admin/edit-property/${property.id}`}
+            >
+              Edit
+            </Link>
+          )}
+
           <p
             className={`text-lg font-extralight border border-red-600 rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-red-600 hover:text-red-400 hover:border-red-400 cursor-pointer`}
             onClick={() => deleteProperty(property.id)}

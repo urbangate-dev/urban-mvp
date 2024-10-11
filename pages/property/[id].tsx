@@ -214,7 +214,7 @@ const Property: React.FC<ChildPageProps> = ({
   const handleInvest = async (property: Prop) => {
     try {
       const loan: LoanCreateProps = {
-        loanAmount: property.loanAmount,
+        loanAmount: 0,
         loanToARV: property.loanARVValue,
         loanToAsIs: property.loanAsIsValue,
         loanToCost: property.loanToCostValue,

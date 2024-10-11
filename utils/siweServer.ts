@@ -3,11 +3,13 @@ import { config } from '@/components/Web3Provider';
 import { baseSepolia } from 'wagmi/chains'
 import { http } from '@wagmi/core'
 
+// This configuration sets up the server-side functionality for Sign-In With Ethereum (SIWE) using 
+// the `connectkit-next-siwe` package. It allows server-side authentication for Ethereum users in the application.
+  
 export const siweServer = configureServerSideSIWE({
   config: {
     chains: config.chains,
     transports: {
-      // RPC URL for each chain
       [baseSepolia.id]: http(
         process.env.NEXT_PUBLIC_ALCHEMYHTTP,
       ),

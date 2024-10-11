@@ -1,3 +1,3 @@
-import { siweServer } from '@/utils/siweServer' // Your path to siweServer.ts
+import { siweServer } from '@/utils/siweServer' 
 
 export default siweServer.apiRouteHandler

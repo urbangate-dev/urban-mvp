@@ -1,6 +1,6 @@
 import { http, createConfig } from '@wagmi/core'
 import { baseSepolia } from 'wagmi/chains'
-
+//config used for reading onchain data
 export const config = createConfig({
     chains: [baseSepolia],
     transports: {

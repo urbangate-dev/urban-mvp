@@ -64,13 +64,6 @@ export default function PropertyCard({ property }: PropertyCardProps) {
             >
               {formatCurrency(property.remainingAmount)} Remaining
             </p>
-            <p className="text-white">
-              {Math.round(
-                ((property.loanAmount - property.remainingAmount) /
-                  property.loanAmount) *
-                  100
-              )}
-            </p>
           </div>
 
           <div

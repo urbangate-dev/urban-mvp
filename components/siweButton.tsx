@@ -2,6 +2,8 @@ import React from 'react';
 import { useSIWE, useModal, SIWESession } from "connectkit";
 import { useAccount } from "wagmi";
 
+
+//Sign in with Ethereum
 const CustomSIWEButton = () => {
   const { setOpen } = useModal();
   const { isConnected } = useAccount();
@@ -16,7 +18,7 @@ const CustomSIWEButton = () => {
   const buttonClass = "text-gold border uppercase font-roboto-condensed text-xl border-gold rounded-lg px-4 py-2 hover:text-dark-gold hover:border-dark-gold transition";
 
 
-  /** Wallet is connected, but not signed in */
+  //Wallet is connected, but not signed in
   if (isConnected) {
     return (
       <button

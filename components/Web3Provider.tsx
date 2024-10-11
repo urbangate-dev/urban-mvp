@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ConnectKitProvider, getDefaultConfig, SIWESession } from "connectkit";
 import { baseSepolia } from "wagmi/chains";
 
+//This component wraps the application with the necessary providers for Web3 functionalities. 
 export const config = createConfig(
   getDefaultConfig({
     appName: "Urban Gate Capital",

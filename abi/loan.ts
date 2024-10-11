@@ -169,6 +169,19 @@ export const abi = [
 	{
 		"inputs": [
 			{
+				"internalType": "int256",
+				"name": "newOffset",
+				"type": "int256"
+			}
+		],
+		"name": "adjustTime",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "",
 				"type": "address"
@@ -401,19 +414,6 @@ export const abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "getCurrentBlockTimestamp",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -462,6 +462,89 @@ export const abi = [
 					}
 				],
 				"internalType": "struct LendingPlatform.Date",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "loanId",
+				"type": "uint256"
+			}
+		],
+		"name": "getLoanDetails",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "paidAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "yieldPercent",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "dueDate",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "offset",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "clientIndex",
+						"type": "uint256"
+					},
+					{
+						"components": [
+							{
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+							},
+							{
+								"internalType": "bool",
+								"name": "isPaid",
+								"type": "bool"
+							},
+							{
+								"internalType": "address",
+								"name": "clientAddress",
+								"type": "address"
+							},
+							{
+								"internalType": "uint256",
+								"name": "interestCounter",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "investmentTime",
+								"type": "uint256"
+							}
+						],
+						"internalType": "struct LendingPlatform.client[]",
+						"name": "clients",
+						"type": "tuple[]"
+					}
+				],
+				"internalType": "struct LendingPlatform.LoanDetails",
 				"name": "",
 				"type": "tuple"
 			}
@@ -633,6 +716,11 @@ export const abi = [
 				"internalType": "uint256",
 				"name": "clientIndex",
 				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "paid",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -679,6 +767,11 @@ export const abi = [
 		],
 		"name": "payOffLoanAmount",
 		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "",
+				"type": "uint256[]"
+			},
 			{
 				"internalType": "uint256",
 				"name": "",

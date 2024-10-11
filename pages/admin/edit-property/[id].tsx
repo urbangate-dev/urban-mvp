@@ -7,6 +7,9 @@ import { UploadButton } from "../../../utils/uploadthing";
 import { truncateFileName } from "../../../utils/functions";
 import { FaArrowLeft } from "react-icons/fa";
 import localFont from "@next/font/local";
+import { abi } from "../../../abi/loan";
+import LoadingModal from "@/components/loadingModal";
+import { useWriteContract } from "wagmi";
 
 const robotoCondensed = localFont({
   src: [
@@ -59,7 +62,11 @@ const EditProperty: React.FC<ChildPageProps> = ({
   });
   const [thumbnail, setThumbnail] = useState<string>("");
   const [additional, setAdditional] = useState<string[]>([]);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [index, setIndex] = useState<number>(0);
+  const [pastAmount, setPastAmount] = useState<number>(0);
+  const [pastTime, setPastTime] = useState<string>("");
+  const [pastYield, setPastYield] = useState<number>(0);
   const { id } = router.query;
 
   const handleChange = (
@@ -83,18 +90,44 @@ const EditProperty: React.FC<ChildPageProps> = ({
       [name]: parsedValue,
     });
   };
+  const {writeContractAsync: writeFundLoan} = useWriteContract();
 
+  //updates the loan on chain if it effects the due date, loan amount, or yield
+  //otherwise it only changes the database
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     e.preventDefault();
-    try {
+    const { loanAmount, yieldPercent, maturityDate } = formData;
+    const dueTime = Math.floor(new Date(maturityDate).getTime() / 1000);
+    const currentTime = Math.floor(Date.now() / 1000);
+    const secondsUntilMaturity = dueTime - currentTime;
+    if(pastAmount == loanAmount && yieldPercent == pastYield && maturityDate == pastTime){
       const response = await axios.put(`/api/property/${id}`, {
         ...formData,
+        remainingAmount: loanAmount,
         draft: false,
       });
-      router.push("/admin/dashboard");
-    } catch (error) {
-      console.error("Error creating property: ", error);
     }
+    else{
+      try {
+          const hash = await writeFundLoan({
+            abi,  
+            address: process.env.NEXT_PUBLIC_LENDINGPLATFORM_ADDRESS as unknown as `0x${string}`,
+            functionName: "updateLoan",
+            args: [BigInt(index), BigInt(loanAmount * 1000000), BigInt(yieldPercent*1000), BigInt(secondsUntilMaturity)],
+          });
+        
+          const response = await axios.put(`/api/property/${id}`, {
+            ...formData,
+            draft: false,
+          });
+        } catch (error) {
+          console.log(error);
+          setIsLoading(false);
+      }
+  }
+    router.push("/admin/dashboard");
+    setIsLoading(false);
   };
 
   const saveDraft = async () => {
@@ -117,6 +150,10 @@ const EditProperty: React.FC<ChildPageProps> = ({
     if (id)
       try {
         const response = await axios.get(`/api/property/${id}`);
+        setIndex(response.data.property.propertyIndex);
+        setPastAmount(response.data.property.loanAmount);
+        setPastTime(response.data.property.maturityDate);
+        setPastYield(response.data.property.yieldPercent);
         setFormData(response.data.property);
       } catch (error) {
         console.error("Error fetching property: ", error);
@@ -245,7 +282,7 @@ const EditProperty: React.FC<ChildPageProps> = ({
                 name="loanAmount"
                 value={formData.loanAmount === 0 ? "" : formData.loanAmount}
                 onChange={handleChange}
-                placeholder="Loan Amouunt ($)"
+                placeholder="Loan Amount ($)"
                 className="border border-grey-border bg-grey-input text-grey-text rounded-md p-5 font-light placeholder:text-grey-text outline-dark-gold text-xl"
               />
             </label>
@@ -485,8 +522,10 @@ const EditProperty: React.FC<ChildPageProps> = ({
           </button>
         </div>
       </form>
+      <LoadingModal isLoading={isLoading} />
     </div>
   );
+  
 };
 
 export default EditProperty;

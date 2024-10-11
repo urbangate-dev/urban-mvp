@@ -109,16 +109,14 @@ const CreateProperty: React.FC<ChildPageProps> = ({
   const {writeContractAsync: writeFundLoan} = useWriteContract();
   const [propertyId, setPropertyId] = useState<string | null>(null);
 
-
+  //creates the property and adds it on chain
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     e.preventDefault();
     const { loanAmount, yieldPercent, maturityDate, remainingAmount } = formData;
     const dueTime = Math.floor(new Date(maturityDate).getTime() / 1000);
-    console.log(remainingAmount);
     const currentTime = Math.floor(Date.now() / 1000);
     const secondsUntilMaturity = dueTime - currentTime;
-    alert(secondsUntilMaturity+ " " + yieldPercent + " " + loanAmount);
     try {
         const hash = await writeFundLoan({
           abi,  
@@ -126,11 +124,9 @@ const CreateProperty: React.FC<ChildPageProps> = ({
           functionName: "createLoanRequest",
           args: [BigInt(loanAmount * 1000000), BigInt(yieldPercent*1000), BigInt(secondsUntilMaturity)],
         });
-        console.log("hash-"+hash);
         const transactionReceipt = await waitForTransactionReceipt(config, {
           hash: hash,
         })
-        console.log(transactionReceipt);
         if(transactionReceipt.status == "success"){
           const propertyIndex = await readContract(config, {
             abi: abi,
@@ -143,18 +139,13 @@ const CreateProperty: React.FC<ChildPageProps> = ({
             propertyIndex: String(Number(propertyIndex)-1),
             paid: false,
           });
-          console.log("API response for property creation:", response.data);
-          console.log(response.data.property);
           setPropertyId(response.data.property.id);
-          console.log("Created property ID:", propertyId);
           router.push("/admin/dashboard");
         }
 
       } catch (error) {
-        
-      console.error("Error creating property: ", error);
+        setIsLoading(false);
       router.push("/admin/dashboard");
-
     }
     setIsLoading(false);
   };
@@ -408,7 +399,6 @@ const CreateProperty: React.FC<ChildPageProps> = ({
                   setThumbnail(res[0].name);
                 }}
                 onUploadError={(error: Error) => {
-                  // Do something with the error.
                   alert(`ERROR! ${error.message}`);
                 }}
               />
@@ -440,7 +430,6 @@ const CreateProperty: React.FC<ChildPageProps> = ({
                   });
                 }}
                 onUploadError={(error: Error) => {
-                  // Do something with the error.
                   alert(`ERROR! ${error.message}`);
                 }}
               />

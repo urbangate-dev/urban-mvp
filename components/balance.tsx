@@ -3,6 +3,7 @@ import { useReadContract, useAccount } from "wagmi";
 import { abi } from "../abi/erc20";
 import { formatCurrency } from "../utils/functions";
 
+//Balance component that displays the amount of usdc tokens (6 decimals)
 export function Balance() {
   const { address } = useAccount();
   const [balance, setBalance] = useState<string | null>(null);
@@ -40,7 +41,6 @@ export function Balance() {
       >
         {isRefetching && "Loading..."}
         {isLoading && <p>Loading balance...</p>}
-        {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
         {balance !== null && !isLoading && !error && (
           <p>Balance: {formatCurrency(parseFloat(balance)/1000000)}</p>
         )}

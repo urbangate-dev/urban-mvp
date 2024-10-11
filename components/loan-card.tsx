@@ -141,6 +141,8 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
 
   const { writeContractAsync } = useWriteContract();
 
+  //User has to pay at least 50000 usdc if the loan is big enough, and if it is less than 50000 usdc
+  //user will pay the rest. (decimal is 10^6)
   const fundLoan = async () => {
     setIsTreansacting(true);
     try {
@@ -161,8 +163,6 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
           hash: hashApprove,
         });
 
-        console.log(transactionReceipt);
-
         if (transactionReceipt.status == "success") {
           const hashFund = await writeContractAsync({
             abi,
@@ -182,11 +182,7 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
             }
           );
 
-          console.log(transactionReceiptFund);
-
           if (transactionReceiptFund.status == "success") {
-            console.log(hashFund + " - Funding Success");
-
             try {
               const payment: PaymentCreateProps = {
                 balance: -amount,
@@ -212,27 +208,23 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
               });
 
               updateLoan(responseLoan.data.loan);
-              console.log("Transaction successful");
             } catch (error) {
               console.error("Updating loan failed:", error);
             }
-          } else {
-            console.log(hashFund + " - Funding Reverted");
           }
-        } else {
-          console.log(hashApprove + " - Approval Reverted");
         }
       }
     } catch (error) {
-      console.error(error);
-      alert("Error initiating fund loan. Check console for details.");
-    } finally {
       setIsTreansacting(false);
-      setIsModalOpen(false);
+      console.error("Updating loan failed:", error);
     }
+    setIsModalOpen(false);
+    setIsTreansacting(false);
+
   };
 
   return (
+    (!loan.funding && property.paid) ? null : (
     <div className="p-5 text-white border border-grey-border gap-6 flex">
       {/* <div className="relative overflow-hidden col-span-1 max-w-20 aspect-video">
         <Image
@@ -268,10 +260,12 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
             >
               Pending
             </p>
+          ) : property.paid ? (
+            <p className="text-gold text-xl font-roboto-mono">Loan Finished</p>
           ) : loan.funding ? (
             <p className="text-gold text-xl font-roboto-mono">Funded</p>
-          ) : loan.paid ? (
-            <p className="text-green-500 text-xl font-roboto-mono">Paid Off</p>
+          ): property.remainingAmount == 0 ? (
+            <p className="text-red-500 text-xl font-roboto-mono">No Investments Available</p>
           ) : (
             <p className="text-green-500 text-xl font-roboto-mono">
               Ready To Fund
@@ -377,13 +371,15 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
             >
               Loan Expired
             </p>
-          ) : (
+          ) : !loan.paid ? (
             <p
               onClick={() => setIsModalOpen(true)}
               className={`text-lg font-extralight border border-gold rounded-full py-2 px-4 transition ${robotoMono.variable} font-roboto-mono uppercase text-gold hover:text-gray-200 hover:border-gray-200 cursor-pointer`}
             >
               Fund Now
             </p>
+          ) : (
+            <p></p>
           )}
           {isModalOpen && (
             <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50">
@@ -429,5 +425,6 @@ export default function LoanCard({ loan, user, updateLoan }: LoanCardProps) {
       </div>
       <LoadingModal isLoading={isTransacting} />
     </div>
-  );
+  )
+  )
 }

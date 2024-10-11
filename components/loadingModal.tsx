@@ -5,6 +5,7 @@ interface LoadingModalProps {
   isLoading: boolean;
 }
 
+//loading modal displayed during transactions
 const LoadingModal: React.FC<LoadingModalProps> = ({ isLoading }) => {
   if (!isLoading) return null;
 
